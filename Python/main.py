@@ -2,6 +2,10 @@
     Create a random chordal graph
 """
 import random
+import json
+import io
+import networkx as nx
+from networkx.readwrite import json_graph
 
 
 class TreeNode:
@@ -19,18 +23,30 @@ class TreeNode:
         return str(self.id)
 
 
+def cliqueListGenChordal(graph):
+    finalGraph = [TreeNode(n.id) for n in graph]
+
+    for i, n in enumerate(graph):
+        for j in range(i + 1, len(graph)):
+            for ci in n.cliqueList:
+                if ci in graph[j].cliqueList:
+                    finalGraph[i].Ax.append(finalGraph[j])
+                    break
+    convertToNetworkX(finalGraph)
+
+
 def ChordalGen(n, k):
     tree = TreeGen(n)
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    print(subtrees)
+    # print(subtrees)
     # subTrees = SubTreeGen(t, k)
     print([t.cliqueList for t in tree])
+    cliqueListGenChordal(tree)
     return subtrees
 
 
 def SubTreeGen(T, k, i):
     Ti = [random.choice(T)]
-    print("selected: " + str(Ti[0]))
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
 
@@ -53,11 +69,6 @@ def SubTreeGen(T, k, i):
 
         zi = random.randint(y.s, len(y.Ax) - 1)
         z = y.Ax[zi]
-        print("selected: " + str(z))
-
-        # if y.s != zi:
-        #     y.Ax[y.s], y.Ax[zi] = y.Ax[zi], y.Ax[y.s]
-        #     y.s += 1
 
         # update every neighbour of z that z is now in Ti, y is among them
         for node in z.Ax:
@@ -75,6 +86,7 @@ def SubTreeGen(T, k, i):
         Ti.append(z)
         z.cliqueList.append(i)
         # check if leaf i.e. has degree 1, then it cannot be selected any more
+        # TODO: is it needed?
         if len(z.Ax) == 1:
             if sy != len(Ti) - 1:
                 Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
@@ -98,7 +110,21 @@ def TreeGen(n):
 
         # append to tree
         tree.append(newnode)
+    convertToNetworkX(tree)
     return tree
+
+
+def convertToNetworkX(graph):
+    lines = []
+    for n in graph:
+        lines.append(str(n.id) + ' ' + ' '.join((str(nn.id) for nn in n.Ax)))
+
+    G = nx.parse_adjlist(lines, nodetype=int)
+    print(nx.is_chordal(G))
+    data = json_graph.node_link_data(G)
+    with io.open('graph.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
 
 ChordalGen(10, 4)
 print(".....Done")
