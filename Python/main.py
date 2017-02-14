@@ -7,6 +7,9 @@ import io
 import networkx as nx
 from networkx.readwrite import json_graph
 
+# initialize global random seed
+R = random.Random()
+
 
 class TreeNode:
     """ A class representing a tree node """
@@ -15,6 +18,8 @@ class TreeNode:
         self.id = id
         self.Ax = []
         self.cliqueList = []
+        # helper list for tree form
+        self.children = []
 
     def __str__(self):
         return str(self.id)
@@ -32,25 +37,25 @@ def cliqueListGenChordal(graph):
                 if ci in graph[j].cliqueList:
                     finalGraph[i].Ax.append(finalGraph[j])
                     break
-    convertToNetworkX(finalGraph)
+    convertToNetworkX([graph, finalGraph])
 
 
 def ChordalGen(n, k):
     tree = TreeGen(n)
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    # print(subtrees)
+    print("subtrees: ", subtrees)
     # subTrees = SubTreeGen(t, k)
-    print([t.cliqueList for t in tree])
+    print("cliqueList: ", [t.cliqueList for t in tree])
     cliqueListGenChordal(tree)
     return subtrees
 
 
 def SubTreeGen(T, k, i):
-    Ti = [random.choice(T)]
+    Ti = [R.choice(T)]
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
 
-    k_i = random.randint(1, 2 * k - 1)
+    k_i = R.randint(1, 2 * k - 1)
     # seperation index for y
     sy = 0
     # seperation indices for each node
@@ -64,11 +69,9 @@ def SubTreeGen(T, k, i):
             pass
 
     for j in range(1, k_i):
-        yi = random.randint(sy, len(Ti) - 1)
-        y = Ti[yi]
+        y, yi = random_element(Ti, sy)
 
-        zi = random.randint(y.s, len(y.Ax) - 1)
-        z = y.Ax[zi]
+        z, zi = random_element(y.Ax, y.s)
 
         # update every neighbour of z that z is now in Ti, y is among them
         for node in z.Ax:
@@ -101,29 +104,49 @@ def TreeGen(n):
     """
     tree = [TreeNode(0)]
     for i in range(0, n - 1):
-        selection = random.choice(tree)
+        selection, _ = random_element(tree)
         newnode = TreeNode(i + 1)
 
         # update the adjacency lists
         newnode.Ax.append(selection)
         selection.Ax.append(newnode)
 
+        # update helper, children list
+        selection.children.append(newnode)
+
         # append to tree
         tree.append(newnode)
-    convertToNetworkX(tree)
+
     return tree
 
 
-def convertToNetworkX(graph):
-    lines = []
-    for n in graph:
-        lines.append(str(n.id) + ' ' + ' '.join((str(nn.id) for nn in n.Ax)))
+def convertToNetworkX(graphs):
+    """
+        Converts a list of graphs(or a single graph) to networkX format, 
+        outputs json result to file `graph.json`
+    """
+    if not isinstance(graphs, list):
+        graphs = [graphs]
 
-    G = nx.parse_adjlist(lines, nodetype=int)
-    print(nx.is_chordal(G))
-    data = json_graph.node_link_data(G)
+    jsonData = []
+    for graph in graphs:
+        lines = []
+        for node in graph:
+            lines.append(str(node.id) + ' ' + ' '.join((str(nn.id) for nn in node.Ax)))
+
+        G = nx.parse_adjlist(lines, nodetype=int)
+        print("is Chordal: {0} ".format(nx.is_chordal(G)))
+        jsonData.append(json_graph.node_link_data(G))
+
     with io.open('graph.json', 'w') as file:
-        json.dump(data, file, indent=4)
+        json.dump(jsonData, file, indent=4)
+
+def random_element(array, index=0):
+    """
+        get a random element, and index from given array starting from index to end
+    """
+    i = R.randint(index, len(array) - 1)
+    return array[i], i
 
 
 ChordalGen(10, 4)
