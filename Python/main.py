@@ -43,9 +43,6 @@ def cliqueListGenChordal(graph):
 
 def ChordalGen(n, k):
     tree = TreeGen(n)
-    for node in tree:
-        print(str(node.id) + ': ' + ' '.join((str(nn.id) for nn in node.Ax)))
-
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
     print("subtrees: ", subtrees)
     # subTrees = SubTreeGen(t, k)
@@ -139,14 +136,7 @@ def convertToNetworkX(graphs):
         for node in graph:
             lines.append(str(node.id) + ' ' + ' '.join(str(nn.id) for nn in node.Ax))
 
-        print("###########")
-        print(lines)
-        print("###########")
-
         G = nx.parse_adjlist(lines, nodetype=int)
-        print(G.nodes())
-        print(G.edges())
-
         print("is Chordal: {0} ".format(nx.is_chordal(G)))
         jsonData.append(json_graph.node_link_data(G))
 
