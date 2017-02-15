@@ -47,7 +47,6 @@
 
     d3.json("graph.json", function(error, graph) {
         if (error) throw error;
-
         if (Array.isArray(graph)) {
             for (var i = 0; i < graph.length; i++) {
                 createGraph(graph[i], i, graph.length);
@@ -58,6 +57,11 @@
     });
 
     function createGraph(graph, i, count) {
+        graph.links.forEach((l) => {
+            l.source = graph.nodes[l.source];
+            l.target = graph.nodes[l.target];
+        });
+
         var link = svg.append("g")
             .attr("class", "links")
             .selectAll("line")
@@ -70,7 +74,9 @@
         var nodeEnter = svg.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
-            .data(graph.nodes)
+            .data(graph.nodes, function(d) {
+                return d.id;
+            })
             .enter();
 
         var node = nodeEnter.append("circle")

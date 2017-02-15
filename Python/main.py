@@ -37,16 +37,21 @@ def cliqueListGenChordal(graph):
                 if ci in graph[j].cliqueList:
                     finalGraph[i].Ax.append(finalGraph[j])
                     break
-    convertToNetworkX([graph, finalGraph])
+
+    return finalGraph
 
 
 def ChordalGen(n, k):
     tree = TreeGen(n)
+    for node in tree:
+        print(str(node.id) + ': ' + ' '.join((str(nn.id) for nn in node.Ax)))
+
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
     print("subtrees: ", subtrees)
     # subTrees = SubTreeGen(t, k)
     print("cliqueList: ", [t.cliqueList for t in tree])
-    cliqueListGenChordal(tree)
+    fg = cliqueListGenChordal(tree)
+    convertToNetworkX([tree, fg])
     return subtrees
 
 
@@ -132,14 +137,21 @@ def convertToNetworkX(graphs):
     for graph in graphs:
         lines = []
         for node in graph:
-            lines.append(str(node.id) + ' ' + ' '.join((str(nn.id) for nn in node.Ax)))
+            lines.append(str(node.id) + ' ' + ' '.join(str(nn.id) for nn in node.Ax))
+
+        print("###########")
+        print(lines)
+        print("###########")
 
         G = nx.parse_adjlist(lines, nodetype=int)
+        print(G.nodes())
+        print(G.edges())
+
         print("is Chordal: {0} ".format(nx.is_chordal(G)))
         jsonData.append(json_graph.node_link_data(G))
 
     with io.open('graph.json', 'w') as file:
-        json.dump(jsonData, file, indent=4)
+      json.dump(jsonData, file, indent=4)
 
 def random_element(array, index=0):
     """

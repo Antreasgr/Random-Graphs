@@ -8,31 +8,31 @@
                 "id": 0
             },
             {
-                "id": 6
-            },
-            {
-                "id": 3
-            },
-            {
-                "id": 2
-            },
-            {
                 "id": 1
-            },
-            {
-                "id": 4
-            },
-            {
-                "id": 5
-            },
-            {
-                "id": 9
             },
             {
                 "id": 7
             },
             {
+                "id": 2
+            },
+            {
+                "id": 6
+            },
+            {
+                "id": 5
+            },
+            {
+                "id": 3
+            },
+            {
                 "id": 8
+            },
+            {
+                "id": 4
+            },
+            {
+                "id": 9
             }
         ],
         "links": [
@@ -45,32 +45,32 @@
                 "target": 2
             },
             {
-                "source": 0,
+                "source": 1,
                 "target": 3
             },
             {
-                "source": 0,
+                "source": 1,
                 "target": 4
             },
             {
-                "source": 1,
-                "target": 9
-            },
-            {
-                "source": 2,
-                "target": 6
-            },
-            {
-                "source": 4,
+                "source": 3,
                 "target": 5
             },
             {
-                "source": 5,
+                "source": 3,
+                "target": 6
+            },
+            {
+                "source": 3,
                 "target": 7
             },
             {
-                "source": 6,
+                "source": 3,
                 "target": 8
+            },
+            {
+                "source": 7,
+                "target": 9
             }
         ]
     },
@@ -89,9 +89,6 @@
                 "id": 2
             },
             {
-                "id": 3
-            },
-            {
                 "id": 4
             },
             {
@@ -102,6 +99,9 @@
             },
             {
                 "id": 7
+            },
+            {
+                "id": 3
             },
             {
                 "id": 8
@@ -136,23 +136,15 @@
                 "target": 6
             },
             {
-                "source": 0,
-                "target": 7
-            },
-            {
-                "source": 0,
-                "target": 8
-            },
-            {
-                "source": 0,
-                "target": 9
-            },
-            {
                 "source": 1,
                 "target": 2
             },
             {
                 "source": 1,
+                "target": 7
+            },
+            {
+                "source": 1,
                 "target": 3
             },
             {
@@ -169,10 +161,6 @@
             },
             {
                 "source": 1,
-                "target": 7
-            },
-            {
-                "source": 1,
                 "target": 8
             },
             {
@@ -181,7 +169,15 @@
             },
             {
                 "source": 2,
+                "target": 7
+            },
+            {
+                "source": 2,
                 "target": 3
+            },
+            {
+                "source": 2,
+                "target": 4
             },
             {
                 "source": 2,
@@ -193,11 +189,15 @@
             },
             {
                 "source": 2,
-                "target": 7
+                "target": 8
             },
             {
                 "source": 2,
-                "target": 8
+                "target": 9
+            },
+            {
+                "source": 3,
+                "target": 7
             },
             {
                 "source": 3,
@@ -209,14 +209,6 @@
             },
             {
                 "source": 3,
-                "target": 6
-            },
-            {
-                "source": 3,
-                "target": 7
-            },
-            {
-                "source": 3,
                 "target": 8
             },
             {
@@ -225,7 +217,11 @@
             },
             {
                 "source": 4,
-                "target": 6
+                "target": 7
+            },
+            {
+                "source": 4,
+                "target": 5
             },
             {
                 "source": 4,
@@ -236,23 +232,11 @@
                 "target": 9
             },
             {
-                "source": 5,
-                "target": 6
-            },
-            {
-                "source": 5,
-                "target": 7
-            },
-            {
-                "source": 6,
-                "target": 7
-            },
-            {
-                "source": 6,
+                "source": 7,
                 "target": 8
             },
             {
-                "source": 6,
+                "source": 7,
                 "target": 9
             },
             {
