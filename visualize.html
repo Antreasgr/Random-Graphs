@@ -45,6 +45,18 @@
 
     var color = d3.scaleOrdinal(d3.schemeCategory10);
 
+    var zoom = d3.zoom().scaleExtent([1, 100])
+        .on("zoom", zoomed);
+
+    var container = svg.append("g")
+        // .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+
+    svg.call(zoom);
+
+    function zoomed() {
+        container.attr("transform", d3.event.transform)
+    }
+
     d3.json("graph.json", function(error, graph) {
         if (error) throw error;
         if (Array.isArray(graph)) {
@@ -62,7 +74,7 @@
             l.target = graph.nodes[l.target];
         });
 
-        var link = svg.append("g")
+        var link = container.append("g")
             .attr("class", "links")
             .selectAll("line")
             .data(graph.links)
@@ -71,7 +83,7 @@
                 return Math.sqrt(d.value);
             });
 
-        var nodeEnter = svg.append("g")
+        var nodeEnter = container.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
             .data(graph.nodes, function(d) {
