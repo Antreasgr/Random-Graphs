@@ -8,7 +8,7 @@ import networkx as nx
 from networkx.readwrite import json_graph
 
 # initialize global random seed
-R = random.Random()
+R = random.Random(501)
 
 
 class TreeNode:
@@ -20,6 +20,8 @@ class TreeNode:
         self.cliqueList = []
         # helper list for tree form
         self.children = []
+        self.parent = None
+        self.marked = False
 
     def __str__(self):
         return str(self.id)
@@ -28,16 +30,44 @@ class TreeNode:
         return str(self.id)
 
 
-def cliqueListGenChordal(graph):
+def cliqueListGenChordal(graph, subtrees):
+    stack = []
+    for node in graph:
+        # find all leaf nodes
+        if len(node.children) == 0:
+            stack.append(node)
+
+    while len(stack) > 0:
+        node = stack.pop()
+        if node.parent != None:
+            if len(node.parent.cliqueList) >= len(node.cliqueList):
+                # check node.cliqueList is subset of node.parent.cliqueList
+                # next is this parent if not marked
+                if not node.parent.marked:
+                    stack.append(node.parent)
+                if is_subset(node.parent.cliqueList, node.cliqueList):
+                    for child in node.children:
+                        child.parent = node.parent
+                else:
+                    node.marked = True
+            else:
+                # check node.parent.cliqueList is subset of node.cliqueList
+                if is_subset(node.cliqueList, node.parent.cliqueList):
+                    # parent.parent could be None if node.parent is root
+                    for child in node.parent.children:
+                        child.parent = node.parent.parent
+                    # node need rechecking with new parent
+                    stack.append(node)
+                else:
+                    node.marked = True
+        else:
+            # TODO: is this ok?
+            node.marked = True
+
+    clique_tree = [x for x in graph if x.marked]
     finalGraph = [TreeNode(n.id) for n in graph]
-
-    for i, n in enumerate(graph):
-        for j in range(i + 1, len(graph)):
-            for ci in n.cliqueList:
-                if ci in graph[j].cliqueList:
-                    finalGraph[i].Ax.append(finalGraph[j])
-                    break
-
+    # TODO: convert clique tree to adjacency list
+ 
     return finalGraph
 
 
@@ -47,7 +77,7 @@ def ChordalGen(n, k):
     print("subtrees: ", subtrees)
     # subTrees = SubTreeGen(t, k)
     print("cliqueList: ", [t.cliqueList for t in tree])
-    fg = cliqueListGenChordal(tree)
+    fg = cliqueListGenChordal(tree, subtrees)
     convertToNetworkX([tree, fg])
     return subtrees
 
@@ -113,8 +143,9 @@ def TreeGen(n):
         newnode.Ax.append(selection)
         selection.Ax.append(newnode)
 
-        # update helper, children list
+        # update helper, children list, parent pointer
         selection.children.append(newnode)
+        newnode.parent = selection
 
         # append to tree
         tree.append(newnode)
@@ -124,7 +155,7 @@ def TreeGen(n):
 
 def convertToNetworkX(graphs):
     """
-        Converts a list of graphs(or a single graph) to networkX format, 
+        Converts a list of graphs(or a single graph) to networkX format,
         outputs json result to file `graph.json`
     """
     if not isinstance(graphs, list):
@@ -141,15 +172,38 @@ def convertToNetworkX(graphs):
         jsonData.append(json_graph.node_link_data(G))
 
     with io.open('graph.json', 'w') as file:
-      json.dump(jsonData, file, indent=4)
+        json.dump(jsonData, file, indent=4)
+
+
+def is_subset(list1, list2):
+    """
+        Returns whether the list1 is subset of list2
+        list1 MUST BE largest than list2
+    """
+    if len(list2) > len(list1):
+        raise Exception("is subset called with largest list 1")
+        # list1, list2=list2, list1
+
+    i = 0
+    j = 0
+    # list1 should be the largest list
+    while i < len(list2):
+        while (j < len(list1)) and (list1[j] != list2[i]):
+            j += 1
+        if j == len(list1):
+            return False
+        i += 1
+
+    return True
+
 
 def random_element(array, index=0):
     """
-        get a random element, and index from given array starting from index to end
+        Get a random element, and index from given array starting from index to end
     """
-    i = R.randint(index, len(array) - 1)
+    i=R.randint(index, len(array) - 1)
     return array[i], i
 
 
-ChordalGen(10, 4)
+ChordalGen(6, 3)
 print(".....Done")
