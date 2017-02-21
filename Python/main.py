@@ -4,6 +4,9 @@
 import random
 import json
 import io
+import time
+import timeit
+import functools
 import networkx as nx
 from networkx.readwrite import json_graph
 
@@ -18,7 +21,7 @@ class TreeNode:
         self.id = id
         self.Ax = []
         self.cliqueList = []
-        # helper list for tree form
+        # helper attributes for tree form
         self.children = []
         self.parent = None
         self.marked = False
@@ -30,7 +33,21 @@ class TreeNode:
         return str(self.id)
 
 
-def cliqueListGenChordal(graph, subtrees):
+def truecliqueListGenChordal(graph, subtrees):
+    """
+        Converts the output of the sub-tree generation algorithm to clique_tree
+    """
+    final_graph = [TreeNode(n.id) for n in graph]
+
+    for i in range(0, len(graph)):
+        for j in range(i + 1, len(graph)):
+            if not set(subtrees[i]).isdisjoint(subtrees[j]):
+                final_graph[i].Ax.append(final_graph[j])
+
+    return final_graph
+
+
+def cliqueListGenChordal(graph):
     stack = []
     for node in graph:
         # find all leaf nodes
@@ -56,6 +73,7 @@ def cliqueListGenChordal(graph, subtrees):
                     # parent.parent could be None if node.parent is root
                     for child in node.parent.children:
                         child.parent = node.parent.parent
+                    node.parent = node.parent.parent
                     # node need rechecking with new parent
                     stack.append(node)
                 else:
@@ -65,20 +83,40 @@ def cliqueListGenChordal(graph, subtrees):
             node.marked = True
 
     clique_tree = [x for x in graph if x.marked]
-    finalGraph = [TreeNode(n.id) for n in graph]
-    # TODO: convert clique tree to adjacency list
- 
-    return finalGraph
+    return clique_tree
 
 
 def ChordalGen(n, k):
+    """
+        Generate a random chordal graph with n vertices, k is the algorithm parameter
+    """
     tree = TreeGen(n)
+    # convert to networx before cliquelistgen, that function may alter the
+    # children attribute -- not yet
+    nx_tree = convert_tree_networkx(tree)
+    # nx_export_json(nx_tree)
+
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    print("subtrees: ", subtrees)
-    # subTrees = SubTreeGen(t, k)
-    print("cliqueList: ", [t.cliqueList for t in tree])
-    fg = cliqueListGenChordal(tree, subtrees)
-    convertToNetworkX([tree, fg])
+
+    # print("subtrees: ", subtrees)
+    # print("cliqueList: ", [t.cliqueList for t in tree])
+    chordal = cliqueListGenChordal(tree)
+    true_chordal = truecliqueListGenChordal(tree, subtrees)
+
+    # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
+    # times = timeit.timeit(func, number=num)
+    # print("Slow convert took {0} s".format(times * 1000 / num))
+
+    # convert to networkx, export to json
+    nx_chordal = convert_clique_tree_networkx(chordal)
+    nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
+    # for nx_g in [nx_tree, nx_chordal]:
+    #     print("is Chordal: {0} ".format(nx.is_chordal(nx_g)))
+    #     print("is Tree: {0} ".format(nx.is_tree(nx_g)))
+    #     print("is Connected: {0} ".format(nx.is_connected(nx_g)))
+    #     print("-------------------")
+    nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
+
     return subtrees
 
 
@@ -102,7 +140,6 @@ def SubTreeGen(T, k, i):
 
     for j in range(1, k_i):
         y, yi = random_element(Ti, sy)
-
         z, zi = random_element(y.Ax, y.s)
 
         # update every neighbour of z that z is now in Ti, y is among them
@@ -153,26 +190,56 @@ def TreeGen(n):
     return tree
 
 
-def convertToNetworkX(graphs):
+def convert_tree_networkx(tree):
     """
-        Converts a list of graphs(or a single graph) to networkX format,
-        outputs json result to file `graph.json`
+        Converts a list of TreeNodes to networkx graph(using children nodes)
+    """
+    graph = nx.Graph()
+    for treenode in tree:
+        for child in treenode.children:
+            graph.add_edge(treenode.id, child.id)
+
+    return graph
+
+
+def convert_clique_tree_networkx(clique_tree):
+    """
+        Converts a clique tree to a networkx graph
+    """
+    graph = nx.Graph()
+    for node in clique_tree:
+        for i in range(len(node.cliqueList)):
+            for j in range(i + 1, len(node.cliqueList)):
+                graph.add_edge(node.cliqueList[i], node.cliqueList[j])
+
+    return graph
+
+
+def convert_adjacency_list_networkx(adj_list_graph):
+    """
+        Converts an adjacency list graph to a networkx graph
+    """
+    graph = nx.Graph()
+    for node in adj_list_graph:
+        for neighbour in node.Ax:
+            graph.add_edge(node.id, neighbour.id)
+
+    return graph
+
+
+def nx_export_json(graphs, filename="graph.json"):
+    """
+        Exports a list of networkx graphs to json
     """
     if not isinstance(graphs, list):
         graphs = [graphs]
 
-    jsonData = []
+    json_data = []
     for graph in graphs:
-        lines = []
-        for node in graph:
-            lines.append(str(node.id) + ' ' + ' '.join(str(nn.id) for nn in node.Ax))
+        json_data.append(json_graph.node_link_data(graph))
 
-        G = nx.parse_adjlist(lines, nodetype=int)
-        print("is Chordal: {0} ".format(nx.is_chordal(G)))
-        jsonData.append(json_graph.node_link_data(G))
-
-    with io.open('graph.json', 'w') as file:
-        json.dump(jsonData, file, indent=4)
+    with io.open(filename, 'w') as file:
+        json.dump(json_data, file, indent=4)
 
 
 def is_subset(list1, list2):
@@ -181,7 +248,7 @@ def is_subset(list1, list2):
         list1 MUST BE largest than list2
     """
     if len(list2) > len(list1):
-        raise Exception("is subset called with largest list 1")
+        raise Exception("is subset called with largest list 2")
         # list1, list2=list2, list1
 
     i = 0
@@ -201,9 +268,9 @@ def random_element(array, index=0):
     """
         Get a random element, and index from given array starting from index to end
     """
-    i=R.randint(index, len(array) - 1)
+    i = R.randint(index, len(array) - 1)
     return array[i], i
 
 
-ChordalGen(6, 3)
+ChordalGen(7, 3)
 print(".....Done")
