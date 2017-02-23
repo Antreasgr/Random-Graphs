@@ -9,6 +9,7 @@ import timeit
 import functools
 import networkx as nx
 from networkx.readwrite import json_graph
+from random import choice
 
 # initialize global random seed
 R = random.Random(501)
@@ -104,23 +105,56 @@ def ChordalGen(n, k):
 
     # print("subtrees: ", subtrees)
     # print("cliqueList: ", [t.cliqueList for t in tree])
+    start_chordal = time.time()
     chordal = cliqueListGenChordal(tree)
+    end_chordal = time.time()
+    start_true = time.time()
     true_chordal = truecliqueListGenChordal(tree, subtrees)
+    end_true = time.time()
 
     # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
     # times = timeit.timeit(func, number=num)
     # print("Slow convert took {0} s".format(times * 1000 / num))
 
     # convert to networkx, export to json
+    start_ctree = time.time()
     nx_chordal = convert_clique_tree_networkx(chordal)
+    end_ctree = time.time()
+    start_true_chordal = time.time()
     nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
+    end_true_chordal = time.time()
     # for nx_g in [nx_tree, nx_chordal]:
     #     print("is Chordal: {0} ".format(nx.is_chordal(nx_g)))
     #     print("is Tree: {0} ".format(nx.is_tree(nx_g)))
     #     print("is Connected: {0} ".format(nx.is_connected(nx_g)))
     print("is isomophic: {0} ".format(
         nx.is_isomorphic(nx_chordal, nx_true_chordal)))
+    print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
+
     #     print("-------------------")
+    print("cliqueListGenChordal    :", end_chordal-start_chordal)
+    print("truecliqueListGenChordal:", end_true-start_true)
+    print("convert_clique_tree_networkx   :", end_ctree-start_ctree)
+    print("convert_adjacency_list_networkx:", end_true_chordal-start_true_chordal) 
+    print("our total : ", end_chordal-start_chordal + end_ctree-start_ctree)
+    print("true total: ", end_true-start_true + end_true_chordal-start_true_chordal)
+    
+    # check dfs running time: 
+    start_dfsnx = time.time()
+    dfstree = nx.dfs_tree(nx_chordal, choice(nx_chordal.nodes()))
+    end_dfsnx = time.time()
+    print("nx dfs run    : ", end_dfsnx-start_dfsnx)
+
+    start_dfsnx = time.time()
+    dfstree = dfs(true_chordal, true_chordal[0])
+    end_dfsnx = time.time()
+    print("simple dfs run: ", end_dfsnx-start_dfsnx)
+
+    start_dfsnx = time.time()
+    dfstree = dfs_list(true_chordal, true_chordal[0])
+    end_dfsnx = time.time()
+    print("list dfs run  : ", end_dfsnx-start_dfsnx)
+
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
 
     return subtrees
@@ -308,5 +342,5 @@ def random_element(array, index=0):
     return array[i], i
 
 
-ChordalGen(50, 14)
+ChordalGen(100, 30)
 print(".....Done")
