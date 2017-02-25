@@ -8,6 +8,7 @@ import time
 import timeit
 import functools
 import networkx as nx
+from collections import deque
 from networkx.readwrite import json_graph
 
 # initialize global random seed
@@ -71,17 +72,19 @@ def cliqueListGenChordal(graph):
                 # check node.parent.cliqueList is subset of node.cliqueList
                 if is_subset(node.cliqueList, node.parent.cliqueList):
                     # parent.parent could be None if node.parent is root
+                    p = node.parent.parent
                     for child in node.parent.children:
-                        child.parent = node.parent.parent
-                    node.parent = node.parent.parent
+                        child.parent = p
+                    node.parent = p
                     # node need rechecking with new parent
                     stack.append(node)
                 else:
                     node.marked = True
         else:
-            # TODO: is this ok?
             node.marked = True
 
+    # TODO: maybe return new nodes and not reference
+    # to the originals, fix children arrays
     clique_tree = [x for x in graph if x.marked]
     return clique_tree
 
@@ -115,8 +118,9 @@ def ChordalGen(n, k):
 
     # convert to networkx, export to json
     start_ctree = time.time()
-    nx_chordal = convert_clique_tree_networkx(chordal)
+    nx_chordal = convert_clique_tree_networkx(chordal, n)
     end_ctree = time.time()
+   
     start_true_chordal = time.time()
     nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
     end_true_chordal = time.time()
@@ -145,13 +149,11 @@ def ChordalGen(n, k):
     start_dfsnx = time.time()
     dfstree = dfs(true_chordal, true_chordal[0])
     end_dfsnx = time.time()
-    print(dfstree)
     print("simple dfs run: ", end_dfsnx-start_dfsnx)
 
     start_dfsnx = time.time()
     dfstree = dfs_list(true_chordal, true_chordal[0])
     end_dfsnx = time.time()
-    print(dfstree)
     print("list dfs run  : ", end_dfsnx-start_dfsnx)
 
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
@@ -241,15 +243,36 @@ def convert_tree_networkx(tree):
     return graph
 
 
-def convert_clique_tree_networkx(clique_tree):
+def convert_clique_tree_networkx(clique_tree, num_vertices):
     """
         Converts a clique tree to a networkx graph
     """
     graph = nx.Graph(graph_type="fast")
-    for node in clique_tree:
-        for i in range(len(node.cliqueList)):
-            for j in range(i + 1, len(node.cliqueList)):
-                graph.add_edge(node.cliqueList[i], node.cliqueList[j])
+    visited, queue = [], deque([clique_tree[0]])
+    while queue:
+        parent = queue.popleft()
+        visited.append(parent)
+        # TODO: children array is pointing to original tree and wrong
+        # so we need to find children by parent poiner
+        # fix children array for this to be faster
+        childs = [c for c in clique_tree if c.parent == parent]
+        queue.extend(childs)
+
+    seen = [None] * num_vertices
+    for node in visited:
+        O, N = [], []
+        for c in node.cliqueList:
+            if seen[c] == None:
+                N.append(c)
+                seen[c] = 0
+            else:
+                O.append(c)
+        for i in range(len(N)):
+            for j in range(i + 1, len(N)):
+                graph.add_edge(N[i], N[j])
+
+            for node2 in O:
+                graph.add_edge(N[i], node2)
 
     return graph
 
@@ -342,5 +365,5 @@ def random_element(array, index=0):
     return array[i], i
 
 
-ChordalGen(100, 30)
+ChordalGen(500, 130)
 print(".....Done")
