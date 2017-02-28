@@ -10,6 +10,7 @@ import functools
 import networkx as nx
 from collections import deque
 from networkx.readwrite import json_graph
+import plotter
 
 # initialize global random seed
 R = random.Random(501)
@@ -116,11 +117,11 @@ def ChordalGen(n, k):
     # times = timeit.timeit(func, number=num)
     # print("Slow convert took {0} s".format(times * 1000 / num))
 
-    # convert to networkx, export to json
+    # convert to networkx
     start_ctree = time.time()
     nx_chordal = convert_clique_tree_networkx(chordal, n)
     end_ctree = time.time()
-   
+
     start_true_chordal = time.time()
     nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
     end_true_chordal = time.time()
@@ -133,28 +134,28 @@ def ChordalGen(n, k):
     print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
-    print("cliqueListGenChordal    :", end_chordal-start_chordal)
-    print("truecliqueListGenChordal:", end_true-start_true)
-    print("convert_clique_tree_networkx   :", end_ctree-start_ctree)
-    print("convert_adjacency_list_networkx:", end_true_chordal-start_true_chordal) 
-    print("our total : ", end_chordal-start_chordal + end_ctree-start_ctree)
-    print("true total: ", end_true-start_true + end_true_chordal-start_true_chordal)
-    
-    # check dfs running time: 
+    pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
+    pl.add_time("truecliqueListGenChordal", end_true - start_true)
+    pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
+    pl.add_time("convert_adjacency_list_networkx", end_true_chordal - start_true_chordal)
+    pl.add_time("our total", end_chordal - start_chordal + end_ctree - start_ctree)
+    pl.add_time("true total", end_true - start_true + end_true_chordal - start_true_chordal)
+
+    # check dfs running time:
     start_dfsnx = time.time()
     dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
     end_dfsnx = time.time()
-    print("nx dfs run    : ", end_dfsnx-start_dfsnx)
+    pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
 
-    start_dfsnx = time.time()
+    start_dfsnx = timeit.default_timer()
     dfstree = dfs(true_chordal, true_chordal[0])
-    end_dfsnx = time.time()
-    print("simple dfs run: ", end_dfsnx-start_dfsnx)
+    end_dfsnx = timeit.default_timer()
+    pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
 
-    start_dfsnx = time.time()
+    start_dfsnx = timeit.default_timer()
     dfstree = dfs_list(true_chordal, true_chordal[0])
-    end_dfsnx = time.time()
-    print("list dfs run  : ", end_dfsnx-start_dfsnx)
+    end_dfsnx = timeit.default_timer()
+    pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
 
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
 
@@ -313,8 +314,7 @@ def is_subset(list1, list2):
         raise Exception("is subset called with largest list 2")
         # list1, list2=list2, list1
 
-    i = 0
-    j = 0
+    i, j = 0, 0
     # list1 should be the largest list
     while i < len(list2):
         while (j < len(list1)) and (list1[j] != list2[i]):
@@ -365,5 +365,19 @@ def random_element(array, index=0):
     return array[i], i
 
 
-ChordalGen(500, 130)
+pl = plotter.Plotter()
+pl.add_label('cliqueListGenChordal', 'Generate clique tree')
+pl.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
+pl.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
+pl.add_label('convert_adjacency_list_networkx',
+             'convert_adjacency_list_networkx')
+pl.add_label('total', 'Our total time')
+pl.add_label('truetotal', 'Slow total time')
+pl.add_label('nx_dfs', 'DFS(using networkx)')
+pl.add_label('simple_dfs', 'DFS(using sets)')
+pl.add_label('list_dfs', 'DFS(using lists)')
+
+ChordalGen(100, 3)
 print(".....Done")
+pl.show()
+
