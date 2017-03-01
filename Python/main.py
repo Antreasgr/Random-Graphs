@@ -60,10 +60,10 @@ def cliqueListGenChordal(graph):
         node = stack.pop()
         if node.parent != None:
             if len(node.parent.cliqueList) >= len(node.cliqueList):
-                # check node.cliqueList is subset of node.parent.cliqueList
                 # next is this parent if not marked
                 if not node.parent.marked:
                     stack.append(node.parent)
+                # check node.cliqueList is subset of node.parent.cliqueList
                 if is_subset(node.parent.cliqueList, node.cliqueList):
                     for child in node.children:
                         child.parent = node.parent
@@ -81,6 +81,9 @@ def cliqueListGenChordal(graph):
                     stack.append(node)
                 else:
                     node.marked = True
+                    # bug ??? why and when is this needed???
+                    if not node.parent.marked:
+                        stack.append(node.parent)
         else:
             node.marked = True
 
@@ -101,61 +104,64 @@ def ChordalGen(n, k):
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
     nx_tree = convert_tree_networkx(tree)
-    # nx_export_json(nx_tree)
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
 
-    # print("subtrees: ", subtrees)
-    # print("cliqueList: ", [t.cliqueList for t in tree])
-    start_chordal = time.time()
-    chordal = cliqueListGenChordal(tree)
-    end_chordal = time.time()
     start_true = time.time()
     true_chordal = truecliqueListGenChordal(tree, subtrees)
     end_true = time.time()
 
-    # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
-    # times = timeit.timeit(func, number=num)
-    # print("Slow convert took {0} s".format(times * 1000 / num))
+    start_true_chordal = time.time()
+    nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
+    end_true_chordal = time.time()
+
+    start_chordal = time.time()
+    chordal = cliqueListGenChordal(tree)
+    end_chordal = time.time()
 
     # convert to networkx
     start_ctree = time.time()
     nx_chordal = convert_clique_tree_networkx(chordal, n)
     end_ctree = time.time()
 
-    start_true_chordal = time.time()
-    nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
-    end_true_chordal = time.time()
+     # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
+    # times = timeit.timeit(func, number=num)
+    # print("Slow convert took {0} s".format(times * 1000 / num))
+
+
     # for nx_g in [nx_tree, nx_chordal]:
     #     print("is Chordal: {0} ".format(nx.is_chordal(nx_g)))
     #     print("is Tree: {0} ".format(nx.is_tree(nx_g)))
     #     print("is Connected: {0} ".format(nx.is_connected(nx_g)))
     print("is isomophic: {0} ".format(
         nx.is_isomorphic(nx_chordal, nx_true_chordal)))
-    print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
+    # print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
     pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
     pl.add_time("truecliqueListGenChordal", end_true - start_true)
     pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
-    pl.add_time("convert_adjacency_list_networkx", end_true_chordal - start_true_chordal)
-    pl.add_time("our total", end_chordal - start_chordal + end_ctree - start_ctree)
-    pl.add_time("true total", end_true - start_true + end_true_chordal - start_true_chordal)
+    pl.add_time("convert_adjacency_list_networkx",
+                end_true_chordal - start_true_chordal)
+    pl.add_time("our total", end_chordal -
+                start_chordal + end_ctree - start_ctree)
+    pl.add_time("true total", end_true - start_true +
+                end_true_chordal - start_true_chordal)
 
     # check dfs running time:
-    start_dfsnx = time.time()
-    dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
-    end_dfsnx = time.time()
-    pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
+    # start_dfsnx = time.time()
+    # dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
+    # end_dfsnx = time.time()
+    # pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
 
-    start_dfsnx = timeit.default_timer()
-    dfstree = dfs(true_chordal, true_chordal[0])
-    end_dfsnx = timeit.default_timer()
-    pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
+    # start_dfsnx = timeit.default_timer()
+    # dfstree = dfs(true_chordal, true_chordal[0])
+    # end_dfsnx = timeit.default_timer()
+    # pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
 
-    start_dfsnx = timeit.default_timer()
-    dfstree = dfs_list(true_chordal, true_chordal[0])
-    end_dfsnx = timeit.default_timer()
-    pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
+    # start_dfsnx = timeit.default_timer()
+    # dfstree = dfs_list(true_chordal, true_chordal[0])
+    # end_dfsnx = timeit.default_timer()
+    # pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
 
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
 
@@ -249,7 +255,7 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
         Converts a clique tree to a networkx graph
     """
     graph = nx.Graph(graph_type="fast")
-    visited, queue = [], deque([clique_tree[0]])
+    visited, queue = [], deque([c for c in clique_tree if c.parent == None])
     while queue:
         parent = queue.popleft()
         visited.append(parent)
@@ -377,7 +383,6 @@ pl.add_label('nx_dfs', 'DFS(using networkx)')
 pl.add_label('simple_dfs', 'DFS(using sets)')
 pl.add_label('list_dfs', 'DFS(using lists)')
 
-ChordalGen(100, 3)
+ChordalGen(8, 2)
 print(".....Done")
-pl.show()
-
+# pl.show()
