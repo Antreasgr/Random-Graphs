@@ -14,7 +14,7 @@ import plotter
 
 # initialize global random seed
 R = random.Random(501)
-
+Now = timeit.default_timer
 
 class TreeNode:
     """ A class representing a tree node """
@@ -101,27 +101,29 @@ def ChordalGen(n, k):
         raise Exception("ChordalGen parameter k must be lower than n/2")
 
     tree = TreeGen(n)
+
+    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
+    
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
     nx_tree = convert_tree_networkx(tree)
-    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
 
-    start_true = time.time()
+    start_true = Now()
     true_chordal = truecliqueListGenChordal(tree, subtrees)
-    end_true = time.time()
+    end_true = Now()
 
-    start_true_chordal = time.time()
+    start_true_chordal = Now()
     nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
-    end_true_chordal = time.time()
+    end_true_chordal = Now()
 
-    start_chordal = time.time()
-    chordal = cliqueListGenChordal(tree)
-    end_chordal = time.time()
+    start_chordal = Now()
+    # chordal = cliqueListGenChordal(tree)
+    end_chordal = Now()
 
     # convert to networkx
-    start_ctree = time.time()
-    nx_chordal = convert_clique_tree_networkx(chordal, n)
-    end_ctree = time.time()
+    start_ctree = Now()
+    nx_chordal = convert_clique_tree_networkx(tree, n)
+    end_ctree = Now()
 
      # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
     # times = timeit.timeit(func, number=num)
@@ -148,19 +150,19 @@ def ChordalGen(n, k):
                 end_true_chordal - start_true_chordal)
 
     # check dfs running time:
-    # start_dfsnx = time.time()
+    # start_dfsnx = Now()
     # dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
-    # end_dfsnx = time.time()
+    # end_dfsnx = Now()
     # pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
 
-    # start_dfsnx = timeit.default_timer()
+    # start_dfsnx = Now()
     # dfstree = dfs(true_chordal, true_chordal[0])
-    # end_dfsnx = timeit.default_timer()
+    # end_dfsnx = Now()
     # pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
 
-    # start_dfsnx = timeit.default_timer()
+    # start_dfsnx = Now()
     # dfstree = dfs_list(true_chordal, true_chordal[0])
-    # end_dfsnx = timeit.default_timer()
+    # end_dfsnx = Now()
     # pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
 
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
@@ -243,7 +245,11 @@ def convert_tree_networkx(tree):
         Converts a list of TreeNodes to networkx graph(using children nodes)
     """
     graph = nx.Graph(graph_type="tree")
+
     for treenode in tree:
+        if treenode.cliqueList:
+            graph.add_node(treenode.id, clique_list=str(treenode.cliqueList))
+
         for child in treenode.children:
             graph.add_edge(treenode.id, child.id)
 
@@ -274,12 +280,16 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
                 seen[c] = 0
             else:
                 O.append(c)
-        for i in range(len(N)):
-            for j in range(i + 1, len(N)):
-                graph.add_edge(N[i], N[j])
+        if len(N):
+            for i in range(len(N)):
+                for j in range(i + 1, len(N)):
+                    graph.add_edge(N[i], N[j])
 
+                for node2 in O:
+                    graph.add_edge(N[i], node2)
+        else:
             for node2 in O:
-                graph.add_edge(N[i], node2)
+                graph.add_node(node2)
 
     return graph
 
@@ -290,8 +300,11 @@ def convert_adjacency_list_networkx(adj_list_graph):
     """
     graph = nx.Graph(graph_type="true")
     for node in adj_list_graph:
-        for neighbour in node.Ax:
-            graph.add_edge(node.id, neighbour.id)
+        if len(node.Ax):
+            for neighbour in node.Ax:
+                graph.add_edge(node.id, neighbour.id)
+        else:
+            graph.add_node(node.id)
 
     return graph
 
@@ -385,4 +398,4 @@ pl.add_label('list_dfs', 'DFS(using lists)')
 
 ChordalGen(8, 2)
 print(".....Done")
-# pl.show()
+pl.show()
