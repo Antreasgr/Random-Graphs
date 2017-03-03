@@ -100,9 +100,13 @@ def ChordalGen(n, k):
     if 2 * k - 1 > n:
         raise Exception("ChordalGen parameter k must be lower than n/2")
 
+    start_real_tree = Now()
     tree = TreeGen(n)
+    end_real_tree = Now()
 
+    start_subtrees = Now()
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
+    end_subtrees = Now()
     
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
@@ -124,6 +128,7 @@ def ChordalGen(n, k):
     start_ctree = Now()
     nx_chordal = convert_clique_tree_networkx(tree, n)
     end_ctree = Now()
+    print("nx_chordal edges: ", nx_chordal.number_of_edges())
 
      # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
     # times = timeit.timeit(func, number=num)
@@ -134,26 +139,31 @@ def ChordalGen(n, k):
     #     print("is Chordal: {0} ".format(nx.is_chordal(nx_g)))
     #     print("is Tree: {0} ".format(nx.is_tree(nx_g)))
     #     print("is Connected: {0} ".format(nx.is_connected(nx_g)))
-    print("is isomophic: {0} ".format(
-        nx.is_isomorphic(nx_chordal, nx_true_chordal)))
+    #print("is isomophic: {0} ".format(
+    #   nx.is_isomorphic(nx_chordal, nx_true_chordal)))
     # print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
-    pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
+    pl.add_time("real_tree", end_real_tree - start_real_tree)
+    pl.add_time("subtrees", end_subtrees - start_subtrees)
+    # pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
     pl.add_time("truecliqueListGenChordal", end_true - start_true)
     pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
+    pl.add_time("ourtotal", end_chordal - start_chordal + 
+                             end_ctree - start_ctree + 
+                             end_real_tree - start_real_tree +
+                             end_subtrees - start_subtrees)
+    pl.add_time("truetotal", end_true - start_true +
+                              end_true_chordal - start_true_chordal +
+                             end_real_tree - start_real_tree +
+                             end_subtrees - start_subtrees)
     pl.add_time("convert_adjacency_list_networkx",
                 end_true_chordal - start_true_chordal)
-    pl.add_time("our total", end_chordal -
-                start_chordal + end_ctree - start_ctree)
-    pl.add_time("true total", end_true - start_true +
-                end_true_chordal - start_true_chordal)
-
     # check dfs running time:
-    # start_dfsnx = Now()
-    # dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
-    # end_dfsnx = Now()
-    # pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
+    start_dfsnx = Now()
+    dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
+    end_dfsnx = Now()
+    pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
 
     # start_dfsnx = Now()
     # dfstree = dfs(true_chordal, true_chordal[0])
@@ -390,12 +400,15 @@ pl.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
 pl.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
 pl.add_label('convert_adjacency_list_networkx',
              'convert_adjacency_list_networkx')
-pl.add_label('total', 'Our total time')
+pl.add_label('ourtotal', 'Our total time')
 pl.add_label('truetotal', 'Slow total time')
 pl.add_label('nx_dfs', 'DFS(using networkx)')
 pl.add_label('simple_dfs', 'DFS(using sets)')
 pl.add_label('list_dfs', 'DFS(using lists)')
+pl.add_label('real_tree', 'Real T generator')
+pl.add_label('subtrees', 'SubTrees generator')
 
-ChordalGen(8, 2)
+
+ChordalGen(1000, 50)
 print(".....Done")
 pl.show()
