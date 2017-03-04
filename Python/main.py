@@ -105,9 +105,12 @@ def ChordalGen(n, k):
     end_real_tree = Now()
 
     start_subtrees = Now()
+    for node in tree:
+        node.s = 0    
     subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
     end_subtrees = Now()
-    
+    my_end_subtrees = end_subtrees-e_rand
+
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
     nx_tree = convert_tree_networkx(tree)
@@ -121,14 +124,14 @@ def ChordalGen(n, k):
     end_true_chordal = Now()
 
     start_chordal = Now()
-    # chordal = cliqueListGenChordal(tree)
+    #chordal = cliqueListGenChordal(tree)
     end_chordal = Now()
 
-    # convert to networkx
+    # convert to networkx, our main algorithm
     start_ctree = Now()
     nx_chordal = convert_clique_tree_networkx(tree, n)
     end_ctree = Now()
-    print("nx_chordal edges: ", nx_chordal.number_of_edges())
+#    print("nx_chordal edges: ", nx_chordal.number_of_edges())
 
      # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
     # times = timeit.timeit(func, number=num)
@@ -144,10 +147,16 @@ def ChordalGen(n, k):
     # print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
+    print("time T: ", end_real_tree-start_real_tree)    
     pl.add_time("real_tree", end_real_tree - start_real_tree)
+    print("time Subtree  : ", end_subtrees-start_subtrees)
     pl.add_time("subtrees", end_subtrees - start_subtrees)
+    print("time MySubtree: ", my_end_subtrees-start_subtrees)    
+    pl.add_time("Mysubtrees", my_end_subtrees - start_subtrees)
     # pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
+    print("time slow main: ", end_true - start_true)    
     pl.add_time("truecliqueListGenChordal", end_true - start_true)
+    print("time our main : ", end_ctree-start_ctree)    
     pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
     pl.add_time("ourtotal", end_chordal - start_chordal + 
                              end_ctree - start_ctree + 
@@ -160,10 +169,19 @@ def ChordalGen(n, k):
     pl.add_time("convert_adjacency_list_networkx",
                 end_true_chordal - start_true_chordal)
     # check dfs running time:
+    v_dfs = R.choice(nx_chordal.nodes())
     start_dfsnx = Now()
-    dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
+    dfstree = nx.dfs_tree(nx_chordal, v_dfs)
     end_dfsnx = Now()
+    print("time nx_dfs: ", end_dfsnx - start_dfsnx)
     pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
+
+    # check con.comp. running time:
+    start_cc = Now()
+    cc = nx.connected_components(nx_chordal)
+    end_cc = Now()
+    print("time nx_cc : ", end_cc - start_cc)    
+    pl.add_time("nx_cc", end_cc - start_cc)
 
     # start_dfsnx = Now()
     # dfstree = dfs(true_chordal, true_chordal[0])
@@ -181,32 +199,43 @@ def ChordalGen(n, k):
 
 
 def SubTreeGen(T, k, i):
+    global e_rand
+
+    s_rand = Now()
     Ti = [R.choice(T)]
+    e_rand += Now() - s_rand    
+
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
 
+    s_rand = Now()
     k_i = R.randint(1, 2 * k - 1)
+    e_rand += Now() - s_rand
+
     # seperation index for y
     sy = 0
     # seperation indices for each node
-    for node in T:
-        node.s = 0
-        try:
-            ni = node.Ax.index(Ti[0])
-            node.Ax[0], node.Ax[ni] = node.Ax[ni], node.Ax[0]
-            node.s += 1
-        except ValueError:
-            pass
+#    for node in T:
+#        node.s = 0
+#        try:
+#            ni = node.Ax.index(Ti[0])
+#            node.Ax[0], node.Ax[ni] = node.Ax[ni], node.Ax[0]
+#            node.s += 1
+#        except ValueError:
+#            pass
 
     for j in range(1, k_i):
+        s_rand = Now()        
         y, yi = random_element(Ti, sy)
         z, zi = random_element(y.Ax, y.s)
+        e_rand += Now()-s_rand    
 
         # update every neighbour of z that z is now in Ti, y is among them
-        for node in z.Ax:
-            ni = node.Ax.index(z)
-            node.Ax[node.s], node.Ax[ni] = node.Ax[ni], node.Ax[node.s]
-            node.s += 1
+        # TODO: not needed (?)
+#        for node in z.Ax:
+#            ni = node.Ax.index(z)
+#            node.Ax[node.s], node.Ax[ni] = node.Ax[ni], node.Ax[node.s]
+#            node.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
@@ -223,6 +252,7 @@ def SubTreeGen(T, k, i):
             if sy != len(Ti) - 1:
                 Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
             sy += 1
+
     return Ti
 
 
@@ -403,12 +433,14 @@ pl.add_label('convert_adjacency_list_networkx',
 pl.add_label('ourtotal', 'Our total time')
 pl.add_label('truetotal', 'Slow total time')
 pl.add_label('nx_dfs', 'DFS(using networkx)')
+pl.add_label('nx_cc', 'CC(using networkx)')
 pl.add_label('simple_dfs', 'DFS(using sets)')
 pl.add_label('list_dfs', 'DFS(using lists)')
 pl.add_label('real_tree', 'Real T generator')
 pl.add_label('subtrees', 'SubTrees generator')
+pl.add_label('mysubtrees', 'SubTrees generator without Random')
 
-
-ChordalGen(1000, 50)
+e_rand = 0
+ChordalGen(1000, 40)
 print(".....Done")
 pl.show()
