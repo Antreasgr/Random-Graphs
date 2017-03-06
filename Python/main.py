@@ -228,39 +228,45 @@ def SubTreeGen(T, k, i):
         z, zi = random_element(y.Ax, y.s) # after y.s in y.Ax there is a neighbor of y outside
         e_rand += Now()-s_rand    
 
-        print("sy: ", sy, " Ti: ", Ti)
-
         # add z to Ti
         Ti.append(z)
-        z.cliqueList.append(i)   ## here we have to be carefull! does it update the real node "z" of T?     
+        z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
 
-        print("sy: ", sy, " Ti: ", Ti)
-
-        # move z to the first part of y.Ax
-        print("y: ", y, "z: ", z)
-        print("y.s: ", y.s, "z.s: ", z.s)        
-        print("y.Ax: ", y.Ax)
-        print("y.Rx: ", y.Rx)
-        print("z.Ax: ", y.Rx)        
-        #print(z.Ax)
+        # move z to the first part of y.Ax:
+        # swap z with w: the vertex at y.s
+        w = y.Ax[y.s]
+        # 1. find the position of y in z
         zyi = y.Rx[zi]
+        # 2. find the position of y in w
+        wyi = y.Rx[y.s]
+        # 3. update the positions of y in z.Rx and w.Rx
+        z.Rx[zyi] = y.s
+        w.Rx[wyi] = zi
+        # 4. do the real swap in y.Ax, positions of y.s and zi    
         y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi] 
+        # 5. do the swap in y.Rx  
         y.Rx[zi], y.Rx[y.s] = y.Rx[y.s], y.Rx[zi] 
-        y.s += 1
-        print(y.Ax)
         
         # move y to the first part of z.Ax
-        #print(y.Rx)        
-        #zyi = y.Rx[y.s-1]
-        print(zyi)
-        print(z.s)        
-        # print(y.Ax[zi])
-        print(z.Ax)
+        # swap y with w: the vertex at z.s        
+        w = z.Ax[z.s]
+        # 1. find the position of z in y        
+        # used to be zi, now it is y.s
+        yzi = y.s     
+        # 2. find the position of z in w
+        wzi = z.Rx[z.s]
+        # 3. update the positions of z in y.Rx and w.Rx
+        y.Rx[yzi] = z.s
+        w.Rx[wzi] = zyi  # the "old" position of y in z
+        # 4. do the real swap in z.Ax, positions of z.s and zyi         
         z.Ax[zyi], z.Ax[z.s] = z.Ax[z.s], z.Ax[zyi]
+        # 5. do the swap in z.Rx  
         z.Rx[zyi], z.Rx[z.s] = z.Rx[z.s], z.Rx[zyi]
+
+        # Update y.s and z.s
+        y.s += 1        
         z.s += 1 # or z.s = 1
-        print(z.Ax)        
-        print("ok")
+
         # update every neighbour of z that z is now in Ti, y is among them
         # TODO: not needed (?)
 #        for node in z.Ax:
@@ -271,22 +277,23 @@ def SubTreeGen(T, k, i):
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
         if y.s > len(y.Ax) - 1:
-            if sy != yi:
-                Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
+#            if sy != yi:
+            Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
             sy += 1
 
         # do the same for z:     
         if z.s > len(z.Ax) - 1:
-            if sy != zi:
-                Ti[sy], Ti[zi] = Ti[zi], Ti[sy]
+#            if sy != zi:
+            Ti[sy], Ti[len(Ti) - 1] = Ti[len(Ti) - 1], Ti[sy]
             sy += 1
 
         # check if leaf i.e. has degree 1, then it cannot be selected any more
         # TODO: is it needed? (i guess not needed....)
-        if len(z.Ax) == 1:
-            if sy != len(Ti) - 1:
-                Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
-            sy += 1
+        # OR: perhaps this is only needed and the two previous cases are not needed... 
+ #       if len(z.Ax) == 1:
+ #           if sy != len(Ti) - 1:
+ #               Ti[sy], Ti[zi] = Ti[zi], Ti[sy] # why "-1" ?
+ #           sy += 1
 
     for node in Ti:
         node.s = 0
@@ -488,8 +495,4 @@ pl.add_label('mysubtrees', 'SubTrees generator without Random')
 e_rand = 0
 ChordalGen(5, 2)
 print(".....Done")
-<<<<<<< HEAD
-#pl.show()
-=======
 pl.show()
->>>>>>> be5733765b7325268eab43608725d5448d38221f
