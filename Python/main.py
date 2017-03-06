@@ -239,22 +239,27 @@ def SubTreeGen(T, k, i):
         # move z to the first part of y.Ax
         print("y: ", y, "z: ", z)
         print("y.s: ", y.s, "z.s: ", z.s)        
-        print(y.Ax)
-        print(y.Rx)
-        print(z.Ax)
+        print("y.Ax: ", y.Ax)
+        print("y.Rx: ", y.Rx)
+        print("z.Ax: ", y.Rx)        
+        #print(z.Ax)
+        zyi = y.Rx[zi]
         y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi] 
         y.Rx[zi], y.Rx[y.s] = y.Rx[y.s], y.Rx[zi] 
         y.s += 1
-
+        print(y.Ax)
+        
         # move y to the first part of z.Ax
-        print(y.Rx)        
-        zyi = y.Rx[y.s-1]
+        #print(y.Rx)        
+        #zyi = y.Rx[y.s-1]
         print(zyi)
         print(z.s)        
         # print(y.Ax[zi])
+        print(z.Ax)
         z.Ax[zyi], z.Ax[z.s] = z.Ax[z.s], z.Ax[zyi]
         z.Rx[zyi], z.Rx[z.s] = z.Rx[z.s], z.Rx[zyi]
         z.s += 1 # or z.s = 1
+        print(z.Ax)        
         print("ok")
         # update every neighbour of z that z is now in Ti, y is among them
         # TODO: not needed (?)
