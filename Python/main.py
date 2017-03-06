@@ -8,12 +8,14 @@ import time
 import timeit
 import functools
 import networkx as nx
+import numpy as np 
 from collections import deque
 from networkx.readwrite import json_graph
 import plotter
 
 # initialize global random seed
 R = random.Random(501)
+np.random.seed(501)
 Now = timeit.default_timer
 
 class TreeNode:
@@ -484,6 +486,7 @@ def random_element(array, index=0):
     """
         Get a random element, and index from given array starting from index to end
     """
+    #i = np.random.random_integers(index, len(array) - 1)
     i = R.randint(index, len(array) - 1)
     return array[i], i
 
@@ -506,6 +509,6 @@ pl.add_label('subtrees', 'SubTrees generator')
 pl.add_label('Mysubtrees', 'SubTrees generator without Random')
 
 e_rand = 0
-ChordalGen(1000, 40)
+ChordalGen(50, 20)
 print(".....Done")
 pl.show()
