@@ -14,7 +14,7 @@ import plotter
 
 # initialize global random seed
 R = random.Random(501)
-
+Now = timeit.default_timer
 
 class TreeNode:
     """ A class representing a tree node """
@@ -22,6 +22,7 @@ class TreeNode:
     def __init__(self, id):
         self.id = id
         self.Ax = []
+        self.Rx = []
         self.cliqueList = []
         # helper attributes for tree form
         self.children = []
@@ -100,28 +101,38 @@ def ChordalGen(n, k):
     if 2 * k - 1 > n:
         raise Exception("ChordalGen parameter k must be lower than n/2")
 
+    start_real_tree = Now()
     tree = TreeGen(n)
+    end_real_tree = Now()
+
+    start_subtrees = Now()
+    for node in tree:
+        node.s = 0    
+    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
+    end_subtrees = Now()
+    my_end_subtrees = end_subtrees-e_rand
+
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
     nx_tree = convert_tree_networkx(tree)
-    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
 
-    start_true = time.time()
+    start_true = Now()
     true_chordal = truecliqueListGenChordal(tree, subtrees)
-    end_true = time.time()
+    end_true = Now()
 
-    start_true_chordal = time.time()
+    start_true_chordal = Now()
     nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
-    end_true_chordal = time.time()
+    end_true_chordal = Now()
 
-    start_chordal = time.time()
-    chordal = cliqueListGenChordal(tree)
-    end_chordal = time.time()
+    start_chordal = Now()
+    #chordal = cliqueListGenChordal(tree)
+    end_chordal = Now()
 
-    # convert to networkx
-    start_ctree = time.time()
-    nx_chordal = convert_clique_tree_networkx(chordal, n)
-    end_ctree = time.time()
+    # convert to networkx, our main algorithm
+    start_ctree = Now()
+    nx_chordal = convert_clique_tree_networkx(tree, n)
+    end_ctree = Now()
+#    print("nx_chordal edges: ", nx_chordal.number_of_edges())
 
      # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
     # times = timeit.timeit(func, number=num)
@@ -132,35 +143,56 @@ def ChordalGen(n, k):
     #     print("is Chordal: {0} ".format(nx.is_chordal(nx_g)))
     #     print("is Tree: {0} ".format(nx.is_tree(nx_g)))
     #     print("is Connected: {0} ".format(nx.is_connected(nx_g)))
-    print("is isomophic: {0} ".format(
-        nx.is_isomorphic(nx_chordal, nx_true_chordal)))
+    #print("is isomophic: {0} ".format(
+    #   nx.is_isomorphic(nx_chordal, nx_true_chordal)))
     # print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
-    pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
+#    print("is Chordal: {0} ".format(nx.is_chordal(nx_chordal)))
+    print("time T: ", end_real_tree-start_real_tree)    
+    pl.add_time("real_tree", end_real_tree - start_real_tree)
+    print("time Subtree  : ", end_subtrees-start_subtrees)
+    pl.add_time("subtrees", end_subtrees - start_subtrees)
+    print("time MySubtree: ", my_end_subtrees-start_subtrees)    
+    pl.add_time("Mysubtrees", my_end_subtrees - start_subtrees)
+    # pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
+    print("time slow main: ", end_true - start_true)    
     pl.add_time("truecliqueListGenChordal", end_true - start_true)
+    print("time our main : ", end_ctree-start_ctree)    
     pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
+    pl.add_time("ourtotal", end_chordal - start_chordal + 
+                             end_ctree - start_ctree + 
+                             end_real_tree - start_real_tree +
+                             end_subtrees - start_subtrees)
+    pl.add_time("truetotal", end_true - start_true +
+                              end_true_chordal - start_true_chordal +
+                             end_real_tree - start_real_tree +
+                             end_subtrees - start_subtrees)
     pl.add_time("convert_adjacency_list_networkx",
                 end_true_chordal - start_true_chordal)
-    pl.add_time("our total", end_chordal -
-                start_chordal + end_ctree - start_ctree)
-    pl.add_time("true total", end_true - start_true +
-                end_true_chordal - start_true_chordal)
-
     # check dfs running time:
-    # start_dfsnx = time.time()
-    # dfstree = nx.dfs_tree(nx_chordal, R.choice(nx_chordal.nodes()))
-    # end_dfsnx = time.time()
-    # pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
+    v_dfs = R.choice(nx_chordal.nodes())
+    start_dfsnx = Now()
+    dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+    end_dfsnx = Now()
+    print("time nx_dfs: ", end_dfsnx - start_dfsnx)
+    pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
 
-    # start_dfsnx = timeit.default_timer()
+    # check con.comp. running time:
+    start_cc = Now()
+    cc = nx.connected_components(nx_chordal)
+    end_cc = Now()
+    print("time nx_cc : ", end_cc - start_cc)    
+    pl.add_time("nx_cc", end_cc - start_cc)
+
+    # start_dfsnx = Now()
     # dfstree = dfs(true_chordal, true_chordal[0])
-    # end_dfsnx = timeit.default_timer()
+    # end_dfsnx = Now()
     # pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
 
-    # start_dfsnx = timeit.default_timer()
+    # start_dfsnx = Now()
     # dfstree = dfs_list(true_chordal, true_chordal[0])
-    # end_dfsnx = timeit.default_timer()
+    # end_dfsnx = Now()
     # pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
 
     nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
@@ -169,32 +201,72 @@ def ChordalGen(n, k):
 
 
 def SubTreeGen(T, k, i):
-    Ti = [R.choice(T)]
-    # the Ti tree contains this node
-    Ti[0].cliqueList.append(i)
+    global e_rand
 
+    s_rand = Now()
+    #Ti = [R.choice(T)]  
+    x = [R.choice(T)]
+    e_rand += Now() - s_rand    
+
+    Ti = x
+
+    # the Ti tree contains this node
+    #Ti[0].cliqueList.append(i)
+    # add to the x node of T the {i} number of Ti
+    x[0].cliqueList.append(i) ## why x[0] and not just x.cliqueL....?
+
+    s_rand = Now()
     k_i = R.randint(1, 2 * k - 1)
-    # seperation index for y
+    e_rand += Now() - s_rand
+
+    # seperation index for Ti: all nodes before "sy" have no neigbor in T-Ti
     sy = 0
-    # seperation indices for each node
-    for node in T:
-        node.s = 0
-        try:
-            ni = node.Ax.index(Ti[0])
-            node.Ax[0], node.Ax[ni] = node.Ax[ni], node.Ax[0]
-            node.s += 1
-        except ValueError:
-            pass
 
     for j in range(1, k_i):
-        y, yi = random_element(Ti, sy)
-        z, zi = random_element(y.Ax, y.s)
+        s_rand = Now()        
+        y, yi = random_element(Ti, sy)  # after sy we have nodes with neighbors outside
+        z, zi = random_element(y.Ax, y.s) # after y.s in y.Ax there is a neighbor of y outside
+        e_rand += Now()-s_rand    
 
+        print("sy: ", sy, " Ti: ", Ti)
+
+        # add z to Ti
+        Ti.append(z)
+        z.cliqueList.append(i)   ## here we have to be carefull! does it update the real node "z" of T?     
+
+        print("sy: ", sy, " Ti: ", Ti)
+
+        # move z to the first part of y.Ax
+        print("y: ", y, "z: ", z)
+        print("y.s: ", y.s, "z.s: ", z.s)        
+        print("y.Ax: ", y.Ax)
+        print("y.Rx: ", y.Rx)
+        print("z.Ax: ", y.Rx)        
+        #print(z.Ax)
+        zyi = y.Rx[zi]
+        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi] 
+        y.Rx[zi], y.Rx[y.s] = y.Rx[y.s], y.Rx[zi] 
+        y.s += 1
+        print(y.Ax)
+        
+        # move y to the first part of z.Ax
+        #print(y.Rx)        
+        #zyi = y.Rx[y.s-1]
+        print(zyi)
+        print(z.s)        
+        # print(y.Ax[zi])
+        print(z.Ax)
+        z.Ax[zyi], z.Ax[z.s] = z.Ax[z.s], z.Ax[zyi]
+        z.Rx[zyi], z.Rx[z.s] = z.Rx[z.s], z.Rx[zyi]
+        z.s += 1 # or z.s = 1
+        print(z.Ax)        
+        print("ok")
         # update every neighbour of z that z is now in Ti, y is among them
-        for node in z.Ax:
-            ni = node.Ax.index(z)
-            node.Ax[node.s], node.Ax[ni] = node.Ax[ni], node.Ax[node.s]
-            node.s += 1
+        # TODO: not needed (?)
+#        for node in z.Ax:
+#            ni = node.Ax.index(z)
+#            node.Ax[node.s], node.Ax[ni] = node.Ax[ni], node.Ax[node.s]
+#            node.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
@@ -203,14 +275,22 @@ def SubTreeGen(T, k, i):
                 Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
             sy += 1
 
-        Ti.append(z)
-        z.cliqueList.append(i)
+        # do the same for z:     
+        if z.s > len(z.Ax) - 1:
+            if sy != zi:
+                Ti[sy], Ti[zi] = Ti[zi], Ti[sy]
+            sy += 1
+
         # check if leaf i.e. has degree 1, then it cannot be selected any more
-        # TODO: is it needed?
+        # TODO: is it needed? (i guess not needed....)
         if len(z.Ax) == 1:
             if sy != len(Ti) - 1:
                 Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
             sy += 1
+
+    for node in Ti:
+        node.s = 0
+
     return Ti
 
 
@@ -228,6 +308,13 @@ def TreeGen(n):
         newnode.Ax.append(selection)
         selection.Ax.append(newnode)
 
+        # also make: x.Ax[i] = y
+        #            x.Rx[i] = length(y.Ax) so that 
+        # if x.Ax[i] = y then 
+        #    y.Ax[x.Rx[i]] = x
+        newnode.Rx.append(len(selection.Ax)-1)
+        selection.Rx.append(len(newnode.Ax)-1)
+        
         # update helper, children list, parent pointer
         selection.children.append(newnode)
         newnode.parent = selection
@@ -243,7 +330,11 @@ def convert_tree_networkx(tree):
         Converts a list of TreeNodes to networkx graph(using children nodes)
     """
     graph = nx.Graph(graph_type="tree")
+
     for treenode in tree:
+        if treenode.cliqueList:
+            graph.add_node(treenode.id, clique_list=str(treenode.cliqueList))
+
         for child in treenode.children:
             graph.add_edge(treenode.id, child.id)
 
@@ -274,12 +365,16 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
                 seen[c] = 0
             else:
                 O.append(c)
-        for i in range(len(N)):
-            for j in range(i + 1, len(N)):
-                graph.add_edge(N[i], N[j])
+        if len(N):
+            for i in range(len(N)):
+                for j in range(i + 1, len(N)):
+                    graph.add_edge(N[i], N[j])
 
+                for node2 in O:
+                    graph.add_edge(N[i], node2)
+        else:
             for node2 in O:
-                graph.add_edge(N[i], node2)
+                graph.add_node(node2)
 
     return graph
 
@@ -290,8 +385,11 @@ def convert_adjacency_list_networkx(adj_list_graph):
     """
     graph = nx.Graph(graph_type="true")
     for node in adj_list_graph:
-        for neighbour in node.Ax:
-            graph.add_edge(node.id, neighbour.id)
+        if len(node.Ax):
+            for neighbour in node.Ax:
+                graph.add_edge(node.id, neighbour.id)
+        else:
+            graph.add_node(node.id)
 
     return graph
 
@@ -377,12 +475,21 @@ pl.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
 pl.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
 pl.add_label('convert_adjacency_list_networkx',
              'convert_adjacency_list_networkx')
-pl.add_label('total', 'Our total time')
+pl.add_label('ourtotal', 'Our total time')
 pl.add_label('truetotal', 'Slow total time')
 pl.add_label('nx_dfs', 'DFS(using networkx)')
+pl.add_label('nx_cc', 'CC(using networkx)')
 pl.add_label('simple_dfs', 'DFS(using sets)')
 pl.add_label('list_dfs', 'DFS(using lists)')
+pl.add_label('real_tree', 'Real T generator')
+pl.add_label('subtrees', 'SubTrees generator')
+pl.add_label('mysubtrees', 'SubTrees generator without Random')
 
-ChordalGen(8, 2)
+e_rand = 0
+ChordalGen(5, 2)
 print(".....Done")
+<<<<<<< HEAD
 #pl.show()
+=======
+pl.show()
+>>>>>>> be5733765b7325268eab43608725d5448d38221f
