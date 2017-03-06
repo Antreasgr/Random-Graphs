@@ -22,6 +22,7 @@ class TreeNode:
     def __init__(self, id):
         self.id = id
         self.Ax = []
+        self.Rx = []
         self.cliqueList = []
         # helper attributes for tree form
         self.children = []
@@ -147,6 +148,7 @@ def ChordalGen(n, k):
     # print("is Connected: {0} ".format(nx.is_connected(nx_chordal)))
 
     #     print("-------------------")
+#    print("is Chordal: {0} ".format(nx.is_chordal(nx_chordal)))
     print("time T: ", end_real_tree-start_real_tree)    
     pl.add_time("real_tree", end_real_tree - start_real_tree)
     print("time Subtree  : ", end_subtrees-start_subtrees)
@@ -202,34 +204,58 @@ def SubTreeGen(T, k, i):
     global e_rand
 
     s_rand = Now()
-    Ti = [R.choice(T)]
+    #Ti = [R.choice(T)]  
+    x = [R.choice(T)]
     e_rand += Now() - s_rand    
 
+    Ti = x
+
     # the Ti tree contains this node
-    Ti[0].cliqueList.append(i)
+    #Ti[0].cliqueList.append(i)
+    # add to the x node of T the {i} number of Ti
+    x[0].cliqueList.append(i) ## why x[0] and not just x.cliqueL....?
 
     s_rand = Now()
     k_i = R.randint(1, 2 * k - 1)
     e_rand += Now() - s_rand
 
-    # seperation index for y
+    # seperation index for Ti: all nodes before "sy" have no neigbor in T-Ti
     sy = 0
-    # seperation indices for each node
-#    for node in T:
-#        node.s = 0
-#        try:
-#            ni = node.Ax.index(Ti[0])
-#            node.Ax[0], node.Ax[ni] = node.Ax[ni], node.Ax[0]
-#            node.s += 1
-#        except ValueError:
-#            pass
 
     for j in range(1, k_i):
         s_rand = Now()        
-        y, yi = random_element(Ti, sy)
-        z, zi = random_element(y.Ax, y.s)
+        y, yi = random_element(Ti, sy)  # after sy we have nodes with neighbors outside
+        z, zi = random_element(y.Ax, y.s) # after y.s in y.Ax there is a neighbor of y outside
         e_rand += Now()-s_rand    
 
+        print("sy: ", sy, " Ti: ", Ti)
+
+        # add z to Ti
+        Ti.append(z)
+        z.cliqueList.append(i)   ## here we have to be carefull! does it update the real node "z" of T?     
+
+        print("sy: ", sy, " Ti: ", Ti)
+
+        # move z to the first part of y.Ax
+        print("y: ", y, "z: ", z)
+        print("y.s: ", y.s, "z.s: ", z.s)        
+        print(y.Ax)
+        print(y.Rx)
+        print(z.Ax)
+        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi] 
+        y.Rx[zi], y.Rx[y.s] = y.Rx[y.s], y.Rx[zi] 
+        y.s += 1
+
+        # move y to the first part of z.Ax
+        print(y.Rx)        
+        zyi = y.Rx[y.s-1]
+        print(zyi)
+        print(z.s)        
+        # print(y.Ax[zi])
+        z.Ax[zyi], z.Ax[z.s] = z.Ax[z.s], z.Ax[zyi]
+        z.Rx[zyi], z.Rx[z.s] = z.Rx[z.s], z.Rx[zyi]
+        z.s += 1 # or z.s = 1
+        print("ok")
         # update every neighbour of z that z is now in Ti, y is among them
         # TODO: not needed (?)
 #        for node in z.Ax:
@@ -244,14 +270,21 @@ def SubTreeGen(T, k, i):
                 Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
             sy += 1
 
-        Ti.append(z)
-        z.cliqueList.append(i)
+        # do the same for z:     
+        if z.s > len(z.Ax) - 1:
+            if sy != zi:
+                Ti[sy], Ti[zi] = Ti[zi], Ti[sy]
+            sy += 1
+
         # check if leaf i.e. has degree 1, then it cannot be selected any more
-        # TODO: is it needed?
+        # TODO: is it needed? (i guess not needed....)
         if len(z.Ax) == 1:
             if sy != len(Ti) - 1:
                 Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
             sy += 1
+
+    for node in Ti:
+        node.s = 0
 
     return Ti
 
@@ -270,6 +303,13 @@ def TreeGen(n):
         newnode.Ax.append(selection)
         selection.Ax.append(newnode)
 
+        # also make: x.Ax[i] = y
+        #            x.Rx[i] = length(y.Ax) so that 
+        # if x.Ax[i] = y then 
+        #    y.Ax[x.Rx[i]] = x
+        newnode.Rx.append(len(selection.Ax)-1)
+        selection.Rx.append(len(newnode.Ax)-1)
+        
         # update helper, children list, parent pointer
         selection.children.append(newnode)
         newnode.parent = selection
@@ -441,6 +481,6 @@ pl.add_label('subtrees', 'SubTrees generator')
 pl.add_label('mysubtrees', 'SubTrees generator without Random')
 
 e_rand = 0
-ChordalGen(1000, 40)
+ChordalGen(5, 2)
 print(".....Done")
 pl.show()
