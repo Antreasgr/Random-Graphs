@@ -117,12 +117,8 @@ def ChordalGen(n, k):
     nx_tree = convert_tree_networkx(tree)
 
     start_true = Now()
-    true_chordal = truecliqueListGenChordal(tree, subtrees)
+    #true_chordal = truecliqueListGenChordal(tree, subtrees)
     end_true = Now()
-
-    start_true_chordal = Now()
-    nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
-    end_true_chordal = Now()
 
     start_chordal = Now()
     #chordal = cliqueListGenChordal(tree)
@@ -132,6 +128,11 @@ def ChordalGen(n, k):
     start_ctree = Now()
     nx_chordal = convert_clique_tree_networkx(tree, n)
     end_ctree = Now()
+
+    start_true_chordal = Now()
+    ax_chordal = allnodes_alledges(nx_chordal)
+    end_true_chordal = Now()
+
 #    print("nx_chordal edges: ", nx_chordal.number_of_edges())
 
      # func = functools.partial(truecliqueListGenChordal, tree, subtrees)
@@ -156,19 +157,17 @@ def ChordalGen(n, k):
     print("time MySubtree: ", my_end_subtrees-start_subtrees)    
     pl.add_time("Mysubtrees", my_end_subtrees - start_subtrees)
     # pl.add_time("cliqueListGenChordal", end_chordal - start_chordal)
-    print("time slow main: ", end_true - start_true)    
-    pl.add_time("truecliqueListGenChordal", end_true - start_true)
+    # print("time slow main: ", end_true - start_true)    
+    # pl.add_time("truecliqueListGenChordal", end_true - start_true)
     print("time our main : ", end_ctree-start_ctree)    
     pl.add_time("convert_clique_tree_networkx", end_ctree - start_ctree)
-    pl.add_time("ourtotal", end_chordal - start_chordal + 
-                             end_ctree - start_ctree + 
+    pl.add_time("ourtotal",  end_ctree - start_ctree + 
                              end_real_tree - start_real_tree +
                              end_subtrees - start_subtrees)
-    pl.add_time("truetotal", end_true - start_true +
-                              end_true_chordal - start_true_chordal +
+    pl.add_time("ourtotalnorandom",  end_ctree - start_ctree + 
                              end_real_tree - start_real_tree +
-                             end_subtrees - start_subtrees)
-    pl.add_time("convert_adjacency_list_networkx",
+                             my_end_subtrees - start_subtrees)
+    pl.add_time("allnodes_alledges",
                 end_true_chordal - start_true_chordal)
     # check dfs running time:
     v_dfs = R.choice(nx_chordal.nodes())
@@ -177,25 +176,26 @@ def ChordalGen(n, k):
     end_dfsnx = Now()
     print("time nx_dfs: ", end_dfsnx - start_dfsnx)
     pl.add_time("nx_dfs", end_dfsnx - start_dfsnx)
-
     # check con.comp. running time:
     start_cc = Now()
     cc = nx.connected_components(nx_chordal)
     end_cc = Now()
     print("time nx_cc : ", end_cc - start_cc)    
     pl.add_time("nx_cc", end_cc - start_cc)
-
-    # start_dfsnx = Now()
-    # dfstree = dfs(true_chordal, true_chordal[0])
-    # end_dfsnx = Now()
-    # pl.add_time("simple_dfs", end_dfsnx - start_dfsnx)
-
-    # start_dfsnx = Now()
-    # dfstree = dfs_list(true_chordal, true_chordal[0])
-    # end_dfsnx = Now()
-    # pl.add_time("list_dfs", end_dfsnx - start_dfsnx)
-
-    nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
+    total_run = end_ctree - start_ctree + end_real_tree - start_real_tree + end_subtrees - start_subtrees
+    total_run_norandom = end_ctree - start_ctree + end_real_tree - start_real_tree + my_end_subtrees - start_subtrees
+    run_alledges = end_true_chordal - start_true_chordal
+    run_dfs = end_dfsnx - start_dfsnx
+    run_cc = end_cc - start_cc                         
+    print("Running time overhead over Alledges:             ", total_run/run_alledges)
+    print("Running time (no random) overhead over Alledges: ", total_run_norandom/run_alledges)
+    print("Running time overhead over DFS:                  ", total_run/run_dfs)
+    print("Running time (no random) overhead over DFS:      ", total_run_norandom/run_dfs)
+    print("Running time overhead over CC:                   ", total_run/run_cc)
+    print("Running time (no random) overhead over CC:       ", total_run_norandom/run_cc)
+    
+    #nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
+    nx_export_json([nx_tree, nx_chordal])
 
     return subtrees
 
@@ -385,6 +385,18 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
 
     return graph
 
+def allnodes_alledges(nx_graph):
+    """
+        Iterates over the adjacency list of a networkx graph and returns a graph with .Ax
+    """
+    Adj = [TreeNode(0)]
+    for node in nx_graph.nodes():
+        newnode = TreeNode(0)
+        for neighbor in nx_graph.neighbors(node):
+                newnode.Ax.append(neighbor)
+        Adj.append(newnode)
+
+    return Adj
 
 def convert_adjacency_list_networkx(adj_list_graph):
     """
@@ -480,9 +492,10 @@ pl = plotter.Plotter()
 pl.add_label('cliqueListGenChordal', 'Generate clique tree')
 pl.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
 pl.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
-pl.add_label('convert_adjacency_list_networkx',
-             'convert_adjacency_list_networkx')
+pl.add_label('allnodes_alledges',
+             'allnodes_alledges')
 pl.add_label('ourtotal', 'Our total time')
+pl.add_label('ourtotalnorandom', 'Our total time without Random')
 pl.add_label('truetotal', 'Slow total time')
 pl.add_label('nx_dfs', 'DFS(using networkx)')
 pl.add_label('nx_cc', 'CC(using networkx)')
@@ -490,9 +503,9 @@ pl.add_label('simple_dfs', 'DFS(using sets)')
 pl.add_label('list_dfs', 'DFS(using lists)')
 pl.add_label('real_tree', 'Real T generator')
 pl.add_label('subtrees', 'SubTrees generator')
-pl.add_label('mysubtrees', 'SubTrees generator without Random')
+pl.add_label('Mysubtrees', 'SubTrees generator without Random')
 
 e_rand = 0
-ChordalGen(5, 2)
+ChordalGen(1000, 40)
 print(".....Done")
 pl.show()
