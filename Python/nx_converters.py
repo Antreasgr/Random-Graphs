@@ -37,7 +37,8 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
         queue.extend(childs)
 
     seen = [None] * num_vertices
-    for node in visited:
+    for i, node in enumerate(visited):
+        graph.add_node(i)
         O, N = [], []
         for c in node.cliqueList:
             if seen[c] == None:
@@ -52,9 +53,6 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
 
                 for node2 in O:
                     graph.add_edge(N[i], node2)
-        else:
-            for node2 in O:
-                graph.add_node(node2)
 
     return graph
 

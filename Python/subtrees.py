@@ -62,42 +62,27 @@ def sub_tree_gen(T, k, i):
 
 
 def SubTreeGen(T, k, i):
-    global e_rand
-
-    s_rand = Now()
-    #Ti = [R.choice(T)]
-    x = [R.choice(T)]
-    e_rand += Now() - s_rand
-
-    Ti = x
+    Ti = [R.choice(T)]
 
     # the Ti tree contains this node
-    # Ti[0].cliqueList.append(i)
-    # add to the x node of T the {i} number of Ti
-    x[0].cliqueList.append(i)  # why x[0] and not just x.cliqueL....?
-
-    s_rand = Now()
-    k_i = R.randint(1, 2 * k - 1)
-    e_rand += Now() - s_rand
+    Ti[0].cliqueList.append(i)
+    if k > 1:
+        k_i = R.randint(1, 2 * k - 1)
+    else:
+        return Ti
 
     # seperation index for Ti: all nodes before "sy" have no neigbor in T-Ti
     sy = 0
 
     for j in range(1, k_i):
-        s_rand = Now()
         # after sy we have nodes with neighbors outside
         y, yi = random_element(Ti, sy)
         # after y.s in y.Ax there is a neighbor of y outside
         z, zi = random_element(y.Ax, y.s)
-        e_rand += Now() - s_rand
 
         # add z to Ti
         Ti.append(z)
         z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
-
-        # Update y.s and z.s
-        y.s += 1
-        z.s += 1  # or z.s = 1
 
         # move z to the first part of y.Ax:
         # swap z with w: the vertex at y.s
@@ -161,48 +146,6 @@ def SubTreeGen(T, k, i):
  #           if sy != len(Ti) - 1:
  #               Ti[sy], Ti[zi] = Ti[zi], Ti[sy] # why "-1" ?
  #           sy += 1
-
-    for node in Ti:
-        node.s = 0
-
-    return Ti
-
-
-def sub_tree_gen(T, k, i):
-    Ti = [R.choice(T)]
-    Ti[0].cliqueList.append(i)
-
-    k_i = R.randint(1, 2 * k - 1)
-    sy = 0
-    for j in range(1, k_i):
-        # after sy we have nodes with neighbors outside
-        y, yi = random_element(Ti, sy)
-        # after y.s in y.Ax there is a neighbor of y outside
-        z, zi = random_element(y.Ax, y.s)
-
-        # add z to Ti
-        Ti.append(z)
-        z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
-
-        # fix y.Ax
-        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
-        y.s += 1
-
-        # now fix z
-        # this is the slow part
-        yzi = z.Ax.index(y)
-        z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
-        z.s += 1
-
-        # if degree of y equals the seperation index on adjacency list, y
-        # cannot be selected any more
-        if y.s > len(y.Ax) - 1:
-            Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
-            sy += 1
-
-        if len(z.Ax) == 1:
-            Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
-            sy += 1
 
     for node in Ti:
         node.s = 0

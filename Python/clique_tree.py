@@ -1,4 +1,4 @@
-import subtrees
+from subtrees import *
 
 def truecliqueListGenChordal(graph, subtrees):
     """
