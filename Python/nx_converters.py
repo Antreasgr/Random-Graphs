@@ -26,6 +26,7 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
         Converts a clique tree to a networkx graph
     """
     graph = nx.Graph(graph_type="fast")
+    graph.add_nodes_from(range(num_vertices))
     visited, queue = [], deque([c for c in clique_tree if c.parent == None])
     while queue:
         parent = queue.popleft()
@@ -38,7 +39,6 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
 
     seen = [None] * num_vertices
     for i, node in enumerate(visited):
-        graph.add_node(i)
         O, N = [], []
         for c in node.cliqueList:
             if seen[c] == None:

@@ -20,8 +20,13 @@ class TreeNode:
 
 
 def sub_tree_gen(T, k, i):
-    Ti = [R.choice(T)]
+    Ti = [random_element(T, 0)[0]]
+
+    # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
+
+    if k == 1:
+        return Ti
 
     k_i = R.randint(1, 2 * k - 1)
     sy = 0
@@ -62,18 +67,17 @@ def sub_tree_gen(T, k, i):
 
 
 def SubTreeGen(T, k, i):
-    Ti = [R.choice(T)]
+    Ti = [random_element(T, 0)[0]]
 
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
-    if k > 1:
-        k_i = R.randint(1, 2 * k - 1)
-    else:
+
+    if k == 1:
         return Ti
 
+    k_i = R.randint(1, 2 * k - 1)
     # seperation index for Ti: all nodes before "sy" have no neigbor in T-Ti
     sy = 0
-
     for j in range(1, k_i):
         # after sy we have nodes with neighbors outside
         y, yi = random_element(Ti, sy)

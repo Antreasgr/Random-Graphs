@@ -7,7 +7,7 @@ from subtrees import *
 from nx_converters import *
 import plotter
 
-def ChordalGen(n, k):
+def ChordalGen(n, k, pl):
     """
         Generate a random chordal graph with n vertices, k is the algorithm parameter
     """
@@ -18,16 +18,21 @@ def ChordalGen(n, k):
     tree = TreeGen(n)
     t_real_tree = Now() - t_real_tree
 
-    t_subtrees = Now()
+    # t_subtrees = Now()
+    # for node in tree:
+    #     node.s = 0
+    # subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
+    # t_subtrees = Now() - t_subtrees
+
+    t_subtrees_2 = Now()
     for node in tree:
         node.s = 0
-    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    # subtrees = [sub_tree_gen(tree, k, i) for i in range(0, n)]
-    t_subtrees = Now() - t_subtrees
+    subtrees = [sub_tree_gen(tree, k, i) for i in range(0, n)]
+    t_subtrees_2 = Now() - t_subtrees_2
 
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
-    nx_tree = convert_tree_networkx(tree)
+    # nx_tree = convert_tree_networkx(tree)
 
     # start_true = Now()
     # true_chordal = truecliqueListGenChordal(tree, subtrees)
@@ -43,37 +48,38 @@ def ChordalGen(n, k):
     nx_chordal = convert_clique_tree_networkx(tree, n)
     t_ctree = Now() - t_ctree
 
-    t_allnodes_alledges = Now()
-    ax_chordal = allnodes_alledges(nx_chordal)
-    t_allnodes_alledges = Now() - t_allnodes_alledges
+    # t_allnodes_alledges = Now()
+    # ax_chordal = allnodes_alledges(nx_chordal)
+    # t_allnodes_alledges = Now() - t_allnodes_alledges
 
     # print("is isomophic: {0} ".format(nx.is_isomorphic(nx_chordal, nx_true_chordal)))
     pl.add_time("real_tree", t_real_tree, output=True)
-    pl.add_time("subtrees", t_subtrees, output=True)
+    # pl.add_time("subtrees", t_subtrees, output=True)
+    pl.add_time("subtrees2", t_subtrees_2, output=True)
     pl.add_time("convert_clique_tree_networkx", t_ctree, output=True)
-    pl.add_time("ourtotal", t_ctree + t_real_tree + t_subtrees, output=True)
-    pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
+    pl.add_time("ourtotal", t_ctree + t_real_tree + t_subtrees_2, output=True)
+    # pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
     
     # check dfs running time:
-    v_dfs = R.choice(nx_chordal.nodes())
-    t_dfsnx = Now()
-    dfstree = nx.dfs_tree(nx_chordal, v_dfs)
-    t_dfsnx = Now() - t_dfsnx
-    pl.add_time("nx_dfs", t_dfsnx, output=True)
+    # v_dfs = R.choice(nx_chordal.nodes())
+    # t_dfsnx = Now()
+    # dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+    # t_dfsnx = Now() - t_dfsnx
+    # pl.add_time("nx_dfs", t_dfsnx, output=True)
 
     # check con.comp. running time:
-    t_cc = Now()
-    cc = nx.connected_components(nx_chordal)
-    t_cc = Now() - t_cc
-    pl.add_time("nx_cc", t_cc, output=True)
-    total_run = t_ctree + t_real_tree + t_subtrees
+    # t_cc = Now()
+    # cc = nx.connected_components(nx_chordal)
+    # t_cc = Now() - t_cc
+    # pl.add_time("nx_cc", t_cc, output=True)
+    # total_run = t_ctree + t_real_tree + t_subtrees
 
-    print("Running time overhead over Alledges:             ", total_run / t_allnodes_alledges)
-    print("Running time overhead over DFS:                  ", total_run / t_dfsnx)
-    print("Running time overhead over CC:                   ", total_run / t_cc)
+    # print("Running time overhead over Alledges:             ", total_run / t_allnodes_alledges)
+    # print("Running time overhead over DFS:                  ", total_run / t_dfsnx)
+    # print("Running time overhead over CC:                   ", total_run / t_cc)
 
-    #nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
-    nx_export_json([nx_tree, nx_chordal])
+    # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
+    # nx_export_json([nx_tree, nx_chordal])
 
     return subtrees
 
@@ -107,24 +113,30 @@ def TreeGen(n):
 
     return tree
 
-pl = plotter.Plotter()
-pl.add_label('cliqueListGenChordal', 'Generate clique tree')
-pl.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
-pl.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
-pl.add_label('allnodes_alledges', 'Base line all nodes all edges')
-pl.add_label('ourtotal', 'Our total time')
-pl.add_label('truetotal', 'Slow total time')
-pl.add_label('nx_dfs', 'DFS(using networkx)')
-pl.add_label('nx_cc', 'CC(using networkx)')
-pl.add_label('simple_dfs', 'DFS(using sets)')
-pl.add_label('list_dfs', 'DFS(using lists)')
-pl.add_label('real_tree', 'Real T generator')
-pl.add_label('subtrees', 'SubTrees generator')
+from joblib import Parallel, delayed    
+if __name__ == '__main__':
+    plt = plotter.Plotter()
+    plt.add_label('cliqueListGenChordal', 'Generate clique tree')
+    plt.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
+    plt.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
+    plt.add_label('allnodes_alledges', 'Base line all nodes all edges')
+    plt.add_label('ourtotal', 'Our total time')
+    plt.add_label('truetotal', 'Slow total time')
+    plt.add_label('nx_dfs', 'DFS(using networkx)')
+    plt.add_label('nx_cc', 'CC(using networkx)')
+    plt.add_label('simple_dfs', 'DFS(using sets)')
+    plt.add_label('list_dfs', 'DFS(using lists)')
+    plt.add_label('real_tree', 'Real T generator')
+    plt.add_label('subtrees', 'SubTrees generator')
 
-for kk in range(4, 7):
-     for kkk in range(1 , (int)(kk / 2)):
-         ChordalGen(kk, kkk)
+    for kk in range(0, 1):
+        r1 = R.randint(2500, 5000)
+        r2 = R.randint(0, r1/2)
+        print(r1, r2)
+        ChordalGen(r1, r2, plt)
 
-# ChordalGen(7, 3)
-print(".....Done")
-pl.show()
+    # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
+
+    # ChordalGen(324, 123, plt)
+    print(".....Done")
+    plt.show()

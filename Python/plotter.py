@@ -13,7 +13,7 @@ class Plotter:
     def add_time(self, key, time, err=0, output=False):
         if not key in self.data :
             self.data[key] = []
-        self.data[key].append((time * 1000, err))
+        self.data[key].append((time, err))
         self.no_runs = max(self.no_runs, len(self.data[key]))
         if output:
             label = self.labels[key] if key in self.labels else key
