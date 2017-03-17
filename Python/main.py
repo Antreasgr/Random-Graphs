@@ -113,30 +113,30 @@ def TreeGen(n):
 
     return tree
 
-from joblib import Parallel, delayed    
+from joblib import Parallel, delayed
 if __name__ == '__main__':
-    plt = plotter.Plotter()
-    plt.add_label('cliqueListGenChordal', 'Generate clique tree')
-    plt.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
-    plt.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
-    plt.add_label('allnodes_alledges', 'Base line all nodes all edges')
-    plt.add_label('ourtotal', 'Our total time')
-    plt.add_label('truetotal', 'Slow total time')
-    plt.add_label('nx_dfs', 'DFS(using networkx)')
-    plt.add_label('nx_cc', 'CC(using networkx)')
-    plt.add_label('simple_dfs', 'DFS(using sets)')
-    plt.add_label('list_dfs', 'DFS(using lists)')
-    plt.add_label('real_tree', 'Real T generator')
-    plt.add_label('subtrees', 'SubTrees generator')
+    plter = plotter.Plotter()
+    plter.add_label('cliqueListGenChordal', 'Generate clique tree')
+    plter.add_label('truecliqueListGenChordal', 'Generate clique tree(slow)')
+    plter.add_label('convert_clique_tree_networkx', 'Clique tree to networkx')
+    plter.add_label('allnodes_alledges', 'Base line all nodes all edges')
+    plter.add_label('ourtotal', 'Our total time')
+    plter.add_label('truetotal', 'Slow total time')
+    plter.add_label('nx_dfs', 'DFS(using networkx)')
+    plter.add_label('nx_cc', 'CC(using networkx)')
+    plter.add_label('simple_dfs', 'DFS(using sets)')
+    plter.add_label('list_dfs', 'DFS(using lists)')
+    plter.add_label('real_tree', 'Real T generator')
+    plter.add_label('subtrees', 'SubTrees generator')
 
     for kk in range(0, 1):
         r1 = R.randint(2500, 5000)
         r2 = R.randint(0, r1/2)
         print(r1, r2)
-        ChordalGen(r1, r2, plt)
+        ChordalGen(r1, r2, plter)
 
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
 
-    # ChordalGen(324, 123, plt)
+    # ChordalGen(324, 123, plter)
     print(".....Done")
-    plt.show()
+    plter.show()
