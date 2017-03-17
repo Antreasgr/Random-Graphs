@@ -7,6 +7,7 @@ from subtrees import *
 from nx_converters import *
 import plotter
 
+
 def ChordalGen(n, k, pl):
     """
         Generate a random chordal graph with n vertices, k is the algorithm parameter
@@ -18,11 +19,11 @@ def ChordalGen(n, k, pl):
     tree = TreeGen(n)
     t_real_tree = Now() - t_real_tree
 
-    # t_subtrees = Now()
-    # for node in tree:
-    #     node.s = 0
-    # subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    # t_subtrees = Now() - t_subtrees
+    t_subtrees = Now()
+    for node in tree:
+        node.s = 0
+    subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
+    t_subtrees = Now() - t_subtrees
 
     t_subtrees_2 = Now()
     for node in tree:
@@ -40,7 +41,7 @@ def ChordalGen(n, k, pl):
     # end_true = Now()
 
     # start_chordal = Now()
-    #chordal = cliqueListGenChordal(tree)
+    # chordal = cliqueListGenChordal(tree)
     # end_chordal = Now()
 
     # convert to networkx, our main algorithm
@@ -54,12 +55,12 @@ def ChordalGen(n, k, pl):
 
     # print("is isomophic: {0} ".format(nx.is_isomorphic(nx_chordal, nx_true_chordal)))
     pl.add_time("real_tree", t_real_tree, output=True)
-    # pl.add_time("subtrees", t_subtrees, output=True)
+    pl.add_time("subtrees", t_subtrees, output=True)
     pl.add_time("subtrees2", t_subtrees_2, output=True)
     pl.add_time("convert_clique_tree_networkx", t_ctree, output=True)
     pl.add_time("ourtotal", t_ctree + t_real_tree + t_subtrees_2, output=True)
     # pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
-    
+
     # check dfs running time:
     # v_dfs = R.choice(nx_chordal.nodes())
     # t_dfsnx = Now()
@@ -82,6 +83,7 @@ def ChordalGen(n, k, pl):
     # nx_export_json([nx_tree, nx_chordal])
 
     return subtrees
+
 
 def TreeGen(n):
     """
@@ -131,7 +133,7 @@ if __name__ == '__main__':
 
     for kk in range(0, 1):
         r1 = R.randint(2500, 5000)
-        r2 = R.randint(0, r1/2)
+        r2 = R.randint(0, r1 / 2)
         print(r1, r2)
         ChordalGen(r1, r2, plter)
 
@@ -139,4 +141,4 @@ if __name__ == '__main__':
 
     # ChordalGen(324, 123, plter)
     print(".....Done")
-    plter.show()
+    # plter.show()
