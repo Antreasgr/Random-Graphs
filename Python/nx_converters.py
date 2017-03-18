@@ -4,6 +4,8 @@ import io
 import json
 from collections import deque
 from subtrees import *
+import numpy
+
 
 def convert_tree_networkx(tree):
     """
@@ -55,6 +57,40 @@ def convert_clique_tree_networkx(clique_tree, num_vertices):
                     graph.add_edge(N[i], node2)
 
     return graph
+
+
+def convert_clique_tree_networkx2(clique_tree, num_vertices):
+    """
+        Converts a clique tree to a networkx graph
+    """
+    graph = nx.Graph(graph_type="fast")
+    graph.add_nodes_from(range(num_vertices))
+    visited, queue = [], deque([c for c in clique_tree if c.parent == None])
+    seen = numpy.full(num_vertices, False, dtype=bool)
+    while queue:
+        parent = queue.popleft()
+        # visited.append(parent)
+        queue.extend(parent.children)
+        add_clique_networx(graph, parent, seen)
+
+    return graph
+
+
+def add_clique_networx(graph, node, seen):
+    O, N = [], []
+    for c in node.cliqueList:
+        if seen[c] == False:
+            N.append(c)
+            seen[c] = True
+        else:
+            O.append(c)
+    if len(N):
+        for i in range(len(N)):
+            for j in range(i + 1, len(N)):
+                graph.add_edge(N[i], N[j])
+
+            for node2 in O:
+                graph.add_edge(N[i], node2)
 
 
 def allnodes_alledges(nx_graph):
