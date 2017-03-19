@@ -28,7 +28,8 @@ def ChordalGen(n, k, pl):
     t_subtrees_2 = Now()
     for node in tree:
         node.s = 0
-    subtrees = [sub_tree_gen(tree, k, i) for i in range(0, n)]
+    for i in range(0, n):
+        sub_tree_gen(tree, k, i)
     t_subtrees_2 = Now() - t_subtrees_2
 
     # convert to networx before cliquelistgen, that function may alter the
@@ -82,7 +83,7 @@ def ChordalGen(n, k, pl):
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
     # nx_export_json([nx_tree, nx_chordal])
 
-    return subtrees
+    # return subtrees
 
 
 def TreeGen(n):
@@ -132,8 +133,8 @@ if __name__ == '__main__':
     plter.add_label('subtrees', 'SubTrees generator')
 
     for kk in range(0, 1):
-        r1 = R.randint(500, 1000)
-        r2 = R.randint(0, r1 / 2)
+        r1 = R.randint(5000, 6000)
+        r2 = R.randint(1, r1 / 2)
         print(r1, r2)
         ChordalGen(r1, r2, plter)
 

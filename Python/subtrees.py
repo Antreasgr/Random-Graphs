@@ -25,7 +25,7 @@ def sub_tree_gen(T, k, i):
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
 
-    if k == 1:
+    if k <= 1:
         return Ti
 
     k_i = R.randint(1, 2 * k - 1)
