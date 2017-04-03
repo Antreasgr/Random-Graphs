@@ -34,7 +34,7 @@ def ChordalGen(n, k, pl):
 
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
-    # nx_tree = convert_tree_networkx(tree)
+    nx_tree = convert_tree_networkx(tree)
 
     # start_true = Now()
     # true_chordal = truecliqueListGenChordal(tree, subtrees)
@@ -81,7 +81,7 @@ def ChordalGen(n, k, pl):
     # print("Running time overhead over CC:                   ", total_run / t_cc)
 
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
-    # nx_export_json([nx_tree, nx_chordal])
+    nx_export_json([nx_tree, nx_chordal])
 
     # return subtrees
 
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     plter.add_label('subtrees', 'SubTrees generator')
 
     for kk in range(0, 1):
-        r1 = R.randint(5000, 6000)
+        r1 = R.randint(15, 20)
         r2 = R.randint(1, r1 / 2)
         print(r1, r2)
         ChordalGen(r1, r2, plter)
