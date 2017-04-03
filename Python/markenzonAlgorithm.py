@@ -2,9 +2,10 @@ from randomizer import *
 from numpy import core
 import random
 from UnionFind import UnionFind
+from nx_converters import *
+
 
 def merge_cliques(num_maximal_cliques, m, L, S, Q, upper_bound):
-
     dis_set = UnionFind()
     [dis_set[i] for i in range(num_maximal_cliques)]
 
@@ -24,8 +25,6 @@ def merge_cliques(num_maximal_cliques, m, L, S, Q, upper_bound):
             m += Delta * delta
 
 
-
-
 def expand_cliques(n):
     Q = [[0]]
     S = [0]
@@ -33,8 +32,8 @@ def expand_cliques(n):
     m = 0
     l = 0
     for u in range(1, n):
-        i = R.randint(0, l + 1, dtype=core.uint32)
-        t = R.randint(0, S[i] + 1, dtype=core.uint32)
+        i = R.randint(0, l + 1)
+        t = R.randint(0, S[i] + 1)
         if t == S[i]:
             # expand old clique
             Q[i].append(u)
@@ -53,7 +52,10 @@ def expand_cliques(n):
 
     return l, m, L, S, Q
 
-
-cliques = expand_cliques(10)
-merge_cliques(*cliques, 100)
+num_of_vertices = 15
+cliques = expand_cliques(num_of_vertices)
+merge_cliques(*cliques, 50)
 print(cliques)
+
+nx_chordal = convert_markenzon_clique_tree_networkx2(cliques[4], num_of_vertices)
+nx_export_json([nx_chordal])

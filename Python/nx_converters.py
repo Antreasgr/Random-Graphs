@@ -65,20 +65,37 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     """
     graph = nx.Graph(graph_type="fast")
     graph.add_nodes_from(range(num_vertices))
-    visited, queue = [], deque([c for c in clique_tree if c.parent == None])
+    visited, queue = [], deque((c for c in clique_tree if c.parent == None))
     seen = numpy.full(num_vertices, False, dtype=bool)
     while queue:
         parent = queue.popleft()
         # visited.append(parent)
         queue.extend(parent.children)
+        add_clique_networx(graph, parent.cliqueList, seen)
+
+    return graph
+
+
+def convert_markenzon_clique_tree_networkx2(clique_tree, num_vertices):
+    """
+        Converts a list of cliques in RIP ordering to a networkx graph.
+        Only the data initialization is different from `convert_clique_tree_networkx2`
+    """
+    graph = nx.Graph(graph_type="fast")
+    graph.add_nodes_from(range(num_vertices))
+    visited, queue = [], deque((c for c in clique_tree))
+    seen = numpy.full(num_vertices, False, dtype=bool)
+    while queue:
+        parent = queue.popleft()
         add_clique_networx(graph, parent, seen)
 
     return graph
 
 
+
 def add_clique_networx(graph, node, seen):
     O, N = [], []
-    for c in node.cliqueList:
+    for c in node:
         if seen[c] == False:
             N.append(c)
             seen[c] = True

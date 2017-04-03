@@ -3,141 +3,6 @@
         "directed": false,
         "multigraph": false,
         "graph": {
-            "graph_type": "tree"
-        },
-        "nodes": [
-            {
-                "clique_list": "[4, 5, 7, 12, 13, 15]",
-                "id": 0
-            },
-            {
-                "clique_list": "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15]",
-                "id": 1
-            },
-            {
-                "clique_list": "[5, 12]",
-                "id": 8
-            },
-            {
-                "clique_list": "[1, 2, 4, 5, 6, 8, 12, 13, 14, 15]",
-                "id": 2
-            },
-            {
-                "clique_list": "[0, 1, 2, 3, 5, 6, 7, 12, 13, 14, 15]",
-                "id": 4
-            },
-            {
-                "clique_list": "[0, 2, 3, 4, 5, 9, 12, 13, 14]",
-                "id": 7
-            },
-            {
-                "clique_list": "[1, 2, 6, 8, 10, 12, 14, 15]",
-                "id": 3
-            },
-            {
-                "clique_list": "[1, 2, 11, 12, 14, 15]",
-                "id": 13
-            },
-            {
-                "clique_list": "[1, 2, 8, 10, 12]",
-                "id": 12
-            },
-            {
-                "clique_list": "[0, 3, 5, 6, 7, 12, 13, 14, 15]",
-                "id": 5
-            },
-            {
-                "clique_list": "[0, 2, 3, 5, 6, 7, 12, 13, 14, 15]",
-                "id": 6
-            },
-            {
-                "clique_list": "[0, 5, 6, 7, 13, 14]",
-                "id": 10
-            },
-            {
-                "clique_list": "[0, 6, 7, 14]",
-                "id": 9
-            },
-            {
-                "clique_list": "[0, 5, 6, 7, 13, 14]",
-                "id": 11
-            },
-            {
-                "clique_list": "[0, 3, 6, 13, 14]",
-                "id": 14
-            },
-            {
-                "clique_list": "[3, 6, 13]",
-                "id": 15
-            }
-        ],
-        "links": [
-            {
-                "source": 0,
-                "target": 1
-            },
-            {
-                "source": 0,
-                "target": 2
-            },
-            {
-                "source": 1,
-                "target": 3
-            },
-            {
-                "source": 1,
-                "target": 4
-            },
-            {
-                "source": 1,
-                "target": 5
-            },
-            {
-                "source": 3,
-                "target": 6
-            },
-            {
-                "source": 3,
-                "target": 7
-            },
-            {
-                "source": 4,
-                "target": 9
-            },
-            {
-                "source": 4,
-                "target": 10
-            },
-            {
-                "source": 4,
-                "target": 11
-            },
-            {
-                "source": 6,
-                "target": 8
-            },
-            {
-                "source": 9,
-                "target": 12
-            },
-            {
-                "source": 9,
-                "target": 13
-            },
-            {
-                "source": 9,
-                "target": 14
-            },
-            {
-                "source": 10,
-                "target": 15
-            }
-        ]
-    },
-    {
-        "directed": false,
-        "multigraph": false,
-        "graph": {
             "graph_type": "fast"
         },
         "nodes": [
@@ -185,9 +50,6 @@
             },
             {
                 "id": 14
-            },
-            {
-                "id": 15
             }
         ],
         "links": [
@@ -197,27 +59,7 @@
             },
             {
                 "source": 0,
-                "target": 2
-            },
-            {
-                "source": 0,
                 "target": 3
-            },
-            {
-                "source": 0,
-                "target": 6
-            },
-            {
-                "source": 0,
-                "target": 8
-            },
-            {
-                "source": 0,
-                "target": 9
-            },
-            {
-                "source": 0,
-                "target": 14
             },
             {
                 "source": 0,
@@ -225,27 +67,11 @@
             },
             {
                 "source": 0,
-                "target": 5
-            },
-            {
-                "source": 0,
                 "target": 7
             },
             {
                 "source": 0,
-                "target": 12
-            },
-            {
-                "source": 0,
-                "target": 13
-            },
-            {
-                "source": 0,
-                "target": 15
-            },
-            {
-                "source": 1,
-                "target": 2
+                "target": 0
             },
             {
                 "source": 1,
@@ -253,119 +79,23 @@
             },
             {
                 "source": 1,
-                "target": 6
-            },
-            {
-                "source": 1,
-                "target": 8
-            },
-            {
-                "source": 1,
-                "target": 9
-            },
-            {
-                "source": 1,
-                "target": 14
-            },
-            {
-                "source": 1,
                 "target": 4
             },
             {
                 "source": 1,
-                "target": 5
-            },
-            {
-                "source": 1,
                 "target": 7
-            },
-            {
-                "source": 1,
-                "target": 12
-            },
-            {
-                "source": 1,
-                "target": 13
-            },
-            {
-                "source": 1,
-                "target": 15
-            },
-            {
-                "source": 1,
-                "target": 10
-            },
-            {
-                "source": 1,
-                "target": 11
-            },
-            {
-                "source": 2,
-                "target": 3
-            },
-            {
-                "source": 2,
-                "target": 6
-            },
-            {
-                "source": 2,
-                "target": 8
-            },
-            {
-                "source": 2,
-                "target": 9
-            },
-            {
-                "source": 2,
-                "target": 14
-            },
-            {
-                "source": 2,
-                "target": 4
-            },
-            {
-                "source": 2,
-                "target": 5
-            },
-            {
-                "source": 2,
-                "target": 7
-            },
-            {
-                "source": 2,
-                "target": 12
-            },
-            {
-                "source": 2,
-                "target": 13
-            },
-            {
-                "source": 2,
-                "target": 15
-            },
-            {
-                "source": 2,
-                "target": 10
             },
             {
                 "source": 2,
                 "target": 11
             },
             {
-                "source": 3,
-                "target": 6
+                "source": 2,
+                "target": 12
             },
             {
-                "source": 3,
-                "target": 8
-            },
-            {
-                "source": 3,
-                "target": 9
-            },
-            {
-                "source": 3,
-                "target": 14
+                "source": 2,
+                "target": 5
             },
             {
                 "source": 3,
@@ -373,111 +103,55 @@
             },
             {
                 "source": 3,
-                "target": 5
-            },
-            {
-                "source": 3,
                 "target": 7
             },
             {
                 "source": 3,
-                "target": 12
+                "target": 3
             },
             {
                 "source": 3,
-                "target": 13
-            },
-            {
-                "source": 3,
-                "target": 15
-            },
-            {
-                "source": 4,
-                "target": 5
-            },
-            {
-                "source": 4,
-                "target": 7
-            },
-            {
-                "source": 4,
-                "target": 12
-            },
-            {
-                "source": 4,
-                "target": 13
-            },
-            {
-                "source": 4,
-                "target": 15
-            },
-            {
-                "source": 4,
                 "target": 6
             },
             {
-                "source": 4,
+                "source": 3,
                 "target": 8
             },
             {
-                "source": 4,
+                "source": 3,
                 "target": 9
             },
             {
-                "source": 4,
-                "target": 14
-            },
-            {
-                "source": 5,
-                "target": 7
-            },
-            {
-                "source": 5,
-                "target": 12
-            },
-            {
-                "source": 5,
+                "source": 3,
                 "target": 13
             },
             {
-                "source": 5,
-                "target": 15
-            },
-            {
-                "source": 5,
-                "target": 6
-            },
-            {
-                "source": 5,
-                "target": 8
-            },
-            {
-                "source": 5,
-                "target": 9
-            },
-            {
-                "source": 5,
+                "source": 3,
                 "target": 14
             },
             {
-                "source": 6,
-                "target": 8
+                "source": 3,
+                "target": 10
             },
             {
-                "source": 6,
-                "target": 9
-            },
-            {
-                "source": 6,
-                "target": 14
-            },
-            {
-                "source": 6,
+                "source": 4,
                 "target": 7
             },
             {
-                "source": 6,
+                "source": 5,
+                "target": 11
+            },
+            {
+                "source": 5,
                 "target": 12
+            },
+            {
+                "source": 6,
+                "target": 8
+            },
+            {
+                "source": 6,
+                "target": 9
             },
             {
                 "source": 6,
@@ -485,47 +159,15 @@
             },
             {
                 "source": 6,
-                "target": 15
+                "target": 14
             },
             {
                 "source": 6,
                 "target": 10
             },
             {
-                "source": 7,
-                "target": 12
-            },
-            {
-                "source": 7,
-                "target": 13
-            },
-            {
-                "source": 7,
-                "target": 15
-            },
-            {
-                "source": 7,
-                "target": 8
-            },
-            {
-                "source": 7,
-                "target": 9
-            },
-            {
-                "source": 7,
-                "target": 14
-            },
-            {
                 "source": 8,
                 "target": 9
-            },
-            {
-                "source": 8,
-                "target": 14
-            },
-            {
-                "source": 8,
-                "target": 12
             },
             {
                 "source": 8,
@@ -533,7 +175,7 @@
             },
             {
                 "source": 8,
-                "target": 15
+                "target": 14
             },
             {
                 "source": 8,
@@ -541,67 +183,31 @@
             },
             {
                 "source": 9,
-                "target": 14
-            },
-            {
-                "source": 9,
-                "target": 12
-            },
-            {
-                "source": 9,
                 "target": 13
             },
             {
                 "source": 9,
-                "target": 15
-            },
-            {
-                "source": 10,
-                "target": 12
-            },
-            {
-                "source": 10,
                 "target": 14
             },
             {
+                "source": 9,
+                "target": 10
+            },
+            {
                 "source": 10,
-                "target": 15
-            },
-            {
-                "source": 11,
-                "target": 12
-            },
-            {
-                "source": 11,
-                "target": 14
-            },
-            {
-                "source": 11,
-                "target": 15
-            },
-            {
-                "source": 12,
                 "target": 13
             },
             {
-                "source": 12,
-                "target": 15
-            },
-            {
-                "source": 12,
+                "source": 10,
                 "target": 14
             },
             {
-                "source": 13,
-                "target": 15
+                "source": 11,
+                "target": 12
             },
             {
                 "source": 13,
                 "target": 14
-            },
-            {
-                "source": 14,
-                "target": 15
             }
         ]
     }

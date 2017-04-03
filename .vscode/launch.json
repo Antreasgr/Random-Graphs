@@ -15,11 +15,11 @@
             ]
         },
         {
-            "name": "Python Markezon",
+            "name": "Python Markenzon",
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            "program": "${workspaceRoot}\\Python\\markezonAlgorithm.py",
+            "program": "${workspaceRoot}\\Python\\markenzonAlgorithm.py",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
                 "WaitOnAbnormalExit",
