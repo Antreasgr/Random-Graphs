@@ -19,20 +19,25 @@ def ChordalGen(n, k, pl):
     tree = TreeGen(n)
     t_real_tree = Now() - t_real_tree
     print("t_real_tree:     ", t_real_tree)
+    sys.stdout.flush()
 
-    # t_subtrees = Now()
-    # for node in tree:
-    #     node.s = 0
-    # subtrees = [SubTreeGen(tree, k, i) for i in range(0, n)]
-    # t_subtrees = Now() - t_subtrees
+    t_subtrees = Now()
+    for node in tree:
+         node.s = 0
+    for i in range(0, n):
+        SubTreeGen(tree, k, i)         
+    t_subtrees = Now() - t_subtrees
+    print("t_subtrees:      ", t_subtrees)    
+    sys.stdout.flush()
 
-    t_subtrees_2 = Now()
+    t_subtrees_2 = Now()        
     for node in tree:
         node.s = 0
     for i in range(0, n):
         sub_tree_gen(tree, k, i)
     t_subtrees_2 = Now() - t_subtrees_2
     print("t_subtrees_2:    ", t_subtrees_2)
+    sys.stdout.flush()    
 
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
@@ -40,6 +45,7 @@ def ChordalGen(n, k, pl):
     nx_tree = convert_tree_networkx(tree)
     t_nx_tree = Now() - t_nx_tree    
     print("t_nx_tree:       ", t_nx_tree)
+    sys.stdout.flush()
 
     # start_true = Now()
     # true_chordal = truecliqueListGenChordal(tree, subtrees)
@@ -55,6 +61,7 @@ def ChordalGen(n, k, pl):
     nx_chordal = convert_clique_tree_networkx2(tree, n)
     t_ctree = Now() - t_ctree
     print("t_ctree:         ", t_ctree)
+    sys.stdout.flush()
 
     # t_allnodes_alledges = Now()
     # ax_chordal = allnodes_alledges(nx_chordal)
@@ -69,16 +76,23 @@ def ChordalGen(n, k, pl):
     # pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
 
     # check dfs running time:
-    # v_dfs = R.choice(nx_chordal.nodes())
-    # t_dfsnx = Now()
-    # dfstree = nx.dfs_tree(nx_chordal, v_dfs)
-    # t_dfsnx = Now() - t_dfsnx
-    # pl.add_time("nx_dfs", t_dfsnx, output=True)
+    v_dfs = R.choice(nx_chordal.nodes())
+    t_dfsnx = Now()
+    dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+    t_dfsnx = Now() - t_dfsnx
+    print("t_dfsnx: ", t_dfsnx)
+    sys.stdout.flush()
 
     # check con.comp. running time:
-    # t_cc = Now()
-    # cc = nx.connected_components(nx_chordal)
-    # t_cc = Now() - t_cc
+    t_cc = Now()
+    ncc = nx.number_connected_components(nx_chordal)
+    t_cc = Now() - t_cc
+    print("ncc: ", ncc)
+    sys.stdout.flush()
+    t_total = t_real_tree + t_subtrees_2 + t_nx_tree + t_ctree
+    print("t_total: ", t_total)
+    sys.stdout.flush()
+    
     # pl.add_time("nx_cc", t_cc, output=True)
     # total_run = t_ctree + t_real_tree + t_subtrees
 
@@ -87,10 +101,10 @@ def ChordalGen(n, k, pl):
     # print("Running time overhead over CC:                   ", total_run / t_cc)
 
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
-    t_nx_export = Now()    
+    # t_nx_export = Now()    
     # nx_export_json([nx_tree, nx_chordal])
-    t_nx_export = Now() - t_nx_export
-    print("t_nx_export:     ", t_nx_export)
+    # t_nx_export = Now() - t_nx_export
+    # print("t_nx_export:     ", t_nx_export)
 
     # return subtrees
 
@@ -148,7 +162,6 @@ if __name__ == '__main__':
 #        ChordalGen(r1, r2, plter)
 
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
-    sys.stdout.flush()
-    ChordalGen(1000, 200, -1)
+    ChordalGen(1000, 400, -1)
     print(".....Done")
     # plter.show()
