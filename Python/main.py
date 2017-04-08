@@ -73,7 +73,7 @@ def ChordalGen(n, k, rand, pl=None):
     # pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
 
     # check dfs running time:
-    v_dfs = rand.RState.choice(nx_chordal.nodes())
+    v_dfs = rand.Rstate.choice(nx_chordal.nodes())
     t_dfsnx = Now()
     dfstree = nx.dfs_tree(nx_chordal, v_dfs)
     t_dfsnx = Now() - t_dfsnx
