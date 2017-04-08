@@ -166,7 +166,7 @@ if __name__ == '__main__':
     parameter_k = 500
 
     # initialize 100000 random floats
-    rand = Randomizer(100000)
+    rand = Randomizer(10000000)
 
     ChordalGen(num_of_vertices, parameter_k, rand)
     print(".....Done")

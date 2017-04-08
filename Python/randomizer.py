@@ -23,6 +23,7 @@ class Randomizer(object):
         return array[i], i
 
     def next_random(self, low, high):
+        self.local_index += 1
         if self.local_index >= self.size:
             print("Run out of random, reseting")
             self.local_index = 0
