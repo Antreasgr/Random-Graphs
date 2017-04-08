@@ -253,15 +253,19 @@
     }
 
     function dragstarted(d) {
-        if (!d3.event.active) d.simulation.alphaTarget(0.3).restart();
+        if (!d3.event.active && d.simulation) d.simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
         d.fy = d.y;
     }
 
     function dragged(d) {
-        console.log("dragged", d);
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+        if (d.simulation) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        } else {
+            d.x = d3.event.x;
+            d.y = d3.event.y;
+        }
     }
 
     function dragended(d) {

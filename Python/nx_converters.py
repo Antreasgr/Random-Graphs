@@ -70,7 +70,7 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     for clique in clique_tree:
         add_clique_networx(graph, clique.cliqueList, seen)
 
-    print("nodes:", len(graph.nodes()), " edges: {0:,}".format(len(graph.edges())))
+    # print("nodes:", len(graph.nodes()), " edges: {0:,}".format(len(graph.edges())))
     return graph
 
 
@@ -101,12 +101,10 @@ def add_clique_networx(graph, node, seen):
     if len(N):
         for i in range(len(N)):
             for j in range(i + 1, len(N)):
-                pass
-                # graph.add_edge(N[i], N[j])
+                graph.add_edge(N[i], N[j])
 
             for node2 in O:
-                pass
-                # graph.add_edge(N[i], node2)
+                graph.add_edge(N[i], node2)
     del O
     del N
 

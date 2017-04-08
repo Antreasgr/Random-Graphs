@@ -25,8 +25,8 @@ class TreeNode(object):
         return str(self.id)
 
 
-def sub_tree_gen(T, k, i):
-    Ti = [random_element(T, 0)[0]]
+def sub_tree_gen(T, k, i, rand):
+    Ti = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
@@ -34,13 +34,13 @@ def sub_tree_gen(T, k, i):
     if k <= 1:
         return Ti
 
-    k_i = R.randint(1, 2 * k - 1)
+    k_i = rand.next_random(1, 2 * k - 1)
     sy = 0
     for j in range(1, k_i):
         # after sy we have nodes with neighbors outside
-        y, yi = random_element(Ti, sy)
+        y, yi = rand.next_element(Ti, sy)
         # after y.s in y.Ax there is a neighbor of y outside
-        z, zi = random_element(y.Ax, y.s)
+        z, zi = rand.next_element(y.Ax, y.s)
 
         # add z to Ti
         Ti.append(z)
@@ -72,8 +72,8 @@ def sub_tree_gen(T, k, i):
     return Ti
 
 
-def SubTreeGen(T, k, i):
-    Ti = [random_element(T, 0)[0]]
+def SubTreeGen(T, k, i, rand):
+    Ti = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node
     Ti[0].cliqueList.append(i)
@@ -81,14 +81,14 @@ def SubTreeGen(T, k, i):
     if k == 1:
         return Ti
 
-    k_i = R.randint(1, 2 * k - 1)
+    k_i = rand.next_random(1, 2 * k - 1)
     # seperation index for Ti: all nodes before "sy" have no neigbor in T-Ti
     sy = 0
     for j in range(1, k_i):
         # after sy we have nodes with neighbors outside
-        y, yi = random_element(Ti, sy)
+        y, yi = rand.next_element(Ti, sy)
         # after y.s in y.Ax there is a neighbor of y outside
-        z, zi = random_element(y.Ax, y.s)
+        z, zi = rand.next_element(y.Ax, y.s)
 
         # add z to Ti
         Ti.append(z)
