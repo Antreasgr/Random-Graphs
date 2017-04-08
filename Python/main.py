@@ -5,8 +5,9 @@ from randomizer import *
 from clique_tree import *
 from subtrees import *
 from nx_converters import *
+import networkx as nx
+from numpy.random import RandomState
 # import plotter
-import sys
 
 def ChordalGen(n, k, pl):
     """
@@ -18,8 +19,7 @@ def ChordalGen(n, k, pl):
     t_real_tree = Now()
     tree = TreeGen(n)
     t_real_tree = Now() - t_real_tree
-    print("t_real_tree:     ", t_real_tree)
-    sys.stdout.flush()
+    print('{0:20} ==> {1:.15f}'.format("t_real_tree", t_real_tree))
 
     t_subtrees = Now()
     for node in tree:
@@ -36,16 +36,14 @@ def ChordalGen(n, k, pl):
     for i in range(0, n):
         sub_tree_gen(tree, k, i)
     t_subtrees_2 = Now() - t_subtrees_2
-    print("t_subtrees_2:    ", t_subtrees_2)
-    sys.stdout.flush()    
+    print('{0:20} ==> {1:.15f}'.format("t_subtrees_2", t_subtrees_2))
 
     # convert to networx before cliquelistgen, that function may alter the
     # children attribute -- not yet
-    t_nx_tree = Now()    
-    nx_tree = convert_tree_networkx(tree)
-    t_nx_tree = Now() - t_nx_tree    
-    print("t_nx_tree:       ", t_nx_tree)
-    sys.stdout.flush()
+    # t_nx_tree = Now()    
+    # nx_tree = convert_tree_networkx(tree)
+    # t_nx_tree = Now() - t_nx_tree    
+    # print("t_nx_tree:       ", t_nx_tree)
 
     # start_true = Now()
     # true_chordal = truecliqueListGenChordal(tree, subtrees)
@@ -60,8 +58,7 @@ def ChordalGen(n, k, pl):
     t_ctree = Now()
     nx_chordal = convert_clique_tree_networkx2(tree, n)
     t_ctree = Now() - t_ctree
-    print("t_ctree:         ", t_ctree)
-    sys.stdout.flush()
+    print('{0:20} ==> {1:.15f}'.format("t_ctree", t_ctree))
 
     # t_allnodes_alledges = Now()
     # ax_chordal = allnodes_alledges(nx_chordal)
@@ -102,7 +99,7 @@ def ChordalGen(n, k, pl):
 
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
     # t_nx_export = Now()    
-    # nx_export_json([nx_tree, nx_chordal])
+    # # nx_export_json([nx_tree, nx_chordal])
     # t_nx_export = Now() - t_nx_export
     # print("t_nx_export:     ", t_nx_export)
 
@@ -162,6 +159,10 @@ if __name__ == '__main__':
 #        ChordalGen(r1, r2, plter)
 
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
-    ChordalGen(1000, 400, -1)
+
+    num_of_vertices = 10000
+    parameter_k = 200
+
+    ChordalGen(num_of_vertices, parameter_k, -1)
     print(".....Done")
-    # plter.show()
+    # # plter.show()

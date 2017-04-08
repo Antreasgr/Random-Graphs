@@ -1,7 +1,13 @@
 from randomizer import *
 
-class TreeNode:
-    """ A class representing a tree node """
+
+class TreeNode(object):
+    """ 
+        A class representing a tree node 
+    """
+    __slots__ = ('id', 'Ax', 'Rx', 'cliqueList',
+                 'children', 'parent', 'marked', 's')
+
     def __init__(self, id):
         self.id = id
         self.Ax = []
