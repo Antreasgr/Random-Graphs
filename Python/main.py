@@ -7,6 +7,7 @@ from subtrees import *
 from nx_converters import *
 import networkx as nx
 from numpy.random import RandomState
+import statistics
 # import plotter
 
 
@@ -50,11 +51,25 @@ def chordal_generation(n, k, rand, pl=None):
 
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("edges", len(nx_chordal.edges())))
+
+    cliques = (len(c.cliqueList) for c in tree)
+    max_clique_size, min_clique_size, sum_clique_size = float(
+        "-inf"), float("inf"), 0
+    for c in cliques:
+        max_clique_size = max(max_clique_size, c)
+        min_clique_size = min(min_clique_size, c)
+        sum_clique_size += c
+
+    avg_clique_size = sum_clique_size / len(tree)
+    print('{0:20} ==> min:{1:10} max:{2:10} average:{3:10}'.format(
+        "cliques", min_clique_size, max_clique_size, avg_clique_size))
+
     sys.stdout.flush()
 
     # print("Running time overhead over Alledges:             ", total_run / t_allnodes_alledges)
     # print("Running time overhead over DFS:                  ", total_run / t_dfsnx)
-    # print("Running time overhead over CC:                   ", total_run / t_cc)
+    # print("Running time overhead over CC:                   ", total_run /
+    # t_cc)
 
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
     # t_nx_export = Now()
@@ -95,7 +110,7 @@ def tree_generation(n, rand):
 
     return tree
 
-#from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 if __name__ == '__main__':
     #    plter = plotter.Plotter()
     #    plter.add_label('cliqueListGenChordal', 'Generate clique tree')
@@ -111,10 +126,11 @@ if __name__ == '__main__':
     #    plter.add_label('real_tree', 'Real T generator')
     #    plter.add_label('subtrees', 'SubTrees generator')
 
-    # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
+    # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
+    # range(10))
 
-    num_of_vertices = 2000
-    parameter_k = 500
+    num_of_vertices = 200
+    parameter_k = 50
 
     # initialize 100000 random floats
     rand = Randomizer(10000000)
