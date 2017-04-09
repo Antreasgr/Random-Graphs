@@ -16,10 +16,10 @@ def convert_tree_networkx(tree):
 
     for treenode in tree:
         if treenode.cliqueList:
-            graph.add_node(treenode.id, clique_list=str(treenode.cliqueList))
+            graph.add_node(treenode.uid, clique_list=str(treenode.cliqueList))
 
         for child in treenode.children:
-            graph.add_edge(treenode.id, child.id)
+            graph.add_edge(treenode.uid, child.uid)
 
     return graph
 
@@ -67,7 +67,11 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     graph = nx.Graph(graph_type="fast")
     graph.add_nodes_from(range(num_vertices))
     seen = numpy.full(num_vertices, False, dtype=bool)
-    for clique in clique_tree:
+    queue = deque((c for c in clique_tree if c.parent == None))
+    while queue:
+        clique = queue.popleft()
+        queue.extend(clique.children)
+
         add_clique_networx(graph, clique.cliqueList, seen)
 
     # print("nodes:", len(graph.nodes()), " edges: {0:,}".format(len(graph.edges())))
@@ -131,9 +135,9 @@ def convert_adjacency_list_networkx(adj_list_graph):
     for node in adj_list_graph:
         if len(node.Ax):
             for neighbour in node.Ax:
-                graph.add_edge(node.id, neighbour.id)
+                graph.add_edge(node.uid, neighbour.uid)
         else:
-            graph.add_node(node.id)
+            graph.add_node(node.uid)
 
     return graph
 

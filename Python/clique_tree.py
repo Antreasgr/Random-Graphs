@@ -4,7 +4,7 @@ def truecliqueListGenChordal(graph, subtrees):
     """
         Converts the output of the sub-tree generation algorithm to clique_tree
     """
-    final_graph = [TreeNode(n.id) for n in graph]
+    final_graph = [TreeNode(n.uid) for n in graph]
 
     for i in range(0, len(graph)):
         for j in range(i + 1, len(graph)):
