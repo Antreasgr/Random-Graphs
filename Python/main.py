@@ -22,13 +22,13 @@ def ChordalGen(n, k, rand, pl=None):
     t_real_tree = Now() - t_real_tree
     print('{0:20} ==> {1:.15f}'.format("t_real_tree", t_real_tree))
 
-    t_subtrees = Now()
-    for node in tree:
-        node.s = 0
-    for i in range(0, n):
-        SubTreeGen(tree, k, i, rand)
-    t_subtrees = Now() - t_subtrees
-    print('{0:20} ==> {1:.15f}'.format("t_subtrees", t_subtrees))
+#    t_subtrees = Now()
+#    for node in tree:
+#        node.s = 0
+#    for i in range(0, n):
+#        SubTreeGen(tree, k, i, rand)
+#    t_subtrees = Now() - t_subtrees
+#    print('{0:20} ==> {1:.15f}'.format("t_subtrees", t_subtrees))
 
     t_subtrees_2 = Now()
     for node in tree:
@@ -88,6 +88,7 @@ def ChordalGen(n, k, rand, pl=None):
     t_total = t_real_tree + t_subtrees_2 + t_ctree
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
 
+    print('{0:20} ==> {1:,d}'.format("ncc", ncc))
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("edges", len(nx_chordal.edges())))
     sys.stdout.flush()
@@ -162,11 +163,13 @@ if __name__ == '__main__':
 
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
 
-    num_of_vertices = 2000
-    parameter_k = 500
+    num_of_vertices = 1000
+    parameter_k = 250
 
     # initialize 100000 random floats
-    rand = Randomizer(10000000)
+    t_rand = Now()
+    rand = Randomizer(2*num_of_vertices)
+    # rand = Randomizer(500000)
 
     ChordalGen(num_of_vertices, parameter_k, rand)
     print(".....Done")
