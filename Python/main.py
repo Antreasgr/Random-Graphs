@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # initialize 100000 random floats
     t_rand = Now()
     # rand = Randomizer(2*num_of_vertices)
-    rand = Randomizer(100000)
+    rand = Randomizer(10)
 
     ChordalGen(num_of_vertices, parameter_k, rand)
     print(".....Done")
