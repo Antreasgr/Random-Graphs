@@ -55,7 +55,7 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
                     # go up the tree until a valid parent is found
                     p = p.parent
                 if p != None:
-                    # in rare cases the root of the tree is not valid and a forest is created
+                    # in rare cases the root of the tree is not valid(empty) and a forest is created
                     newnode.parent = helper[p.uid]
                     newnode.parent.children.append(newnode)
 
