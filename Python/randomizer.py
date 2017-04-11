@@ -2,6 +2,7 @@ from numpy.random import RandomState
 from numpy import core
 from timeit import default_timer
 import random
+import sys
 
 Now = default_timer
 
@@ -25,6 +26,7 @@ class Timer(object):
         self.elapsed = self.end - self.start
         if self.output:
             print('{0:20} ==> {1:.15f}'.format(self.prefix, self.elapsed))
+            sys.stdout.flush()
 
 
 class Randomizer(object):

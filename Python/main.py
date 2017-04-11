@@ -47,12 +47,16 @@ def chordal_generation(n, k, rand, pl=None):
         ncc = nx.number_connected_components(nx_chordal)
 
     t_total = t_real_tree.elapsed + t_subtrees_2.elapsed + t_ctree.elapsed
+    print("----------- Stats: -----------------------")
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
 
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
+    print('{0:20} ==> {1:,d}'.format("k", k))
     print('{0:20} ==> {1:,d}'.format("edges", len(nx_chordal.edges())))
 
     print('{0:20} ==> {1:,d}'.format("cc", ncc))
+    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10} {5:>10} {6:>10}'.format(
+        "cliques", "#", "min", "max", "average", "width", "height"))
     print_clique_tree_statistics(tree)
     print_clique_tree_statistics(final_ctree)
     sys.stdout.flush()
@@ -81,10 +85,11 @@ def print_clique_tree_statistics(tree):
         sum_clique_size += c
 
     avg_clique_size = sum_clique_size / len(tree)
-    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10}'.format(
-        "cliques", "#", "min", "max", "average"))
-    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10.3f}'.format(
-        "", len(tree), min_clique_size, max_clique_size, avg_clique_size))
+
+    width, height = dfs_tree(tree, tree[0])
+
+    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10.3f} {5:>10} {6:>10}'.format(
+        "", len(tree), min_clique_size, max_clique_size, avg_clique_size, width, height))
 
 
 def tree_generation(n, rand):
@@ -140,9 +145,8 @@ if __name__ == '__main__':
     parameter_k = 5
 
     # initialize 10M random floats
-    for i in range(0, 500):
-        print(i)
-        rand = Randomizer(10000000, i)
+    for i in range(4, 5):
+        rand = Randomizer(2*num_of_vertices, i)
         chordal_generation(num_of_vertices, parameter_k, rand)
 
     print(".....Done")

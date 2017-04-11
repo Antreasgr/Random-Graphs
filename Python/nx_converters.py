@@ -38,26 +38,35 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     queue = deque([clique_tree[0]])
     ctree = []
     helper = {}
+    parent_queue = deque([clique_tree[0]])
     while queue:
         clique = queue.popleft()
         queue.extend(clique.children)
         is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen)
-
-        if is_valid_clique:
+        if is_valid_clique:  # if "0"
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
+            parent = parent_queue.popleft()
+            newnode.parent = parent
+            for c in clique.children:
+                parent_queue.appendleft(newnode)
+            parent.children.append(newnode)
             ctree.append(newnode)
-            helper[clique.uid] = newnode
-            if clique.parent != None:
-                # if this is not the root fix parent and children pointers
-                p = clique.parent
-                while p != None and p.uid not in helper:
-                    # go up the tree until a valid parent is found
-                    p = p.parent
-                if p != None:
-                    # in rare cases the root of the tree is not valid(empty) and a forest is created
-                    newnode.parent = helper[p.uid]
-                    newnode.parent.children.append(newnode)
+        else:
+            parent = parent_queue.popleft()
+            for c in clique.children:
+                parent_queue.appendleft(parent)
+        #    helper[clique.uid] = newnode
+        #    if clique.parent != None:
+        #        # if this is not the root fix parent and children pointers
+        #        p = clique.parent
+        #        while p != None and p.uid not in helper:
+        #            # go up the tree until a valid parent is found
+        #            p = p.parent
+        #        if p != None:
+        #            # in rare cases the root of the tree is not valid(empty) and a forest is created
+        #            newnode.parent = helper[p.uid]
+        #            newnode.parent.children.append(newnode)
 
     return graph, ctree
 
@@ -94,6 +103,9 @@ def add_clique_networx(graph, node, seen):
             for node2 in O:
                 graph.add_edge(N[i], node2)
         return True
+    # todo:
+    # if len(O)==0 then start new tree
+    # => should return 0,1,2 with 0: some New some Old, 1: no New some Old, 2: some New no Old
     return False
 
 

@@ -1,5 +1,6 @@
 from subtrees import *
 
+
 def truecliqueListGenChordal(graph, subtrees):
     """
         Converts the output of the sub-tree generation algorithm to clique_tree
@@ -108,3 +109,26 @@ def dfs_list(graph, root):
             stack.extend(
                 (neighbour for neighbour in vertex.Ax if not neighbour.dfs_visited))
     return visited
+
+
+def dfs_tree(tree, root):
+    """
+        Goes through a tree using DFS, and compute max children, its depth, and the level of each node 
+    """
+    visited, stack = set(), [root]
+
+    width, height = float("-inf"), float("-inf")
+    # root.height = 0
+    while stack:
+        vertex = stack.pop()
+        if len(vertex.children) > width:
+            width = len(vertex.children)
+        if vertex.height > height:
+            height = vertex.height
+        if vertex not in visited:
+            visited.add(vertex)
+            new_c = set(vertex.children) - visited
+            for c in new_c:
+                c.height = vertex.height + 1
+            stack.extend(new_c)
+    return width, height
