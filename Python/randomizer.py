@@ -3,8 +3,28 @@ from numpy import core
 from timeit import default_timer
 import random
 
-# initialize global random seed
 Now = default_timer
+
+
+class Timer(object):
+    __slots__ = ["start", "end", "elapsed", "prefix", "output"]
+
+    def __init__(self, prefix=None, output=True):
+        self.prefix = prefix
+        self.output = output
+        self.start = 0
+        self.end = 0
+        self.elapsed = 0
+
+    def __enter__(self):
+        self.start = Now()
+        return self
+
+    def __exit__(self, *args):
+        self.end = Now()
+        self.elapsed = self.end - self.start
+        if self.output:
+            print('{0:20} ==> {1:.15f}'.format(self.prefix, self.elapsed))
 
 
 class Randomizer(object):
@@ -25,7 +45,7 @@ class Randomizer(object):
     def next_random(self, low, high):
         self.local_index += 1
         if self.local_index >= self.size:
-#            print("Run out of random, reseting")
+            print("Run out of random, reseting")
             self.local_index = 0
 
         return int(self.np_random[self.local_index] * (high - low) + low)

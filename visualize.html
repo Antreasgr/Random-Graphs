@@ -128,7 +128,7 @@
             .data(datalinks)
             .enter().append("line")
             .attr("stroke-width", function(d) {
-                return Math.sqrt(d.value);
+                // return Math.sqrt(d.value);
             });
 
         if (isTree) {
@@ -265,6 +265,33 @@
         } else {
             d.x = d3.event.x;
             d.y = d3.event.y;
+
+            d3.select(this).attr("cx", function(d) {
+                return d.x;
+            }).attr("cy", function(d) {
+                return d.y;
+            });
+
+            var links = d3.selectAll("line").filter(function(l) {
+                return l.source === d || l.target === d
+            });
+
+            links.attr("x1", function(d) {
+                return d.source.x;
+            }).attr("y1", function(d) {
+                return d.source.y;
+            }).attr("x2", function(d) {
+                return d.target.x;
+            }).attr("y2", function(d) {
+                return d.target.y;
+            });
+
+            var label = d3.selectAll("text").filter(l => l === d);
+            label.attr("x", function(d) {
+                return d.x + 5;
+            }).attr("y", function(d) {
+                return d.y - 5;
+            });
         }
     }
 

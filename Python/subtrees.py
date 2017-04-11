@@ -5,11 +5,11 @@ class TreeNode(object):
     """ 
         A class representing a tree node 
     """
-    __slots__ = ('id', 'Ax', 'Rx', 'cliqueList',
+    __slots__ = ('uid', 'Ax', 'Rx', 'cliqueList',
                  'children', 'parent', 'marked', 's')
 
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, uid):
+        self.uid = uid
         self.Ax = []
         self.Rx = []
         self.cliqueList = []
@@ -19,10 +19,10 @@ class TreeNode(object):
         self.marked = False
 
     def __str__(self):
-        return str(self.id)
+        return str(self.uid)
 
     def __repr__(self):
-        return str(self.id)
+        return str(self.uid)
 
 
 def sub_tree_gen(T, k, i, rand):

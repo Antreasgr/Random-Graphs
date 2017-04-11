@@ -7,98 +7,60 @@ from subtrees import *
 from nx_converters import *
 import networkx as nx
 from numpy.random import RandomState
+import statistics
 # import plotter
 
 
-def ChordalGen(n, k, rand, pl=None):
+def chordal_generation(n, k, rand, pl=None):
     """
         Generate a random chordal graph with n vertices, k is the algorithm parameter
     """
     if 2 * k - 1 > n:
-        raise Exception("ChordalGen parameter k must be lower than n/2")
+        raise Exception("chordal gen parameter k must be lower than n/2")
 
-    t_real_tree = Now()
-    tree = TreeGen(n, rand)
-    t_real_tree = Now() - t_real_tree
-    print('{0:20} ==> {1:.15f}'.format("t_real_tree", t_real_tree))
+    with Timer("t_real_tree") as t_real_tree:
+        tree = tree_generation(n, rand)
 
-#    t_subtrees = Now()
-#    for node in tree:
-#        node.s = 0
-#    for i in range(0, n):
-#        SubTreeGen(tree, k, i, rand)
-#    t_subtrees = Now() - t_subtrees
-#    print('{0:20} ==> {1:.15f}'.format("t_subtrees", t_subtrees))
-
-    t_subtrees_2 = Now()
-    for node in tree:
-        node.s = 0
-    for i in range(0, n):
-        sub_tree_gen(tree, k, i, rand)
-    t_subtrees_2 = Now() - t_subtrees_2
-    print('{0:20} ==> {1:.15f}'.format("t_subtrees_2", t_subtrees_2))
+    with Timer("t_subtrees_2") as t_subtrees_2:
+        for node in tree:
+            node.s = 0
+        for i in range(0, n):
+            sub_tree_gen(tree, k, i, rand)
 
     # this is only for visual purposes
     # t_nx_tree = Now()
-    nx_tree = convert_tree_networkx(tree)
+    # nx_tree = convert_tree_networkx(tree)
     # t_nx_tree = Now() - t_nx_tree
     # print("t_nx_tree:       ", t_nx_tree)
 
-    # start_true = Now()
-    # true_chordal = truecliqueListGenChordal(tree, subtrees)
-    # nx_true_chordal = convert_adjacency_list_networkx(true_chordal)
-    # end_true = Now()
-
-    # start_chordal = Now()
-    # chordal = cliqueListGenChordal(tree)
-    # end_chordal = Now()
-
     # convert to networkx, our main algorithm
-    t_ctree = Now()
-    nx_chordal = convert_clique_tree_networkx2(tree, n)
-    t_ctree = Now() - t_ctree
-    print('{0:20} ==> {1:.15f}'.format("t_ctree", t_ctree))
-
-
-    # t_allnodes_alledges = Now()
-    # ax_chordal = allnodes_alledges(nx_chordal)
-    # t_allnodes_alledges = Now() - t_allnodes_alledges
-
-    # print("is isomophic: {0} ".format(nx.is_isomorphic(nx_chordal, nx_true_chordal)))
-    ## pl.add_time("real_tree", t_real_tree, output=True)
-    # pl.add_time("subtrees", t_subtrees, output=True)
-    ## pl.add_time("subtrees2", t_subtrees_2, output=True)
-    ## pl.add_time("convert_clique_tree_networkx", t_ctree, output=True)
-    ## pl.add_time("ourtotal", t_ctree + t_real_tree + t_subtrees_2, output=True)
-    # pl.add_time("allnodes_alledges", t_allnodes_alledges, output=True)
+    with Timer("t_ctree") as t_ctree:
+        nx_chordal, final_ctree = convert_clique_tree_networkx2(tree, n)
 
     # check dfs running time:
     v_dfs = rand.Rstate.choice(nx_chordal.nodes())
-    t_dfsnx = Now()
-    dfstree = nx.dfs_tree(nx_chordal, v_dfs)
-    t_dfsnx = Now() - t_dfsnx
-    print('{0:20} ==> {1:.15f}'.format("t_dfsnx", t_dfsnx))
+    with Timer("t_dfsnx") as t_dfsnx:
+        dfstree = nx.dfs_tree(nx_chordal, v_dfs)
 
     # check con.comp. running time:
-    t_cc = Now()
-    ncc = nx.number_connected_components(nx_chordal)
-    t_cc = Now() - t_cc
-    print('{0:20} ==> {1:.15f}'.format("t_cc", t_cc))
+    with Timer("t_cc") as t_cc:
+        ncc = nx.number_connected_components(nx_chordal)
 
-    t_total = t_real_tree + t_subtrees_2 + t_ctree
+    t_total = t_real_tree.elapsed + t_subtrees_2.elapsed + t_ctree.elapsed
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
 
-    print('{0:20} ==> {1:,d}'.format("ncc", ncc))
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("edges", len(nx_chordal.edges())))
-    sys.stdout.flush()
 
-    # pl.add_time("nx_cc", t_cc, output=True)
-    # total_run = t_ctree + t_real_tree + t_subtrees
+    print('{0:20} ==> {1:,d}'.format("cc", ncc))
+    print_clique_tree_statistics(tree)
+    print_clique_tree_statistics(final_ctree)
+    sys.stdout.flush()
 
     # print("Running time overhead over Alledges:             ", total_run / t_allnodes_alledges)
     # print("Running time overhead over DFS:                  ", total_run / t_dfsnx)
-    # print("Running time overhead over CC:                   ", total_run / t_cc)
+    # print("Running time overhead over CC:                   ", total_run /
+    # t_cc)
 
     # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
     # t_nx_export = Now()
@@ -109,15 +71,31 @@ def ChordalGen(n, k, rand, pl=None):
     # return subtrees
 
 
-def TreeGen(n, rand):
+def print_clique_tree_statistics(tree):
+    cliques = (len(c.cliqueList) for c in tree)
+    max_clique_size, min_clique_size, sum_clique_size = float(
+        "-inf"), float("inf"), 0
+    for c in cliques:
+        max_clique_size = max(max_clique_size, c)
+        min_clique_size = min(min_clique_size, c)
+        sum_clique_size += c
+
+    avg_clique_size = sum_clique_size / len(tree)
+    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10}'.format(
+        "cliques", "#", "min", "max", "average"))
+    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10.3f}'.format(
+        "", len(tree), min_clique_size, max_clique_size, avg_clique_size))
+
+
+def tree_generation(n, rand):
     """
         Creates a random tree on n nodes
         and create the adjacency lists for each node
     """
     tree = [TreeNode(0)]
-    for id in range(0, n - 1):
+    for uid in range(0, n - 1):
         selection, _ = rand.next_element(tree)
-        newnode = TreeNode(id + 1)
+        newnode = TreeNode(uid + 1)
 
         # update the adjacency lists
         newnode.Ax.append(selection)
@@ -139,7 +117,7 @@ def TreeGen(n, rand):
 
     return tree
 
-#from joblib import Parallel, delayed
+# from joblib import Parallel, delayed
 if __name__ == '__main__':
     #    plter = plotter.Plotter()
     #    plter.add_label('cliqueListGenChordal', 'Generate clique tree')
@@ -155,22 +133,17 @@ if __name__ == '__main__':
     #    plter.add_label('real_tree', 'Real T generator')
     #    plter.add_label('subtrees', 'SubTrees generator')
 
-    #    for kk in range(0, 1):
-    #        r1 = R.randint(15, 20)
-    #        r2 = R.randint(1, r1 / 2)
-    #        print(r1, r2)
-    #        ChordalGen(r1, r2, plter)
+    # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
+    # range(10))
 
-    # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in range(10))
+    num_of_vertices = 20
+    parameter_k = 5
 
-    num_of_vertices = 1000
-    parameter_k = 250
+    # initialize 10M random floats
+    for i in range(0, 500):
+        print(i)
+        rand = Randomizer(10000000, i)
+        chordal_generation(num_of_vertices, parameter_k, rand)
 
-    # initialize 100000 random floats
-    t_rand = Now()
-    # rand = Randomizer(2*num_of_vertices)
-    rand = Randomizer(10)
-
-    ChordalGen(num_of_vertices, parameter_k, rand)
     print(".....Done")
-    # # plter.show()
+    # plter.show()

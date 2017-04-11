@@ -16,46 +16,10 @@ def convert_tree_networkx(tree):
 
     for treenode in tree:
         if treenode.cliqueList:
-            graph.add_node(treenode.id, clique_list=str(treenode.cliqueList))
+            graph.add_node(treenode.uid, clique_list=str(treenode.cliqueList))
 
         for child in treenode.children:
-            graph.add_edge(treenode.id, child.id)
-
-    return graph
-
-
-def convert_clique_tree_networkx(clique_tree, num_vertices):
-    """
-        Converts a clique tree to a networkx graph
-    """
-    graph = nx.Graph(graph_type="fast")
-    graph.add_nodes_from(range(num_vertices))
-    visited, queue = [], deque([c for c in clique_tree if c.parent == None])
-    while queue:
-        parent = queue.popleft()
-        visited.append(parent)
-        # TODO: children array is pointing to original tree and wrong
-        # so we need to find children by parent poiner
-        # fix children array for this to be faster
-        childs = [c for c in clique_tree if c.parent == parent]
-        queue.extend(childs)
-
-    seen = [None] * num_vertices
-    for i, node in enumerate(visited):
-        O, N = [], []
-        for c in node.cliqueList:
-            if seen[c] == None:
-                N.append(c)
-                seen[c] = 0
-            else:
-                O.append(c)
-        if len(N):
-            for i in range(len(N)):
-                for j in range(i + 1, len(N)):
-                    graph.add_edge(N[i], N[j])
-
-                for node2 in O:
-                    graph.add_edge(N[i], node2)
+            graph.add_edge(treenode.uid, child.uid)
 
     return graph
 
@@ -67,11 +31,35 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     graph = nx.Graph(graph_type="fast")
     graph.add_nodes_from(range(num_vertices))
     seen = numpy.full(num_vertices, False, dtype=bool)
-    for clique in clique_tree:
-        add_clique_networx(graph, clique.cliqueList, seen)
 
-    # print("nodes:", len(graph.nodes()), " edges: {0:,}".format(len(graph.edges())))
-    return graph
+    if clique_tree[0].parent != None:
+        raise Exception("Invalid tree first node is not root")
+
+    queue = deque([clique_tree[0]])
+    ctree = []
+    helper = {}
+    while queue:
+        clique = queue.popleft()
+        queue.extend(clique.children)
+        is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen)
+
+        if is_valid_clique:
+            newnode = TreeNode(clique.uid)
+            newnode.cliqueList = clique.cliqueList
+            ctree.append(newnode)
+            helper[clique.uid] = newnode
+            if clique.parent != None:
+                # if this is not the root fix parent and children pointers
+                p = clique.parent
+                while p != None and p.uid not in helper:
+                    # go up the tree until a valid parent is found
+                    p = p.parent
+                if p != None:
+                    # in rare cases the root of the tree is not valid(empty) and a forest is created
+                    newnode.parent = helper[p.uid]
+                    newnode.parent.children.append(newnode)
+
+    return graph, ctree
 
 
 def convert_markenzon_clique_tree_networkx2(clique_tree, num_vertices):
@@ -105,8 +93,8 @@ def add_clique_networx(graph, node, seen):
 
             for node2 in O:
                 graph.add_edge(N[i], node2)
-    del O
-    del N
+        return True
+    return False
 
 
 def allnodes_alledges(nx_graph):
@@ -131,9 +119,9 @@ def convert_adjacency_list_networkx(adj_list_graph):
     for node in adj_list_graph:
         if len(node.Ax):
             for neighbour in node.Ax:
-                graph.add_edge(node.id, neighbour.id)
+                graph.add_edge(node.uid, neighbour.uid)
         else:
-            graph.add_node(node.id)
+            graph.add_node(node.uid)
 
     return graph
 
