@@ -43,11 +43,15 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
         clique = queue.popleft()
         queue.extend(clique.children)
         is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen)
-        if is_valid_clique:  # if "0"
+        if is_valid_clique != "dummy":  # if "0"
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
             parent = parent_queue.popleft()
             newnode.parent = parent
+            if is_valid_clique == "valid": 
+                newnode.cc = parent.cc
+            else:
+                newnode.cc = parent.cc + 1    
             for c in clique.children:
                 parent_queue.appendleft(newnode)
             parent.children.append(newnode)
@@ -102,11 +106,14 @@ def add_clique_networx(graph, node, seen):
 
             for node2 in O:
                 graph.add_edge(N[i], node2)
-        return True
+        if len(O):
+            return "valid"
+        else:
+            return "newcc"
     # todo:
     # if len(O)==0 then start new tree
     # => should return 0,1,2 with 0: some New some Old, 1: no New some Old, 2: some New no Old
-    return False
+    return "dummy"
 
 
 def allnodes_alledges(nx_graph):

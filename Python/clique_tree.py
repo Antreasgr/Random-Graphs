@@ -121,14 +121,17 @@ def dfs_tree(tree, root):
     # root.height = 0
     while stack:
         vertex = stack.pop()
-        if len(vertex.children) > width:
-            width = len(vertex.children)
-        if vertex.height > height:
-            height = vertex.height
         if vertex not in visited:
             visited.add(vertex)
             new_c = set(vertex.children) - visited
+            num_children = 0
             for c in new_c:
-                c.height = vertex.height + 1
+                if vertex.cc == c.cc:  # same component
+                    c.height = vertex.height + 1
+                    num_children += 1
+            if num_children > width:
+                width = num_children
+            if vertex.height > height:
+                height = vertex.height            
             stack.extend(new_c)
     return width, height

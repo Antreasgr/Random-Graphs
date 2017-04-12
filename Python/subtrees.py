@@ -6,7 +6,7 @@ class TreeNode(object):
         A class representing a tree node 
     """
     __slots__ = ('uid', 'Ax', 'Rx', 'cliqueList',
-                 'children', 'parent', 'marked', 'height', 's')
+                 'children', 'parent', 'marked', 'height', 'cc', 's')
 
     def __init__(self, uid):
         self.uid = uid
@@ -18,6 +18,7 @@ class TreeNode(object):
         self.parent = None
         self.marked = False
         self.height = 0
+        self.cc = 0
 
     def __str__(self):
         return str(self.uid)

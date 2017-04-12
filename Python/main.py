@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # range(10))
 
     num_of_vertices = 20
-    parameter_k = 5
+    parameter_k = 2
 
     # initialize 10M random floats
     for i in range(4, 5):
