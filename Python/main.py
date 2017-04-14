@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     # initialize 10M random floats
     for i in range(4, 5):
-        rand = Randomizer(2*num_of_vertices, i)
+        rand = Randomizer(2*num_of_vertices, 165)
         chordal_generation(num_of_vertices, parameter_k, rand)
 
     print(".....Done")
