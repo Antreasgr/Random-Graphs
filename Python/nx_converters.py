@@ -50,8 +50,12 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
             newnode.parent = parent
             parent.children.append(newnode)
             newnode.cc = parent.cc
+            # here we need to be careful:
+            # "parent" now may be a subset of "newnode"
+            # can this happen if "parent" has > 1 child ?
+            # if not, we can deal with such case...
             for c in clique.children:
-                parent_queue.appendleft(newnode)
+                parent_queue.append(newnode)
             ctree = forest.ctree[newnode.cc]    
             ctree.append(newnode) # ??
         if is_valid_clique == "newcc": 
@@ -64,12 +68,16 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
             ctree.append(newnode)
             forest.ctree.append(ctree)
             for c in clique.children:
-                parent_queue.appendleft(newnode)
+                parent_queue.append(newnode)
            # forest.ctree.append(newnode)
-        if is_valid_clique == "empty" or is_valid_clique == "dummy": 
+        if is_valid_clique == "empty": 
             parent = parent_queue.popleft()
             for c in clique.children:
-                parent_queue.appendleft(parent)
+                parent_queue.append(c)
+        if is_valid_clique == "dummy": 
+            parent = parent_queue.popleft()
+            for c in clique.children:
+                parent_queue.append(parent)                
 
     return graph, forest
 
