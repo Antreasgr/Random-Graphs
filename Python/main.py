@@ -150,8 +150,8 @@ if __name__ == '__main__':
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
     # range(10))
 
-    num_of_vertices = 1000
-    parameter_k = 10
+    num_of_vertices = 20
+    parameter_k = 4
 
     # initialize 10M random floats
     for i in range(4, 5):
