@@ -36,43 +36,42 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
         raise Exception("Invalid tree first node is not root")
 
     queue = deque([clique_tree[0]])
-    ctree = []
+    forest = cForest(0)
     helper = {}
     parent_queue = deque([clique_tree[0]])
     while queue:
         clique = queue.popleft()
         queue.extend(clique.children)
         is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen)
-        if is_valid_clique != "dummy":  # if "0"
+        if is_valid_clique == "valid":
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
             parent = parent_queue.popleft()
             newnode.parent = parent
-            if is_valid_clique == "valid": 
-                newnode.cc = parent.cc
-            else:
-                newnode.cc = parent.cc + 1    
+            parent.children.append(newnode)
+            newnode.cc = parent.cc
             for c in clique.children:
                 parent_queue.appendleft(newnode)
-            parent.children.append(newnode)
+            ctree = forest.ctree[newnode.cc]    
+            ctree.append(newnode) # ??
+        if is_valid_clique == "newcc": 
+            newnode = TreeNode(clique.uid)
+            newnode.cliqueList = clique.cliqueList
+            parent = parent_queue.popleft()
+            newnode.parent = newnode
+            newnode.cc = len(forest.ctree) # parent.cc + 1
+            ctree = []
             ctree.append(newnode)
-        else:
+            forest.ctree.append(ctree)
+            for c in clique.children:
+                parent_queue.appendleft(newnode)
+           # forest.ctree.append(newnode)
+        if is_valid_clique == "empty" or is_valid_clique == "dummy": 
             parent = parent_queue.popleft()
             for c in clique.children:
                 parent_queue.appendleft(parent)
-        #    helper[clique.uid] = newnode
-        #    if clique.parent != None:
-        #        # if this is not the root fix parent and children pointers
-        #        p = clique.parent
-        #        while p != None and p.uid not in helper:
-        #            # go up the tree until a valid parent is found
-        #            p = p.parent
-        #        if p != None:
-        #            # in rare cases the root of the tree is not valid(empty) and a forest is created
-        #            newnode.parent = helper[p.uid]
-        #            newnode.parent.children.append(newnode)
 
-    return graph, ctree
+    return graph, forest
 
 
 def convert_markenzon_clique_tree_networkx2(clique_tree, num_vertices):
@@ -92,6 +91,13 @@ def convert_markenzon_clique_tree_networkx2(clique_tree, num_vertices):
 
 
 def add_clique_networx(graph, node, seen):
+    """
+        Add edges to "graph" depending on the Old and New nodes from the list of already "seen" nodes. 
+        Returns "valid" if N != [] and O != []
+        Returns "newcc" if N != [] and O = []
+        Returns "dummy" if N = [] and O != []
+        Returns "empty" if N = [] and O = []                        
+    """    
     O, N = [], []
     for c in node:
         if seen[c] == False:
@@ -110,10 +116,9 @@ def add_clique_networx(graph, node, seen):
             return "valid"
         else:
             return "newcc"
-    # todo:
-    # if len(O)==0 then start new tree
-    # => should return 0,1,2 with 0: some New some Old, 1: no New some Old, 2: some New no Old
-    return "dummy"
+    if len(O):
+        return "dummy"
+    return "empty"
 
 
 def allnodes_alledges(nx_graph):

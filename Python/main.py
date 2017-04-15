@@ -35,7 +35,7 @@ def chordal_generation(n, k, rand, pl=None):
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree") as t_ctree:
-        nx_chordal, final_ctree = convert_clique_tree_networkx2(tree, n)
+        nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n)
 
     # check dfs running time:
     v_dfs = rand.Rstate.choice(nx_chordal.nodes())
@@ -57,8 +57,10 @@ def chordal_generation(n, k, rand, pl=None):
     print('{0:20} ==> {1:,d}'.format("cc", ncc))
     print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10} {5:>10} {6:>10}'.format(
         "cliques", "#", "min", "max", "average", "width", "height"))
-    print_clique_tree_statistics(tree)
-    print_clique_tree_statistics(final_ctree)
+    temp_forest = cForest(1)
+    temp_forest.ctree.append(tree)    
+    print_clique_tree_statistics(temp_forest)
+    print_clique_tree_statistics(final_cforest)
     sys.stdout.flush()
 
     # print("Running time overhead over Alledges:             ", total_run / t_allnodes_alledges)
@@ -75,21 +77,21 @@ def chordal_generation(n, k, rand, pl=None):
     # return subtrees
 
 
-def print_clique_tree_statistics(tree):
-    cliques = (len(c.cliqueList) for c in tree)
-    max_clique_size, min_clique_size, sum_clique_size = float(
-        "-inf"), float("inf"), 0
-    for c in cliques:
-        max_clique_size = max(max_clique_size, c)
-        min_clique_size = min(min_clique_size, c)
-        sum_clique_size += c
+def print_clique_tree_statistics(forest):
+    max_clique_size, min_clique_size, sum_clique_size, num_c = float("-inf"), float("inf"), 0, 0
+    for tree in forest.ctree:
+        cliques = (len(c.cliqueList) for c in tree)
+        for c in cliques:
+            max_clique_size = max(max_clique_size, c)
+            min_clique_size = min(min_clique_size, c)
+            sum_clique_size += c
+        num_c += len(tree)    
 
-    avg_clique_size = sum_clique_size / len(tree)
+    avg_clique_size = sum_clique_size / num_c
 
-    width, height = dfs_tree(tree, tree[0])
+    width, height = dfs_forest(forest)
 
-    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10.3f} {5:>10} {6:>10}'.format(
-        "", len(tree), min_clique_size, max_clique_size, avg_clique_size, width, height))
+    print('{0:20} ==> {1:>10} {2:>10} {3:>10} {4:>10.3f} {5:>10} {6:>10}'.format("", num_c, min_clique_size, max_clique_size, avg_clique_size, width, height))
 
 
 def tree_generation(n, rand):

@@ -1,5 +1,17 @@
 from randomizer import *
 
+class cForest(object):
+    __slots__ = ('uid','ctree')
+
+    def __init__(self,uid):
+        self.uid = uid
+        self.ctree = []
+
+    def __str__(self):
+        return str(self.uid)
+
+    def __repr__(self):
+        return str(self.uid)    
 
 class TreeNode(object):
     """ 
@@ -28,6 +40,9 @@ class TreeNode(object):
 
 
 def sub_tree_gen(T, k, i, rand):
+    """
+        Uses .index() but runs fast for small k 
+    """    
     Ti = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node
@@ -75,6 +90,9 @@ def sub_tree_gen(T, k, i, rand):
 
 
 def SubTreeGen(T, k, i, rand):
+    """
+        Does NOT use index() and runs fast for large values of k 
+    """
     Ti = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node

@@ -126,12 +126,24 @@ def dfs_tree(tree, root):
             new_c = set(vertex.children) - visited
             num_children = 0
             for c in new_c:
-                if vertex.cc == c.cc:  # same component
-                    c.height = vertex.height + 1
-                    num_children += 1
+                c.height = vertex.height + 1
+                num_children += 1
             if num_children > width:
                 width = num_children
             if vertex.height > height:
                 height = vertex.height            
             stack.extend(new_c)
+    return width, height
+
+def dfs_forest(forest):
+    """
+        Goes through a forest using DFS, and compute max children, its depth, and the level of each node 
+    """
+    width, height = float("-inf"), float("-inf")
+    for tree in forest.ctree:
+        w , h = dfs_tree(tree, tree[0])
+        if w > width:
+            width = w
+        if h > height:
+            height = h
     return width, height
