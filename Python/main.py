@@ -30,7 +30,7 @@ def chordal_generation(n, k, rand, pl=None):
 
     # this is only for visual purposes
     # t_nx_tree = Now()
-    # nx_tree = convert_tree_networkx(tree)
+    nx_tree = convert_tree_networkx(tree)
     # t_nx_tree = Now() - t_nx_tree
     # print("t_nx_tree:       ", t_nx_tree)
 
@@ -75,11 +75,9 @@ def chordal_generation(n, k, rand, pl=None):
     # print("Running time overhead over CC:                   ", total_run /
     # t_cc)
 
-    # nx_export_json([nx_tree, nx_chordal, nx_true_chordal])
-    # t_nx_export = Now()
-    # nx_export_json([nx_tree, nx_chordal])
-    # t_nx_export = Now() - t_nx_export
-    # print("t_nx_export:     ", t_nx_export)
+    nx_ctrees = [convert_tree_networkx(tree) for tree in final_cforest.ctree]
+    nx_ctrees.insert(0, nx_tree)
+    nx_export_json(nx_ctrees)
 
     # return subtrees
 
@@ -150,8 +148,8 @@ if __name__ == '__main__':
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
     # range(10))
 
-    num_of_vertices = 1000
-    parameter_k = 10
+    num_of_vertices = 20
+    parameter_k = 5
 
     # initialize 10M random floats
     for i in range(4, 5):
