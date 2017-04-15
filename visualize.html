@@ -109,7 +109,7 @@
             datanodes.forEach(function(d) {
                 d.y = d.depth * 70
                 d.y += 50;
-                d.x = d.x * (width / (count + 1));
+                d.x = center[0] + d.x * (width / (count + 1));
                 d.id = d.data.id;
             });
         } else {
