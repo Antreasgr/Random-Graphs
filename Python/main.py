@@ -25,7 +25,8 @@ def chordal_generation(n, k, rand, pl=None):
         for node in tree:
             node.s = 0
         for i in range(0, n):
-            sub_tree_gen(tree, k, i, rand)
+            #sub_tree_gen(tree, k, i, rand)
+            SubTreeGen(tree, k, i, rand)
 
     # this is only for visual purposes
     # t_nx_tree = Now()
@@ -38,9 +39,13 @@ def chordal_generation(n, k, rand, pl=None):
         nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n)
 
     # check dfs running time:
-    v_dfs = rand.Rstate.choice(nx_chordal.nodes())
+ #   v_dfs = rand.Rstate.choice(nx_chordal.nodes())
     with Timer("t_dfsnx") as t_dfsnx:
-        dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+        cc = nx.connected_components(nx_chordal)
+        for c in cc: 
+            v_dfs = next(iter(c))
+            dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+        # dfstree = nx.dfs_tree(nx_chordal, v_dfs)
 
     # check con.comp. running time:
     with Timer("t_cc") as t_cc:
@@ -49,6 +54,8 @@ def chordal_generation(n, k, rand, pl=None):
     t_total = t_real_tree.elapsed + t_subtrees_2.elapsed + t_ctree.elapsed
     print("----------- Stats: -----------------------")
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
+    ratio = float(str(t_total)) / float(str(t_dfsnx.elapsed))
+    print('{0:20} ==> {1:.15f}'.format("ratio[total/dfs]", ratio))
 
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("k", k))
@@ -143,8 +150,8 @@ if __name__ == '__main__':
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
     # range(10))
 
-    num_of_vertices = 20
-    parameter_k = 2
+    num_of_vertices = 1000
+    parameter_k = 100
 
     # initialize 10M random floats
     for i in range(4, 5):
@@ -153,3 +160,16 @@ if __name__ == '__main__':
 
     print(".....Done")
     # plter.show()
+
+    """
+        Todo:
+        - clean the code
+        - Randomizer(): we should keep it with linear parameter
+                        what happens for small/large parameter? 
+                        does it affect on the quality of the random graph ?
+        - SubTreeGen() and sub_tree_gen():
+            what is the practical difference?
+            when we should the one against the other?
+    """
+
+    

@@ -47,7 +47,7 @@ class Randomizer(object):
     def next_random(self, low, high):
         self.local_index += 1
         if self.local_index >= self.size:
-            print("Run out of random, reseting")
+          #  print("Run out of random, reseting")
             self.local_index = 0
 
         return int(self.np_random[self.local_index] * (high - low) + low)
