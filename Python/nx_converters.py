@@ -47,17 +47,21 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
             parent = parent_queue.popleft()
-            newnode.parent = parent
-            parent.children.append(newnode)
-            newnode.cc = parent.cc
             # here we need to be careful:
             # "parent" now may be a subset of "newnode"
-            # can this happen if "parent" has > 1 child ?
-            # if not, we can deal with such case...
-            for c in clique.children:
-                parent_queue.append(newnode)
-            ctree = forest.ctree[newnode.cc]    
-            ctree.append(newnode) # ??
+            if len(newnode.cliqueList) >= len(parent.cliqueList) and is_subset(newnode.cliqueList, parent.cliqueList):
+                # we have to kill "parent" and replace it by "newnode"
+                # insted, we replace parent.cliqueList by newnode.cliqueList and update appropriately
+                parent.cliqueList = newnode.cliqueList
+
+            else:       
+                newnode.parent = parent
+                parent.children.append(newnode)
+                newnode.cc = parent.cc
+                for c in clique.children:
+                    parent_queue.append(newnode)
+                ctree = forest.ctree[newnode.cc]    
+                ctree.append(newnode)
         if is_valid_clique == "newcc": 
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
@@ -98,7 +102,7 @@ def convert_markenzon_clique_tree_networkx2(clique_tree, num_vertices):
     return graph
 
 
-def add_clique_networx(graph, node, seen):
+def add_clique_networx(graph, node, seen, add=True):
     """
         Add edges to "graph" depending on the Old and New nodes from the list of already "seen" nodes. 
         Returns "valid" if N != [] and O != []
@@ -114,12 +118,13 @@ def add_clique_networx(graph, node, seen):
         else:
             O.append(c)
     if len(N):
-        for i in range(len(N)):
-            for j in range(i + 1, len(N)):
-                graph.add_edge(N[i], N[j])
+        if add:
+            for i in range(len(N)):
+                for j in range(i + 1, len(N)):
+                    graph.add_edge(N[i], N[j])
 
-            for node2 in O:
-                graph.add_edge(N[i], node2)
+                for node2 in O:
+                    graph.add_edge(N[i], node2)
         if len(O):
             return "valid"
         else:
