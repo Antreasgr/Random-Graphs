@@ -4,6 +4,7 @@ import io
 import json
 from collections import deque
 from subtrees import *
+from clique_tree import *
 import numpy
 import sys
 
@@ -51,9 +52,10 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
             # "parent" now may be a subset of "newnode"
             if len(newnode.cliqueList) >= len(parent.cliqueList) and is_subset(newnode.cliqueList, parent.cliqueList):
                 # we have to kill "parent" and replace it by "newnode"
-                # insted, we replace parent.cliqueList by newnode.cliqueList and update appropriately
+                # instead, we replace parent.cliqueList by newnode.cliqueList and update appropriately
                 parent.cliqueList = newnode.cliqueList
-
+                for c in clique.children:
+                    parent_queue.append(parent) # appendleft ?
             else:       
                 newnode.parent = parent
                 parent.children.append(newnode)

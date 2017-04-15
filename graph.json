@@ -168,28 +168,20 @@
         },
         "nodes": [
             {
-                "clique_list": "[11]",
-                "id": 1
-            },
-            {
                 "clique_list": "[1, 2, 5, 9, 11, 15, 17, 19]",
-                "id": 2
+                "id": 1
             },
             {
                 "clique_list": "[1, 2, 7, 8, 11, 13, 14, 19]",
                 "id": 3
             },
             {
-                "clique_list": "[3, 4, 5, 9, 11, 15, 17]",
+                "clique_list": "[3, 4, 5, 9, 10, 11, 15, 16, 17]",
                 "id": 11
             },
             {
                 "clique_list": "[0, 1]",
                 "id": 12
-            },
-            {
-                "clique_list": "[3, 4, 5, 9, 10, 11, 15, 16, 17]",
-                "id": 16
             }
         ],
         "links": [
@@ -198,20 +190,12 @@
                 "target": 1
             },
             {
-                "source": 1,
+                "source": 0,
                 "target": 2
             },
             {
-                "source": 1,
+                "source": 0,
                 "target": 3
-            },
-            {
-                "source": 1,
-                "target": 4
-            },
-            {
-                "source": 3,
-                "target": 5
             }
         ]
     },
