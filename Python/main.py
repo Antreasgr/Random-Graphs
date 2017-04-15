@@ -151,7 +151,7 @@ if __name__ == '__main__':
     # range(10))
 
     num_of_vertices = 1000
-    parameter_k = 100
+    parameter_k = 10
 
     # initialize 10M random floats
     for i in range(4, 5):
@@ -166,10 +166,11 @@ if __name__ == '__main__':
         - clean the code
         - Randomizer(): we should keep it with linear parameter
                         what happens for small/large parameter? 
-                        does it affect on the quality of the random graph ?
+                        does it affect on the quality of the random graph?
+                        does it affect on the running time?
         - SubTreeGen() and sub_tree_gen():
             what is the practical difference?
-            when we should the one against the other?
+            when we should use the one against the other?
     """
 
     
