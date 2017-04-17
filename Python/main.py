@@ -51,11 +51,24 @@ def chordal_generation(n, k, rand, pl=None):
     with Timer("t_cc") as t_cc:
         ncc = nx.number_connected_components(nx_chordal)
 
+    with Timer("t_chordal") as t_chordal:
+        graph_chordal = nx.is_chordal(nx_chordal)
+
+    with Timer("t_forestverify") as t_forestverify:    
+        tree_cliqueforest = is_cliqueforest(final_cforest,nx_chordal)
+
+    print("----------- Verify: ---------------------")    
+    print("is_chordal:      ", graph_chordal)
+    print("clique forest:   ", tree_cliqueforest)
+#    print('{0:20} ==> {1:.15f}'.format("t_verify", t_verify))
+
     t_total = t_real_tree.elapsed + t_subtrees_2.elapsed + t_ctree.elapsed
     print("----------- Stats: -----------------------")
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
-    ratio = float(str(t_total)) / float(str(t_dfsnx.elapsed))
-    print('{0:20} ==> {1:.15f}'.format("ratio[total/dfs]", ratio))
+    ratiodfs = float(str(t_total)) / float(str(t_dfsnx.elapsed))
+    print('{0:20} ==> {1:.15f}'.format("ratio[total/dfs]", ratiodfs))
+    ratiochordal = float(str(t_total)) / float(str(t_chordal.elapsed))    
+    print('{0:20} ==> {1:.15f}'.format("ratio[total/chordal]", ratiochordal))
 
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("k", k))
@@ -148,8 +161,8 @@ if __name__ == '__main__':
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
     # range(10))
 
-    num_of_vertices = 20
-    parameter_k = 5
+    num_of_vertices = 100
+    parameter_k = 10
 
     # initialize 10M random floats
     for i in range(4, 5):

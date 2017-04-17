@@ -147,3 +147,62 @@ def dfs_forest(forest):
         if h > height:
             height = h
     return width, height
+
+def check_clique(vlist, graph):
+    for i in range(0, len(vlist)):
+        for j in range(i+1, len(vlist)):
+            if not graph.has_edge(vlist[i],vlist[j]):
+                return False
+    return True
+
+def common_notincluded(list1, list2):
+    if not list1:
+        return False
+    if not list2:
+        return False    
+    if len(list1)>len(list2):
+        l1,l2 = list1,list2
+    else:
+        l1,l2 = list2,list1
+    if is_subset(l1,l2):
+        return False    
+    return True
+
+def is_cliqueforest(forest, graph):
+    """
+        Checks whether forest is indeed a forest of clique trees:
+        1. cliqueList induce a clique in G
+        2. cliqueList is neither empty, nor subset or superset of each of its children         
+        3. the induced subtree Tv of each v in cliqueList must be connected
+    """
+    seen = [[] for v in graph.nodes()]
+    for tree in forest.ctree:
+        stack = [tree[0]]
+        while stack:
+            u = stack.pop()
+            # 1. cliqueList induce a clique in G 
+            a1 = check_clique(u.cliqueList, graph)
+            # 2. cliqueList is neither empty, nor subset or superset of each of its children         
+            a2 = True
+            for c in u.children:
+                a2 = a2 and common_notincluded(u.cliqueList,c.cliqueList)
+            # 3. the induced subtree Tv of each v in cliqueList must be connected                
+            a3 = True    
+            for v in u.cliqueList:
+                if len(seen[v]):
+                    i = 0
+                    connected = False                    
+                    while not connected and i < len(seen[v]): 
+                        utree = seen[v][i]
+                        if u in utree.children or utree in u.children:
+                            connected = True
+                        i += 1 
+                else:
+                    connected = True           
+                seen[v].append(u)
+                a3 = a3 and connected    
+            if not (a1 and a2 and a3):
+                # print(a1,a2,a3)
+                return False
+            stack.extend(u.children)    
+    return True     
