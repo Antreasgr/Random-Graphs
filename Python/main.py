@@ -52,7 +52,7 @@ def chordal_generation(n, k, rand, pl=None):
         ncc = nx.number_connected_components(nx_chordal)
 
     with Timer("t_chordal") as t_chordal:
-        graph_chordal = nx.is_chordal(nx_chordal)
+        graph_chordal = Chordal(nx_chordal)
 
     with Timer("t_forestverify") as t_forestverify:    
         tree_cliqueforest = is_cliqueforest(final_cforest,nx_chordal)
@@ -161,8 +161,8 @@ if __name__ == '__main__':
     # Parallel(n_jobs=4)(delayed(ChordalGen)(500, 47, plotter) for i in
     # range(10))
 
-    num_of_vertices = 100
-    parameter_k = 10
+    num_of_vertices = 1000
+    parameter_k = 100
 
     # initialize 10M random floats
     for i in range(4, 5):
