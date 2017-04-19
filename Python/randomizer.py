@@ -34,6 +34,7 @@ class Randomizer(object):
     def __init__(self, size, seed=None):
         self.size = size
         self.local_index = 0
+        self.Seed = seed
         self.Rstate = RandomState(seed)
         self.np_random = self.Rstate.random_sample(size)
 
@@ -51,3 +52,4 @@ class Randomizer(object):
             self.local_index = 0
 
         return int(self.np_random[self.local_index] * (high - low) + low)
+

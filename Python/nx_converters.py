@@ -38,7 +38,6 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
 
     queue = deque([clique_tree[0]])
     forest = cForest(0)
-    helper = {}
     parent_queue = deque([clique_tree[0]])
     while queue:
         clique = queue.popleft()
@@ -52,38 +51,39 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
             # "parent" now may be a subset of "newnode"
             if len(newnode.cliqueList) >= len(parent.cliqueList) and is_subset(newnode.cliqueList, parent.cliqueList):
                 # we have to kill "parent" and replace it by "newnode"
-                # instead, we replace parent.cliqueList by newnode.cliqueList and update appropriately
+                # instead, we replace parent.cliqueList by newnode.cliqueList
+                # and update appropriately
                 parent.cliqueList = newnode.cliqueList
                 for c in clique.children:
-                    parent_queue.append(parent) # appendleft ?
-            else:       
+                    parent_queue.append(parent)  # appendleft ?
+            else:
                 newnode.parent = parent
                 parent.children.append(newnode)
                 newnode.cc = parent.cc
                 for c in clique.children:
                     parent_queue.append(newnode)
-                ctree = forest.ctree[newnode.cc]    
+                ctree = forest.ctree[newnode.cc]
                 ctree.append(newnode)
-        if is_valid_clique == "newcc": 
+        if is_valid_clique == "newcc":
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList
             parent = parent_queue.popleft()
             newnode.parent = newnode
-            newnode.cc = len(forest.ctree) # parent.cc + 1
+            newnode.cc = len(forest.ctree)  # parent.cc + 1
             ctree = []
             ctree.append(newnode)
             forest.ctree.append(ctree)
             for c in clique.children:
                 parent_queue.append(newnode)
            # forest.ctree.append(newnode)
-        if is_valid_clique == "empty": 
+        if is_valid_clique == "empty":
             parent = parent_queue.popleft()
             for c in clique.children:
                 parent_queue.append(c)
-        if is_valid_clique == "dummy": 
+        if is_valid_clique == "dummy":
             parent = parent_queue.popleft()
             for c in clique.children:
-                parent_queue.append(parent)                
+                parent_queue.append(parent)
 
     return graph, forest
 
@@ -111,7 +111,7 @@ def add_clique_networx(graph, node, seen, add=True):
         Returns "newcc" if N != [] and O = []
         Returns "dummy" if N = [] and O != []
         Returns "empty" if N = [] and O = []                        
-    """    
+    """
     O, N = [], []
     for c in node:
         if seen[c] == False:

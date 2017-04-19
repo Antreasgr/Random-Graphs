@@ -2,6 +2,7 @@ from subtrees import *
 import unittest
 from LexBFS import LexBFS
 
+
 def truecliqueListGenChordal(graph, subtrees):
     """
         Converts the output of the sub-tree generation algorithm to clique_tree
@@ -132,9 +133,10 @@ def dfs_tree(tree, root):
             if num_children > width:
                 width = num_children
             if vertex.height > height:
-                height = vertex.height            
+                height = vertex.height
             stack.extend(new_c)
     return width, height
+
 
 def dfs_forest(forest):
     """
@@ -142,32 +144,35 @@ def dfs_forest(forest):
     """
     width, height = float("-inf"), float("-inf")
     for tree in forest.ctree:
-        w , h = dfs_tree(tree, tree[0])
+        w, h = dfs_tree(tree, tree[0])
         if w > width:
             width = w
         if h > height:
             height = h
     return width, height
 
+
 def check_clique(vlist, graph):
     for i in range(0, len(vlist)):
-        for j in range(i+1, len(vlist)):
-            if not graph.has_edge(vlist[i],vlist[j]):
+        for j in range(i + 1, len(vlist)):
+            if not graph.has_edge(vlist[i], vlist[j]):
                 return False
     return True
+
 
 def common_notincluded(list1, list2):
     if not list1:
         return False
     if not list2:
-        return False    
-    if len(list1)>len(list2):
-        l1,l2 = list1,list2
+        return False
+    if len(list1) > len(list2):
+        l1, l2 = list1, list2
     else:
-        l1,l2 = list2,list1
-    if is_subset(l1,l2):
-        return False    
+        l1, l2 = list2, list1
+    if is_subset(l1, l2):
+        return False
     return True
+
 
 def is_cliqueforest(forest, graph):
     """
@@ -181,32 +186,35 @@ def is_cliqueforest(forest, graph):
         stack = [tree[0]]
         while stack:
             u = stack.pop()
-            # 1. cliqueList induce a clique in G 
+            # 1. cliqueList induce a clique in G
             a1 = check_clique(u.cliqueList, graph)
-            # 2. cliqueList is neither empty, nor subset or superset of each of its children         
+            # 2. cliqueList is neither empty, nor subset or superset of each of
+            # its children
             a2 = True
             for c in u.children:
-                a2 = a2 and common_notincluded(u.cliqueList,c.cliqueList)
-            # 3. the induced subtree Tv of each v in cliqueList must be connected                
-            a3 = True    
+                a2 = a2 and common_notincluded(u.cliqueList, c.cliqueList)
+            # 3. the induced subtree Tv of each v in cliqueList must be
+            # connected
+            a3 = True
             for v in u.cliqueList:
                 if len(seen[v]):
                     i = 0
-                    connected = False                    
-                    while not connected and i < len(seen[v]): 
+                    connected = False
+                    while not connected and i < len(seen[v]):
                         utree = seen[v][i]
                         if u in utree.children or utree in u.children:
                             connected = True
-                        i += 1 
+                        i += 1
                 else:
-                    connected = True           
+                    connected = True
                 seen[v].append(u)
-                a3 = a3 and connected    
+                a3 = a3 and connected
             if not (a1 and a2 and a3):
                 # print(a1,a2,a3)
                 return False
-            stack.extend(u.children)    
-    return True     
+            stack.extend(u.children)
+    return True
+
 
 def PerfectEliminationOrdering(G):
     """Return a perfect elimination ordering, or raise an exception if not chordal.
@@ -217,7 +225,7 @@ def PerfectEliminationOrdering(G):
     """
     alreadyProcessed = set()
     B = list(LexBFS(G))
-    position = {B[i]:i for i in range(len(B))}
+    position = {B[i]: i for i in range(len(B))}
     leftNeighbors = {}
     parent = {}
     for v in B:
@@ -226,9 +234,11 @@ def PerfectEliminationOrdering(G):
         if leftNeighbors[v]:
             parent[v] = B[max([position[w] for w in leftNeighbors[v]])]
             if not leftNeighbors[v] - {parent[v]} <= leftNeighbors[parent[v]]:
-                raise ValueError("Input to PerfectEliminationOrdering is not chordal")
+                raise ValueError(
+                    "Input to PerfectEliminationOrdering is not chordal")
     B.reverse()
     return B
+
 
 def Chordal(G):
     """Test if a given graph is chordal."""

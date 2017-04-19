@@ -149,13 +149,6 @@ def SubTreeGen(T, k, i, rand):
         y.s += 1
         z.s += 1  # or z.s = 1
 
-        # update every neighbour of z that z is now in Ti, y is among them
-        # TODO: not needed (?)
-#        for node in z.Ax:
-#            ni = node.Ax.index(z)
-#            node.Ax[node.s], node.Ax[ni] = node.Ax[ni], node.Ax[node.s]
-#            node.s += 1
-
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
         if y.s > len(y.Ax) - 1:
@@ -169,13 +162,6 @@ def SubTreeGen(T, k, i, rand):
             Ti[sy], Ti[len(Ti) - 1] = Ti[len(Ti) - 1], Ti[sy]
             sy += 1
 
-        # check if leaf i.e. has degree 1, then it cannot be selected any more
-        # TODO: is it needed? (i guess not needed....)
-        # OR: perhaps this is only needed and the two previous cases are not needed...
- #       if len(z.Ax) == 1:
- #           if sy != len(Ti) - 1:
- #               Ti[sy], Ti[zi] = Ti[zi], Ti[sy] # why "-1" ?
- #           sy += 1
 
     for node in Ti:
         node.s = 0
