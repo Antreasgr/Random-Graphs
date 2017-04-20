@@ -12,7 +12,7 @@ import statistics
 # import plotter
 
 
-def chordal_generation(n, k, rand, version=0):
+def chordal_generation(n, k, rand, version="index"):
     """
         Generate a random chordal graph with n vertices, k is the algorithm parameter
     """
@@ -33,10 +33,12 @@ def chordal_generation(n, k, rand, version=0):
         for node in tree:
             node.s = 0
         for subtree_index in range(0, n):
-            if version == 0:
+            if version == "index":
                 sub_tree_gen(tree, k, subtree_index, rand)
-            else:
+            elif version == "Rx":
                 SubTreeGen(tree, k, subtree_index, rand)
+            else:
+                sub_tree_gen_new(tree, k, subtree_index, rand)
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree") as t_ctree:
@@ -118,23 +120,26 @@ def tree_generation(n, rand):
     """
     tree = [TreeNode(0)]
     for uid in range(0, n - 1):
-        selection, _ = rand.next_element(tree)
+        parent, _ = rand.next_element(tree)
         newnode = TreeNode(uid + 1)
 
         # update the adjacency lists
-        newnode.Ax.append(selection)
-        selection.Ax.append(newnode)
+        newnode.Ax.append(parent)
+        parent.Ax.append(newnode)
 
         # also make: x.Ax[i] = y
         #            x.Rx[i] = length(y.Ax) so that
         # if x.Ax[i] = y then
         #    y.Ax[x.Rx[i]] = x
-        newnode.Rx.append(len(selection.Ax) - 1)
-        selection.Rx.append(len(newnode.Ax) - 1)
+        newnode.Rx.append(len(parent.Ax) - 1)
+        parent.Rx.append(len(newnode.Ax) - 1)
+
+        parent.Dx[newnode] = len(parent.Ax) - 1
+        newnode.Dx[parent] = len(newnode.Ax) - 1
 
         # update helper, children list, parent pointer
-        selection.children.append(newnode)
-        newnode.parent = selection
+        parent.children.append(newnode)
+        newnode.parent = parent
 
         # append to tree
         tree.append(newnode)
@@ -144,13 +149,17 @@ def tree_generation(n, rand):
 
 if __name__ == '__main__':
     num_of_vertices = 1000
-    parameter_k = 300
+    parameter_k = 400
 
-    for i in range(165, 166):
+    for i in range(100, 101):
         randomizer = Randomizer(2 * num_of_vertices, i)
+        trees3 = chordal_generation(
+            num_of_vertices, parameter_k, randomizer, version="Dx")
+        randomizer.local_index = 0
         trees1 = chordal_generation(num_of_vertices, parameter_k, randomizer)
         randomizer.local_index = 0
-        trees2 = chordal_generation(num_of_vertices, parameter_k, randomizer, version=1)
+        # trees2 = chordal_generation(num_of_vertices, parameter_k, randomizer, version="Rx")
+        # randomizer.local_index = 0
 
     # nx_export_json(trees1 + trees2)
 

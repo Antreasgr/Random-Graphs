@@ -1,9 +1,10 @@
 from randomizer import *
 
-class cForest(object):
-    __slots__ = ('uid','ctree')
 
-    def __init__(self,uid):
+class cForest(object):
+    __slots__ = ('uid', 'ctree')
+
+    def __init__(self, uid):
         self.uid = uid
         self.ctree = []
 
@@ -11,18 +12,20 @@ class cForest(object):
         return str(self.uid)
 
     def __repr__(self):
-        return str(self.uid)    
+        return str(self.uid)
+
 
 class TreeNode(object):
-    """ 
-        A class representing a tree node 
     """
-    __slots__ = ('uid', 'Ax', 'Rx', 'cliqueList',
+        A class representing a tree node
+    """
+    __slots__ = ('uid', 'Ax', 'Rx', 'Dx', 'cliqueList',
                  'children', 'parent', 'marked', 'height', 'cc', 's')
 
     def __init__(self, uid):
         self.uid = uid
         self.Ax = []
+        self.Dx = {}
         self.Rx = []
         self.cliqueList = []
         # helper attributes for tree form
@@ -41,8 +44,8 @@ class TreeNode(object):
 
 def sub_tree_gen(T, k, i, rand):
     """
-        Uses .index() but runs fast for small k 
-    """    
+        Uses .index() but runs fast for small k
+    """
     Ti = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node
@@ -89,9 +92,72 @@ def sub_tree_gen(T, k, i, rand):
     return Ti
 
 
+def sub_tree_gen_new(T, k, i, rand):
+    """
+        Uses .index() but runs fast for small k
+    """
+    Ti = [rand.next_element(T, 0)[0]]
+
+    # the Ti tree contains this node
+    Ti[0].cliqueList.append(i)
+
+    if k <= 1:
+        return Ti
+
+    k_i = rand.next_random(1, 2 * k - 1)
+    sy = 0
+    for j in range(1, k_i):
+        # after sy we have nodes with neighbors outside
+        y, yi = rand.next_element(Ti, sy)
+        # after y.s in y.Ax there is a neighbor of y outside
+        z, zi = rand.next_element(y.Ax, y.s)
+
+        # add z to Ti
+        Ti.append(z)
+        z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
+
+        # fix y.Ax
+        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
+        y.Dx[z] = y.s
+        y.Dx[y.Ax[zi]] = zi
+
+        if not y.Ax[y.Dx[z]] == z:
+            print("error in y.Dx 2")
+        y.s += 1
+
+        # now fix z
+        yzi = z.Dx[y]  # z.Ax.index(y)
+        if not z.Ax[z.Dx[y]] == y:
+            print("error in z.Dx 1")
+
+        z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+
+        z.Dx[y] = z.s
+        z.Dx[z.Ax[yzi]] = yzi
+
+        if not z.Ax[z.Dx[y]] == y:
+            print("error in z.Dx 2")
+        z.s += 1
+
+        # if degree of y equals the seperation index on adjacency list, y
+        # cannot be selected any more
+        if y.s > len(y.Ax) - 1:
+            Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
+            sy += 1
+
+        if len(z.Ax) == 1:
+            Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
+            sy += 1
+
+    for node in Ti:
+        node.s = 0
+
+    return Ti
+
+
 def SubTreeGen(T, k, i, rand):
     """
-        Does NOT use index() and runs fast for large values of k 
+        Does NOT use index() and runs fast for large values of k
     """
     Ti = [rand.next_element(T, 0)[0]]
 
@@ -152,16 +218,13 @@ def SubTreeGen(T, k, i, rand):
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
         if y.s > len(y.Ax) - 1:
-            #            if sy != yi:
             Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
             sy += 1
 
         # do the same for z:
-        if z.s > len(z.Ax) - 1:
-            #            if sy != zi:
-            Ti[sy], Ti[len(Ti) - 1] = Ti[len(Ti) - 1], Ti[sy]
+        if len(z.Ax) == 1:
+            Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
             sy += 1
-
 
     for node in Ti:
         node.s = 0
