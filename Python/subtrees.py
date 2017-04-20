@@ -72,8 +72,9 @@ def sub_tree_gen(T, k, i, rand):
 
         # now fix z
         # this is the slow part
-        yzi = z.Ax.index(y)
-        z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+        if z.Ax[z.s] != y:
+            yzi = z.Ax.index(y)
+            z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
         z.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
@@ -91,9 +92,10 @@ def sub_tree_gen(T, k, i, rand):
 
     return Ti
 
+
 def sub_tree_gen_new(T, k, i, rand):
     """
-        Uses .index() but runs fast for small k
+        Uses .Dx
     """
     Ti = [rand.next_element(T, 0)[0]]
 
@@ -116,16 +118,18 @@ def sub_tree_gen_new(T, k, i, rand):
         z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
 
         # fix y.Ax
-        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
-        y.Dx[z] = y.s
-        y.Dx[y.Ax[zi]] = zi
+        if zi != y.s:
+            y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
+            y.Dx[z] = y.s
+            y.Dx[y.Ax[zi]] = zi
         y.s += 1
 
         # now fix z
         yzi = z.Dx[y]  # z.Ax.index(y)
-        z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
-        z.Dx[y] = z.s
-        z.Dx[z.Ax[yzi]] = yzi
+        if yzi != z.s:
+            z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+            z.Dx[y] = z.s
+            z.Dx[z.Ax[yzi]] = yzi
         z.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
