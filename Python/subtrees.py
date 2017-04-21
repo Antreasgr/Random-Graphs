@@ -42,7 +42,7 @@ class TreeNode(object):
         return str(self.uid)
 
 
-def sub_tree_gen(T, k, i, rand):
+def sub_tree_gen(T, k, i, rand, t_all):
     """
         Uses .index() but runs fast for small k
     """
@@ -52,7 +52,7 @@ def sub_tree_gen(T, k, i, rand):
     Ti[0].cliqueList.append(i)
 
     if k <= 1:
-        return Ti
+        return t_all #Ti
 
     k_i = rand.next_random(1, 2 * k - 1)
     sy = 0
@@ -73,7 +73,10 @@ def sub_tree_gen(T, k, i, rand):
         # now fix z
         # this is the slow part
         if z.Ax[z.s] != y:
+            t_start = Now()                    
             yzi = z.Ax.index(y)
+            t_start = Now()-t_start
+            t_all += t_start                 
             z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
         z.s += 1
 
@@ -90,10 +93,10 @@ def sub_tree_gen(T, k, i, rand):
     for node in Ti:
         node.s = 0
 
-    return Ti
+    return t_all #Ti
 
 
-def sub_tree_gen_new(T, k, i, rand):
+def sub_tree_gen_new(T, k, i, rand, t_all):
     """
         Uses .Dx
     """
@@ -103,7 +106,7 @@ def sub_tree_gen_new(T, k, i, rand):
     Ti[0].cliqueList.append(i)
 
     if k <= 1:
-        return Ti
+        return t_all #Ti
 
     k_i = rand.next_random(1, 2 * k - 1)
     sy = 0
@@ -124,8 +127,11 @@ def sub_tree_gen_new(T, k, i, rand):
             y.Dx[y.Ax[zi]] = zi
         y.s += 1
 
+        t_start = Now()
         # now fix z
         yzi = z.Dx[y]  # z.Ax.index(y)
+        t_start = Now()-t_start
+        t_all += t_start         
         if yzi != z.s:
             z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
             z.Dx[y] = z.s
@@ -145,7 +151,7 @@ def sub_tree_gen_new(T, k, i, rand):
     for node in Ti:
         node.s = 0
 
-    return Ti
+    return t_all #Ti
 
 
 def SubTreeGen(T, k, i, rand):

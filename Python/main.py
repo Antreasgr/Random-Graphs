@@ -32,26 +32,28 @@ def chordal_generation(n, k, rand, version="index"):
     with Timer("t_subtrees_2") as t_subtrees_2:
         for node in tree:
             node.s = 0
+        t_all1 = 0    
         for subtree_index in range(0, n):
             if version == "index":
-                sub_tree_gen(tree, k, subtree_index, rand)
+                t_all1 = sub_tree_gen(tree, k, subtree_index, rand, t_all1)
             elif version == "Rx":
-                SubTreeGen(tree, k, subtree_index, rand)
+                t_all1 = SubTreeGen(tree, k, subtree_index, rand, t_all1)
             else:
-                sub_tree_gen_new(tree, k, subtree_index, rand)
+                t_all1 = sub_tree_gen_new(tree, k, subtree_index, rand, t_all1)
+    print("t_all1: ", t_all1)                
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree") as t_ctree:
         nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n)
 
-    with Timer("t_dfsnx") as t_dfsnx:
-        cc = nx.connected_components(nx_chordal)
-        for c in cc:
-            v_dfs = next(iter(c))
-            dfstree = nx.dfs_tree(nx_chordal, v_dfs)
+    #with Timer("t_dfsnx") as t_dfsnx:
+    #    cc = nx.connected_components(nx_chordal)
+    #    for c in cc:
+    #        v_dfs = next(iter(c))
+    #        dfstree = nx.dfs_tree(nx_chordal, v_dfs)
 
-    with Timer("t_cc") as t_cc:
-        ncc = nx.number_connected_components(nx_chordal)
+    # with Timer("t_cc") as t_cc:
+    ncc = nx.number_connected_components(nx_chordal)
 
     with Timer("t_chordal") as t_chordal:
         graph_chordal = Chordal(nx_chordal)
@@ -65,11 +67,15 @@ def chordal_generation(n, k, rand, version="index"):
     print(" Stats ".center(50, "-"))
     t_total = t_real_tree.elapsed + t_subtrees_2.elapsed + t_ctree.elapsed
     print('{0:20} ==> {1:.15f}'.format("t_total", t_total))
-    ratiodfs = float(str(t_total)) / float(str(t_dfsnx.elapsed))
-    print('{0:20} ==> {1:.15f}'.format("ratio[total/dfs]", ratiodfs))
+    #ratiodfs = float(str(t_total)) / float(str(t_dfsnx.elapsed))
+    #print('{0:20} ==> {1:.15f}'.format("ratio[total/dfs]", ratiodfs))
     ratiochordal = float(str(t_total)) / float(str(t_chordal.elapsed))
     print('{0:20} ==> {1:.15f}'.format("ratio[total/chordal]", ratiochordal))
-
+    ratioforest = float(str(t_total)) / float(str(t_forestverify.elapsed))
+    print('{0:20} ==> {1:.15f}'.format("ratio[total/forest]", ratioforest))
+    ratioboth = float(str(t_total)) / (float(str(t_forestverify.elapsed))+float(str(t_chordal.elapsed)))
+    print('{0:20} ==> {1:.15f}'.format("ratio[total/[chordal+forest]]", ratioboth))
+    print(" ".center(50, "-"))
     print('{0:20} ==> {1:,d}'.format("nodes", len(nx_chordal.nodes())))
     print('{0:20} ==> {1:,d}'.format("k", k))
     print('{0:20} ==> {1:,d}'.format("edges", len(nx_chordal.edges())))
