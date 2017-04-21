@@ -72,12 +72,12 @@ def sub_tree_gen(T, k, i, rand, t_all):
 
         # now fix z
         # this is the slow part
-        if z.Ax[z.s] != y:
-            t_start = Now()                    
-            yzi = z.Ax.index(y)
-            t_start = Now()-t_start
-            t_all += t_start                 
-            z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+        # if z.Ax[z.s] != y:
+        t_start = Now()                    
+        yzi = z.Ax.index(y)
+        t_start = Now()-t_start
+        t_all += t_start                 
+        z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
         z.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
@@ -123,19 +123,24 @@ def sub_tree_gen_new(T, k, i, rand, t_all):
         # fix y.Ax
         if zi != y.s:
             y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
+            t_start = Now()                    
             y.Dx[z] = y.s
             y.Dx[y.Ax[zi]] = zi
+            t_start = Now()-t_start
+            t_all += t_start                                             
         y.s += 1
 
-        t_start = Now()
         # now fix z
-        yzi = z.Dx[y]  # z.Ax.index(y)
-        t_start = Now()-t_start
-        t_all += t_start         
-        if yzi != z.s:
+        # yzi = z.Dx[y]  # z.Ax.index(y)
+        if z.Ax[z.s] != y:        
+        # if yzi != z.s:
+            t_start = Now()        
+            yzi = z.Dx[y]  # z.Ax.index(y)        
             z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
             z.Dx[y] = z.s
             z.Dx[z.Ax[yzi]] = yzi
+            t_start = Now()-t_start
+            t_all += t_start                                 
         z.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
