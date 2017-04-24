@@ -1,7 +1,17 @@
-from randomizer import *
+from enum import Enum
 
+class AlgorithmVersion(Enum):
+    """
+        The available versions of the algorithm
+    """
+    Index = 0
+    Dict = 1
+    ReverseLookup = 2
 
 class cForest(object):
+    """
+        A class representing a clique forest
+    """
     __slots__ = ('uid', 'ctree')
 
     def __init__(self, uid):
@@ -42,124 +52,66 @@ class TreeNode(object):
         return str(self.uid)
 
 
-def sub_tree_gen(T, k, i, rand, t_all):
+def sub_tree_gen(T, k, i, rand, version=AlgorithmVersion.Index):
     """
-        Uses .index() but runs fast for small k
+        Generates a random subtree of a given tree
+        Uses .index() but runs fast for small k if version==None || "index"
+        else uses .Dx
     """
-    Ti = [rand.next_element(T, 0)[0]]
+    tree_i = [rand.next_element(T, 0)[0]]
 
     # the Ti tree contains this node
-    Ti[0].cliqueList.append(i)
+    tree_i[0].cliqueList.append(i)
 
     if k <= 1:
-        return t_all #Ti
+        return tree_i
 
     k_i = rand.next_random(1, 2 * k - 1)
-    sy = 0
-    for j in range(1, k_i):
+    s_y = 0
+    for _ in range(1, k_i):
         # after sy we have nodes with neighbors outside
-        y, yi = rand.next_element(Ti, sy)
+        y, yi = rand.next_element(tree_i, s_y)
         # after y.s in y.Ax there is a neighbor of y outside
         z, zi = rand.next_element(y.Ax, y.s)
 
         # add z to Ti
-        Ti.append(z)
-        z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
-
-        # fix y.Ax
-        y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
-        y.s += 1
-
-        # now fix z
-        # this is the slow part
-        if z.Ax[z.s] != y:
-            t_start = Now()                    
-            yzi = z.Ax.index(y)
-            t_start = Now()-t_start
-            t_all += t_start                 
-            z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
-        z.s += 1
-
-        # if degree of y equals the seperation index on adjacency list, y
-        # cannot be selected any more
-        if y.s > len(y.Ax) - 1:
-            Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
-            sy += 1
-
-        if len(z.Ax) == 1:
-            Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
-            sy += 1
-
-    for node in Ti:
-        node.s = 0
-
-    return t_all #Ti
-
-
-def sub_tree_gen_new(T, k, i, rand, t_all):
-    """
-        Uses .Dx
-    """
-    Ti = [rand.next_element(T, 0)[0]]
-
-    # the Ti tree contains this node
-    Ti[0].cliqueList.append(i)
-
-    if k <= 1:
-        return t_all #Ti
-
-    k_i = rand.next_random(1, 2 * k - 1)
-    sy = 0
-    for j in range(1, k_i):
-        # after sy we have nodes with neighbors outside
-        y, yi = rand.next_element(Ti, sy)
-        # after y.s in y.Ax there is a neighbor of y outside
-        z, zi = rand.next_element(y.Ax, y.s)
-
-        # add z to Ti
-        Ti.append(z)
+        tree_i.append(z)
         z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
 
         # fix y.Ax
         if zi != y.s:
             y.Ax[zi], y.Ax[y.s] = y.Ax[y.s], y.Ax[zi]
-            t_start = Now()                    
-            y.Dx[z] = y.s
-            y.Dx[y.Ax[zi]] = zi
-            t_start = Now()-t_start
-            t_all += t_start                                             
+            if version != AlgorithmVersion.Index:
+                y.Dx[z] = y.s
+                y.Dx[y.Ax[zi]] = zi
         y.s += 1
 
         # now fix z
-        # yzi = z.Dx[y]  # z.Ax.index(y)
-        if z.Ax[z.s] != y:        
-        # if yzi != z.s:
-            t_start = Now()        
-            yzi = z.Dx[y]  # z.Ax.index(y)        
-            t_start = Now()-t_start
-            t_all += t_start                                             
-            z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
-            t_start = Now()                    
-            z.Dx[y] = z.s
-            z.Dx[z.Ax[yzi]] = yzi
-            t_start = Now()-t_start
-            t_all += t_start                                 
+        if z.Ax[z.s] != y:
+            if version == AlgorithmVersion.Index:
+                yzi = z.Ax.index(y)
+                z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+            else:
+                yzi = z.Dx[y]
+                z.Ax[yzi], z.Ax[z.s] = z.Ax[z.s], z.Ax[yzi]
+                z.Dx[y] = z.s
+                z.Dx[z.Ax[yzi]] = yzi
         z.s += 1
 
         # if degree of y equals the seperation index on adjacency list, y
         # cannot be selected any more
         if y.s > len(y.Ax) - 1:
-            Ti[sy], Ti[yi] = Ti[yi], Ti[sy]
-            sy += 1
+            tree_i[s_y], tree_i[yi] = tree_i[yi], tree_i[s_y]
+            s_y += 1
 
         if len(z.Ax) == 1:
-            Ti[sy], Ti[-1] = Ti[-1], Ti[sy]
-            sy += 1
+            tree_i[s_y], tree_i[-1] = tree_i[-1], tree_i[s_y]
+            s_y += 1
 
-    for node in Ti:
+    for node in tree_i:
         node.s = 0
 
-    return t_all #Ti
+    return tree_i
 
 
 def SubTreeGen(T, k, i, rand):

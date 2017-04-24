@@ -8,11 +8,12 @@ Now = default_timer
 
 
 class Timer(object):
-    __slots__ = ["start", "end", "elapsed", "prefix", "output"]
+    __slots__ = ["start", "end", "elapsed", "prefix", "output", "outDict"]
 
-    def __init__(self, prefix=None, output=True):
+    def __init__(self, prefix=None, outDict=None, output=True):
         self.prefix = prefix
         self.output = output
+        self.outDict = outDict
         self.start = 0
         self.end = 0
         self.elapsed = 0
@@ -24,8 +25,11 @@ class Timer(object):
     def __exit__(self, *args):
         self.end = Now()
         self.elapsed = self.end - self.start
+        if self.outDict != None:
+            self.outDict[self.prefix] = self.elapsed
+
         if self.output:
-            print('{0:20} ==> {1:.15f}'.format(self.prefix, self.elapsed))
+            print('\t{0:20} {1:.15f}'.format(self.prefix + ":", self.elapsed))
             sys.stdout.flush()
 
 
