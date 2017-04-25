@@ -198,13 +198,12 @@ if __name__ == '__main__':
         chordal_generation(RUNNER2, randomizer)
         trees3 = post_process(RUNNER2)
 
+    print(".....Done")
     # RUNNER contains all data and statistics
     print_statistics(RUNNER)
     print_statistics(RUNNER2)
 
     # nx_export_json(trees1 + trees2)
-
-    print(".....Done")
 
     """
         Todo:
