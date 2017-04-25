@@ -1,13 +1,16 @@
 """
     Create a random chordal graph
 """
-from randomizer import *
-from clique_tree import *
-from subtrees import *
-from nx_converters import *
+import statistics
+
 import networkx as nx
 from numpy.random import RandomState
-import statistics
+
+from clique_tree import *
+from nx_converters import *
+from randomizer import *
+from subtrees import *
+
 # from joblib import Parallel, delayed
 # import plotter
 
@@ -23,12 +26,12 @@ def chordal_generation(run, rand):
     if 2 * k - 1 > n:
         raise Exception("chordal gen parameter k must be lower than n/2")
 
-    print("- Begin Run ")
-    print("\tParameters: ")
+    print("Begin Run ".center(70, "-"))
+    print("Parameters: ")
     print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format("n", "k", "seed", "version"))
     print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format(n, k, rand.Seed, version))
 
-    print("- Times: ")
+    print("Times: ".center(70, "-"))
     with Timer("t_real_tree", run["Times"]):
         tree = tree_generation(n, rand)
 
@@ -36,16 +39,11 @@ def chordal_generation(run, rand):
         for node in tree:
             node.s = 0
         for subtree_index in range(0, n):
-            if version == AlgorithmVersion.ReverseLookup:
-                SubTreeGen(tree, k, subtree_index, rand)
-            else:
-                sub_tree_gen(tree, k, subtree_index, rand, version)
+            sub_tree_gen(tree, k, subtree_index, rand, version)
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree", run["Times"]):
         nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n)
-
-    ncc = nx.number_connected_components(nx_chordal)
 
     with Timer("t_chordal", run["Times"]):
         graph_chordal = Chordal(nx_chordal)
@@ -56,54 +54,51 @@ def chordal_generation(run, rand):
     run["Output"]["tree"] = tree
     run["Output"]["nx_chordal"] = nx_chordal
     run["Output"]["final_cforest"] = final_cforest
-    run["Output"]["graph_chordal"] = graph_chordal
-    run["Output"]["ncc"] = ncc
-    run["Output"]["tree_cliqueforest"] = tree_cliqueforest
+    run["Verify"]["graph_chordal"] = graph_chordal
+    run["Verify"]["tree_cliqueforest"] = tree_cliqueforest
 
-    print("- End Run")
-    sys.stdout.flush()
+    print("End Run".center(70, "-"))
 
 
 def post_process(run):
     out = run["Output"]
+    stats = run["Stats"]
     times = run["Times"]
 
-    print("- Verify:")
-    print("\t is_chordal:      ", out["graph_chordal"])
-    print("\t clique forest:   ", out["tree_cliqueforest"])
-    print("- Stats:")
-    t_total = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
-    print('\t{0:20} {1:.15f}'.format("t_total:", t_total))
+    # get number of conected components
+    stats["ncc"] = nx.number_connected_components(out["nx_chordal"])
 
-    ratiochordal = t_total / float(times["t_chordal"])
-    ratioforest = t_total / float(times["t_forestverify"])
-    ratioboth = t_total / float(times["t_forestverify"] + times["t_chordal"])
+    # calculate time, and ratios
+    stats["t_total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
+    stats["ratio[total/chordal]"] = stats["t_total"] / float(times["t_chordal"])
+    stats["ratio[total/forest]"] = stats["t_total"] / float(times["t_forestverify"])
+    stats["ratio[total/[chordal+forest]]"] = stats["t_total"] / float(times["t_forestverify"] + times["t_chordal"])
 
-    print('\t{0:20} {1:.15f}'.format("ratio[total/chordal]:", ratiochordal))
-    print('\t{0:20} {1:.15f}'.format("ratio[total/forest]:", ratioforest))
-    print('\t{0:20} {1:.15f}'.format("ratio[total/[chordal+forest]]:", ratioboth))
+    # get output parameters
+    out["nodes"] = len(out["nx_chordal"].nodes())
+    out["edges"] = len(out["nx_chordal"].edges())
 
-    print("- Ouput:")
-    print('\t{0} {1:,d}'.format("nodes:", len(out["nx_chordal"].nodes())))
-    print('\t{0} {1:,d}'.format("edges:", len(out["nx_chordal"].edges())))
+    out["clique_trees"] = [{}, {}]
 
-    print('\t{0} {1:,d}'.format("cc:", out["ncc"]))
-    print('\t{0:20} {1:>10} {2:>10} {3:>10} {4:>10} {5:>10} {6:>10}'.format(
-        "clique tree:", "#", "min", "max", "average", "width", "height"))
     temp_forest = cForest(1)
     temp_forest.ctree.append(out["tree"])
-    print_clique_tree_statistics(temp_forest)
-    print_clique_tree_statistics(out["final_cforest"])
 
+    # calculate tree output parameters
+    calculate_clique_tree_statistics(temp_forest, out["clique_trees"][0])
+    calculate_clique_tree_statistics(out["final_cforest"], out["clique_trees"][1])
+
+    # convert clique forest to nx for export to json
     nx_ctrees = [convert_tree_networkx(tree) for tree in out["final_cforest"].ctree]
     nx_ctrees.insert(0, convert_tree_networkx(out["tree"]))
 
     return nx_ctrees
 
-def print_clique_tree_statistics(forest):
+    
+def calculate_clique_tree_statistics(forest, out):
     """
         Print statistics for a given clique tree
     """
+
     max_clique_size, min_clique_size, sum_clique_size, num_c = float(
         "-inf"), float("inf"), 0, 0
     for tree in forest.ctree:
@@ -118,30 +113,48 @@ def print_clique_tree_statistics(forest):
 
     width, height = dfs_forest(forest)
 
-    print('\t{0:20} {1:>10} {2:>10} {3:>10} {4:>10.3f} {5:>10} {6:>10}'.format(
-        "", num_c, min_clique_size, max_clique_size, avg_clique_size, width, height))
+    out["#"], out["min"], out["max"] = num_c, min_clique_size, max_clique_size
+    out["avg"], out["width"], out["height"] = avg_clique_size, width, height
+
+    return num_c, min_clique_size, max_clique_size, avg_clique_size, width, height
 
 
-def tree_generation(n, rand):
+def print_statistics(run):
+    """
+        Print all statistics in pretty format
+    """
+    s_all = {'parameters':{}, 'Times':{}, 'Verify':{}, 'Stats':{},
+             'Output': {"tree", "nx_chordal", "final_cforest"}}
+    for section in s_all:
+        print("- " + section + ":")
+        for sub in run[section]:
+            if sub not in s_all[section]:
+                if sub != "clique_trees":
+                    try:
+                        print('\t{0:30} {1!s:>20}'.format(sub + ":", run[section][sub]))
+                    except TypeError:
+                        pass
+                else:
+                    print('\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                          .format(sub, "#", "min", "max", "average", "width", "height"))
+                    for ctree in run[section][sub]:
+                        print('\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                              .format("", ctree["#"], ctree["min"], ctree["max"], ctree["avg"],
+                                      ctree["width"], ctree["height"]))
+
+def tree_generation(n_vert, rand):
     """
         Creates a random tree on n nodes
         and create the adjacency lists for each node
     """
     tree = [TreeNode(0)]
-    for uid in range(0, n - 1):
+    for uid in range(0, n_vert - 1):
         parent, _ = rand.next_element(tree)
         newnode = TreeNode(uid + 1)
 
         # update the adjacency lists
         newnode.Ax.append(parent)
         parent.Ax.append(newnode)
-
-        # also make: x.Ax[i] = y
-        #            x.Rx[i] = length(y.Ax) so that
-        # if x.Ax[i] = y then
-        #    y.Ax[x.Rx[i]] = x
-        newnode.Rx.append(len(parent.Ax) - 1)
-        parent.Rx.append(len(newnode.Ax) - 1)
 
         parent.Dx[newnode] = len(parent.Ax) - 1
         newnode.Dx[parent] = len(newnode.Ax) - 1
@@ -156,32 +169,38 @@ def tree_generation(n, rand):
     return tree
 
 
-if __name__ == '__main__':
-    num_of_vertices = 10
-    parameter_k = 4
+def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVersion.Index):
+    """
+        Creates a new runner object to initiliaze the algorithm
+    """
+    return {"parameters":
+            {"n": num_of_vertices, "k": parameter_k, "version": version, 'seed': seed},
+            'Times': {},
+            'Verify': {},
+            'Stats': {},
+            'Output':{}
+           }
 
-    RUNNER = {"parameters":
-                {
-                    "n": num_of_vertices, "k": parameter_k, "version": AlgorithmVersion.Index, 'seed': None 
-                },
-                'Times': {},
-                'Verify': {},
-                'Stats': {},
-                'Output':{}
-            }
+if __name__ == '__main__':
+    NUM_VERTICES = 10
+    PAR_K = 4
 
     for i in range(254, 255):
-        randomizer = Randomizer(2 * num_of_vertices, i)
+        randomizer = Randomizer(2 * NUM_VERTICES, i)
 
-        RUNNER["parameters"]["seed"] = i
-        RUNNER["parameters"]["version"] = AlgorithmVersion.Dict
+        RUNNER = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Dict)
         chordal_generation(RUNNER, randomizer)
         trees1 = post_process(RUNNER)
 
         randomizer.local_index = 0
-        RUNNER["parameters"]["version"] = AlgorithmVersion.Index
-        chordal_generation(RUNNER, randomizer)
-        trees3 = post_process(RUNNER)
+
+        RUNNER2 = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index)
+        chordal_generation(RUNNER2, randomizer)
+        trees3 = post_process(RUNNER2)
+
+    # RUNNER contains all data and statistics
+    print_statistics(RUNNER)
+    print_statistics(RUNNER2)
 
     # nx_export_json(trees1 + trees2)
 
