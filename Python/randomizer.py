@@ -49,6 +49,17 @@ class Randomizer(object):
         i = self.next_random(index, len(array))
         return array[i], i
 
+    def sample(self, population, k):
+        # An n-length list is smaller than a k-length set
+        n = len(population)
+        result = [None] * k
+        pool = list(population)
+        for i in range(k):         # invariant:  non-selected at [0,n-i)
+            j = self.next_random(0, n - i)
+            result[i] = pool[j]
+            pool[j] = pool[n - i - 1]   # move non-selected item into vacancy
+        return result
+
     def next_random(self, low, high):
         self.local_index += 1
         if self.local_index >= self.size:
@@ -56,4 +67,3 @@ class Randomizer(object):
             self.local_index = 0
 
         return int(self.np_random[self.local_index] * (high - low) + low)
-
