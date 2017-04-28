@@ -49,29 +49,29 @@ def merge_cliques(mParameters, upper_bound, rand):
         delta = mParameters.cardinality_array[i] - omega
         Delta = mParameters.cardinality_array[j] - omega
         if mParameters.num_edges + (delta * Delta) <= upper_bound:
-            dis_set.union(i, j)
-            mParameters.cliques[i] = mParameters.cliques[i] + mParameters.cliques[j]
+            dis_set.union(a, b)
+            mParameters.cliques[i].update(mParameters.cliques[j])
             mParameters.cardinality_array[i] = Delta + delta + omega
-            mParameters.cliques[j] = []
+            mParameters.cliques[j] = set()
             mParameters.cardinality_array[j] = 0
             mParameters.num_edges += Delta * delta
-    
+
 
 
 def expand_cliques(n, rand):
-    Q, S, L, m, l = [[0]], [0], [], 0, 0
+    Q, S, L, m, l = [set([0])], [1], [], 0, 0
     for u in range(1, n):
         i = rand.next_random(0, l + 1)
         t = rand.next_random(0, S[i] + 1)
         if t == S[i]:
             # expand old clique
-            Q[i].append(u)
+            Q[i].add(u)
             S[i] += 1
         else:
             # create new clique
             q_subset = rand.sample(Q[i], t)
             l += 1
-            Q.append([u] + q_subset)
+            Q.append(set([u] + q_subset))
             S.append(t + 1)
             if len(Q) != len(S) and len(Q) != l:
                 raise Exception("invalid l")
@@ -79,13 +79,13 @@ def expand_cliques(n, rand):
             L.append((i, l, t))
         m += t
 
-    return MarkenzonParameters(l, m, L, S, Q)
+    return MarkenzonParameters(l + 1, m, L, S, Q)
 
 
 if __name__ == '__main__':
     NUM_VERTICES = 15
 
-    randomizer = Randomizer(2 * NUM_VERTICES)
+    randomizer = Randomizer(2 * NUM_VERTICES, 4)
     cliques = expand_cliques(NUM_VERTICES, randomizer)
     print("- Expand cliques:")
     print("\t", cliques)
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     clique_edges = list(cliques.edges_list)
 
-    merge_cliques(cliques, 500, randomizer)
+    merge_cliques(cliques, 50, randomizer)
     print("- Merge cliques:")
     print("\t", cliques)
     # print(clique_edges)
