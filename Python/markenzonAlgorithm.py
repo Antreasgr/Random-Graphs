@@ -27,7 +27,7 @@ class MarkenzonParameters(object):
         self.cliques = Q
 
     def __str__(self):
-        return "#:{}\tedges:{}\tedges_list:{}\tcardinalities:{}\tcliques:{}".format(
+        return "\t#:{}\r\n\tedges:{}\r\n\tedges_list:{}\r\n\tcardinalities:{}\r\n\tcliques:{}".format(
             self.num_maximal_cliques, self.num_edges, self.edges_list, self.cardinality_array, self.cliques)
 
     def __repr__(self):
@@ -81,25 +81,32 @@ def expand_cliques(n, rand):
 
     return MarkenzonParameters(l + 1, m, L, S, Q)
 
-
-if __name__ == '__main__':
-    NUM_VERTICES = 15
-
+NUM_VERTICES = 15
+EDGES_BOUND = 50
+def main():
     randomizer = Randomizer(2 * NUM_VERTICES, 4)
-    cliques = expand_cliques(NUM_VERTICES, randomizer)
+    p_markenzon = expand_cliques(NUM_VERTICES, randomizer)
     print("- Expand cliques:")
-    print("\t", cliques)
+    print(p_markenzon)
     # keep a copy of clique tree edges L because merge_cliques is consuming it
 
-    clique_edges = list(cliques.edges_list)
+    clique_edges = list(p_markenzon.edges_list)
 
-    merge_cliques(cliques, 50, randomizer)
+    merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
+
+    # find clique tree edges
+    for edge in clique_edges:
+        if (p_markenzon.cardinality_array[edge[0]] > 0 and
+                p_markenzon.cardinality_array[edge[1]] > 0):
+            p_markenzon.edges_list.append(edge)
+
     print("- Merge cliques:")
-    print("\t", cliques)
-    # print(clique_edges)
-
-    nx_chordal = convert_markenzon_clique_tree_networkx2(cliques.cliques, NUM_VERTICES)
+    print(p_markenzon)
+    nx_chordal = convert_markenzon_clique_tree_networkx2(p_markenzon.cliques, NUM_VERTICES)
     print("- Stats:")
     print("\t nodes:", len(nx_chordal.nodes()))
     print("\t edges:", len(nx_chordal.edges()))
     nx_export_json([nx_chordal])
+
+if __name__ == '__main__':
+    main()
