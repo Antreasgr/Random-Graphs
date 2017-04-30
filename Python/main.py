@@ -2,6 +2,7 @@
     Create a random chordal graph
 """
 import statistics
+import os
 
 import networkx as nx
 from numpy.random import RandomState
@@ -10,6 +11,7 @@ from clique_tree import *
 from nx_converters import *
 from randomizer import *
 from subtrees import *
+from datetime import datetime
 
 # from joblib import Parallel, delayed
 # import plotter
@@ -119,28 +121,29 @@ def calculate_clique_tree_statistics(forest, out):
     return num_c, min_clique_size, max_clique_size, avg_clique_size, width, height
 
 
-def print_statistics(run):
+def print_statistics(run, file=sys.stdout):
     """
         Print all statistics in pretty format
     """
     s_all = {'parameters':{}, 'Times':{}, 'Verify':{}, 'Stats':{},
              'Output': {"tree", "nx_chordal", "final_cforest"}}
+    print("- Run:", file=file)
     for section in s_all:
-        print("- " + section + ":")
+        print("\t" + section + ":", file=file)
         for sub in run[section]:
             if sub not in s_all[section]:
                 if sub != "clique_trees":
                     try:
-                        print('\t{0:30} {1!s:>20}'.format(sub + ":", run[section][sub]))
+                        print('\t\t{0:30} {1!s:>20}'.format(sub + ":", run[section][sub]), file=file)
                     except TypeError:
                         pass
                 else:
-                    print('\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
-                          .format(sub, "#", "min", "max", "average", "width", "height"))
+                    print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                          .format(sub +":", "'#'", "min", "max", "average", "width", "height"), file=file)
                     for ctree in run[section][sub]:
-                        print('\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                        print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
                               .format("", ctree["#"], ctree["min"], ctree["max"], ctree["avg"],
-                                      ctree["width"], ctree["height"]))
+                                      ctree["width"], ctree["height"]), file=file)
 
 def tree_generation(n_vert, rand):
     """
@@ -200,8 +203,12 @@ if __name__ == '__main__':
 
     print(".....Done")
     # RUNNER contains all data and statistics
-    print_statistics(RUNNER)
-    print_statistics(RUNNER2)
+    filename = "Results/Run_{}_{}_{}.yml".format(NUM_VERTICES, PAR_K, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    with io.open(filename, 'w') as file:
+        print_statistics(RUNNER, file)
+        print_statistics(RUNNER2, file)
 
     # nx_export_json(trees1 + trees2)
 
