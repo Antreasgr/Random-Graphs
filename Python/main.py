@@ -13,6 +13,9 @@ from randomizer import *
 from subtrees import *
 from datetime import datetime
 
+import yaml
+from yaml import Loader, Dumper
+
 # from joblib import Parallel, delayed
 # import plotter
 
@@ -129,21 +132,29 @@ def print_statistics(run, file=sys.stdout):
              'Output': {"tree", "nx_chordal", "final_cforest"}}
     print("- Run:", file=file)
     for section in s_all:
-        print("\t" + section + ":", file=file)
+        print("  " + section + ":", file=file)
         for sub in run[section]:
             if sub not in s_all[section]:
                 if sub != "clique_trees":
                     try:
-                        print('\t\t{0:30} {1!s:>20}'.format(sub + ":", run[section][sub]), file=file)
+                        print('    {0:30} {1!s:>20}'.format(sub + ":", run[section][sub]), file=file)
                     except TypeError:
                         pass
                 else:
-                    print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
-                          .format(sub +":", "'#'", "min", "max", "average", "width", "height"), file=file)
                     for ctree in run[section][sub]:
-                        print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
-                              .format("", ctree["#"], ctree["min"], ctree["max"], ctree["avg"],
-                                      ctree["width"], ctree["height"]), file=file)
+                        print('    - ' + sub + ":", file=file)
+                        print('         num:', ctree["#"], file=file)
+                        print('         min:', ctree["min"], file=file)
+                        print('         max:', ctree["max"], file=file)
+                        print('         avg:', ctree["avg"], file=file)
+                        print('         width:', ctree["width"], file=file)
+                        print('         height:', ctree["height"], file=file)
+                    # print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                    #       .format(sub +":", "'#'", "min", "max", "average", "width", "height"), file=file)
+                    # for ctree in run[section][sub]:
+                    #     print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
+                    #           .format("", ctree["#"], ctree["min"], ctree["max"], ctree["avg"],
+                    #                   ctree["width"], ctree["height"]), file=file)
 
 def tree_generation(n_vert, rand):
     """
@@ -209,6 +220,11 @@ if __name__ == '__main__':
     with io.open(filename, 'w') as file:
         print_statistics(RUNNER, file)
         print_statistics(RUNNER2, file)
+
+    # # del RUNNER["Output"]
+    # # del RUNNER2["Output"]
+    # # with io.open("test.yml", 'w') as file:
+    # #     yaml.dump([RUNNER, RUNNER2], file, Dumper=Dumper)
 
     # nx_export_json(trees1 + trees2)
 
