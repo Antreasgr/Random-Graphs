@@ -56,9 +56,9 @@ def chordal_generation(run, rand):
     with Timer("t_forestverify", run["Times"]):
         tree_cliqueforest = is_cliqueforest(final_cforest, nx_chordal)
 
-    run["Output"]["tree"] = tree
-    run["Output"]["nx_chordal"] = nx_chordal
-    run["Output"]["final_cforest"] = final_cforest
+    run["Graphs"]["tree"] = tree
+    run["Graphs"]["nx_chordal"] = nx_chordal
+    run["Graphs"]["final_cforest"] = final_cforest
     run["Verify"]["graph_chordal"] = graph_chordal
     run["Verify"]["tree_cliqueforest"] = tree_cliqueforest
 
@@ -67,11 +67,12 @@ def chordal_generation(run, rand):
 
 def post_process(run):
     out = run["Output"]
+    graphs = run["Graphs"]
     stats = run["Stats"]
     times = run["Times"]
 
     # get number of conected components
-    stats["ncc"] = nx.number_connected_components(out["nx_chordal"])
+    stats["ncc"] = nx.number_connected_components(graphs["nx_chordal"])
 
     # calculate time, and ratios
     stats["t_total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
@@ -80,25 +81,25 @@ def post_process(run):
     stats["ratio[total/[chordal+forest]]"] = stats["t_total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
-    out["nodes"] = len(out["nx_chordal"].nodes())
-    out["edges"] = len(out["nx_chordal"].edges())
+    out["nodes"] = len(graphs["nx_chordal"].nodes())
+    out["edges"] = len(graphs["nx_chordal"].edges())
 
     out["clique_trees"] = [{}, {}]
 
     temp_forest = cForest(1)
-    temp_forest.ctree.append(out["tree"])
+    temp_forest.ctree.append(graphs["tree"])
 
     # calculate tree output parameters
     calculate_clique_tree_statistics(temp_forest, out["clique_trees"][0])
-    calculate_clique_tree_statistics(out["final_cforest"], out["clique_trees"][1])
+    calculate_clique_tree_statistics(graphs["final_cforest"], out["clique_trees"][1])
 
     # convert clique forest to nx for export to json
-    nx_ctrees = [convert_tree_networkx(tree) for tree in out["final_cforest"].ctree]
-    nx_ctrees.insert(0, convert_tree_networkx(out["tree"]))
+    nx_ctrees = [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
+    nx_ctrees.insert(0, convert_tree_networkx(graphs["tree"]))
 
     return nx_ctrees
 
-    
+
 def calculate_clique_tree_statistics(forest, out):
     """
         Print statistics for a given clique tree
@@ -149,12 +150,7 @@ def print_statistics(run, file=sys.stdout):
                         print('         avg:', ctree["avg"], file=file)
                         print('         width:', ctree["width"], file=file)
                         print('         height:', ctree["height"], file=file)
-                    # print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
-                    #       .format(sub +":", "'#'", "min", "max", "average", "width", "height"), file=file)
-                    # for ctree in run[section][sub]:
-                    #     print('\t\t{:30} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}'
-                    #           .format("", ctree["#"], ctree["min"], ctree["max"], ctree["avg"],
-                    #                   ctree["width"], ctree["height"]), file=file)
+                   
 
 def tree_generation(n_vert, rand):
     """
@@ -192,6 +188,7 @@ def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVer
             'Times': {},
             'Verify': {},
             'Stats': {},
+            'Graphs': {},
             'Output':{}
            }
 
