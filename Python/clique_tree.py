@@ -128,6 +128,13 @@ def dfs_tree(tree, root):
             new_c = set(vertex.children) - visited
             num_children = 0
             for c in new_c:
+                # weight = is_subset(c.cliqueList, vertex.cliqueList)
+                # if weight:
+                #     print(weight)
+                # else:
+                #     raise Exception("No sublist")
+
+
                 c.height = vertex.height + 1
                 num_children += 1
             if num_children > width:

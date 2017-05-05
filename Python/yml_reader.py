@@ -8,3 +8,4 @@ files = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.pa
 with open(files[0], 'r') as stream:
     data_loaded = yaml.load(stream, Loader=Loader)
 print(data_loaded)
+

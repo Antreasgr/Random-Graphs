@@ -119,7 +119,7 @@ def calculate_clique_tree_statistics(forest, out):
 
     width, height = dfs_forest(forest)
 
-    out["#"], out["min"], out["max"] = num_c, min_clique_size, max_clique_size
+    out["num"], out["min"], out["max"] = num_c, min_clique_size, max_clique_size
     out["avg"], out["width"], out["height"] = avg_clique_size, width, height
 
     return num_c, min_clique_size, max_clique_size, avg_clique_size, width, height
@@ -137,20 +137,17 @@ def print_statistics(run, file=sys.stdout):
         for sub in run[section]:
             if sub not in s_all[section]:
                 if sub != "clique_trees":
-                    try:
-                        print('    {0:30} {1!s:>20}'.format(sub + ":", run[section][sub]), file=file)
-                    except TypeError:
-                        pass
+                    value = run[section][sub]
+                    if isinstance(value, float):
+                        print('    {0:35} {1:>22.15f}'.format(sub + ":", value), file=file)
+                    else:
+                        print('    {0:35} {1!s:>22}'.format(sub + ":", value), file=file)
                 else:
                     for ctree in run[section][sub]:
                         print('    - ' + sub + ":", file=file)
-                        print('         num:', ctree["#"], file=file)
-                        print('         min:', ctree["min"], file=file)
-                        print('         max:', ctree["max"], file=file)
-                        print('         avg:', ctree["avg"], file=file)
-                        print('         width:', ctree["width"], file=file)
-                        print('         height:', ctree["height"], file=file)
-                   
+                        for c_value in ctree:
+                            print('         {0:30} {1!s:>22}'.format(c_value + ':', ctree[c_value]), file=file)
+                       
 
 def tree_generation(n_vert, rand):
     """
@@ -199,15 +196,10 @@ if __name__ == '__main__':
     for i in range(254, 255):
         randomizer = Randomizer(2 * NUM_VERTICES, i)
 
-        RUNNER = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Dict)
+        RUNNER = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index)
         chordal_generation(RUNNER, randomizer)
         trees1 = post_process(RUNNER)
 
-        randomizer.local_index = 0
-
-        RUNNER2 = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index)
-        chordal_generation(RUNNER2, randomizer)
-        trees3 = post_process(RUNNER2)
 
     print(".....Done")
     # RUNNER contains all data and statistics
@@ -216,14 +208,13 @@ if __name__ == '__main__':
 
     with io.open(filename, 'w') as file:
         print_statistics(RUNNER, file)
-        print_statistics(RUNNER2, file)
 
-    # # del RUNNER["Output"]
-    # # del RUNNER2["Output"]
-    # # with io.open("test.yml", 'w') as file:
-    # #     yaml.dump([RUNNER, RUNNER2], file, Dumper=Dumper)
+    # del RUNNER["Output"]
+    # del RUNNER2["Output"]
+    # with io.open("test.yml", 'w') as file:
+    #     yaml.dump([RUNNER], file, Dumper=Dumper)
 
-    # nx_export_json(trees1 + trees2)
+    nx_export_json(trees1 + [RUNNER["Graphs"]["nx_chordal"]])
 
     """
         Todo:
