@@ -106,9 +106,6 @@ def main():
     print("- Expand cliques:")
     print(p_markenzon)
 
-    # keep a copy of clique tree edges L because merge_cliques is consuming it
-    clique_edges = list(p_markenzon.edges_list)
-
     merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
 
     print("- Merge cliques:")
