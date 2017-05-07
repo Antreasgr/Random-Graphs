@@ -2,63 +2,22 @@ from subtrees import *
 import unittest
 from LexBFS import LexBFS
 
+class TreeStatistics(object):
+    __slots__ = ['num', 'min_size', 'max_size', 'sum_size',
+                 'avg_size', 'sum_weight', 'avg_weight',
+                 'num_edges', 'width', 'height']
 
-def truecliqueListGenChordal(graph, subtrees):
-    """
-        Converts the output of the sub-tree generation algorithm to clique_tree
-    """
-    final_graph = [TreeNode(n.uid) for n in graph]
-
-    for i in range(0, len(graph)):
-        for j in range(i + 1, len(graph)):
-            if not set(subtrees[i]).isdisjoint(subtrees[j]):
-                final_graph[i].Ax.append(final_graph[j])
-
-    return final_graph
-
-
-def cliqueListGenChordal(graph):
-    stack = []
-    for node in graph:
-        # find all leaf nodes
-        if len(node.children) == 0:
-            stack.append(node)
-
-    while len(stack) > 0:
-        node = stack.pop()
-        if node.parent != None:
-            if len(node.parent.cliqueList) >= len(node.cliqueList):
-                # next is this parent if not marked
-                if not node.parent.marked:
-                    stack.append(node.parent)
-                # check node.cliqueList is subset of node.parent.cliqueList
-                if is_subset(node.parent.cliqueList, node.cliqueList):
-                    for child in node.children:
-                        child.parent = node.parent
-                else:
-                    node.marked = True
-            else:
-                # check node.parent.cliqueList is subset of node.cliqueList
-                if is_subset(node.cliqueList, node.parent.cliqueList):
-                    # parent.parent could be None if node.parent is root
-                    p = node.parent.parent
-                    for child in node.parent.children:
-                        child.parent = p
-                    node.parent = p
-                    # node need rechecking with new parent
-                    stack.append(node)
-                else:
-                    node.marked = True
-                    # bug ??? why and when is this needed???
-                    if not node.parent.marked:
-                        stack.append(node.parent)
-        else:
-            node.marked = True
-
-    # TODO: maybe return new nodes and not reference
-    # to the originals, fix children arrays
-    clique_tree = [x for x in graph if x.marked]
-    return clique_tree
+    def __init__(self):
+        self.num = 0
+        self.min_size = float("inf")
+        self.max_size = float("-inf")
+        self.sum_size = 0
+        self.avg_size = 0
+        self.sum_weight = 0
+        self.avg_weight = 0
+        self.num_edges = 0
+        self.width = float("-inf")
+        self.height = float("-inf")
 
 
 def is_subset(list1, list2):
@@ -81,6 +40,22 @@ def is_subset(list1, list2):
 
     return True
 
+def common_values(list1, list2):
+    """
+        Returns the common values of two sorted arrays
+    """
+    i, j, common, len_a, len_b = 0, 0, 0, len(list1), len(list2)
+    while i < len_a and j < len_b:
+        if list1[i] > list2[j]:
+            j += 1
+        elif  list1[i] < list2[j]:
+            i += 1
+        else:
+            common += 1
+            i += 1
+            j += 1
+    return common
+
 
 def dfs(graph, root):
     """
@@ -94,69 +69,55 @@ def dfs(graph, root):
             stack.extend(set(vertex.Ax) - visited)
     return visited
 
-
-def dfs_list(graph, root):
-    """
-        Goes through a graph using DFS,using lists(should be faster)
-    """
-    for node in graph:
-        node.dfs_visited = False
-
-    visited, stack = [], [root]
-    while stack:
-        vertex = stack.pop()
-        if not vertex.dfs_visited:
-            visited.append(vertex)
-            vertex.dfs_visited = True
-            stack.extend(
-                (neighbour for neighbour in vertex.Ax if not neighbour.dfs_visited))
-    return visited
-
-
 def dfs_tree(tree, root):
     """
-        Goes through a tree using DFS, and compute max children, its depth, and the level of each node 
+        Goes through a tree using DFS, and compute max children, its depth, and the level of each node
     """
     visited, stack = set(), [root]
 
-    width, height = float("-inf"), float("-inf")
+    stats = TreeStatistics()
     # root.height = 0
     while stack:
         vertex = stack.pop()
         if vertex not in visited:
             visited.add(vertex)
             new_c = set(vertex.children) - visited
-            num_children = 0
+            stats.num_edges += len(new_c)
             for c in new_c:
-                # weight = is_subset(c.cliqueList, vertex.cliqueList)
-                # if weight:
-                #     print(weight)
-                # else:
-                #     raise Exception("No sublist")
-
-
+                c.weight = common_values(vertex.cliqueList, c.cliqueList)
+                stats.sum_weight += c.weight
                 c.height = vertex.height + 1
-                num_children += 1
-            if num_children > width:
-                width = num_children
-            if vertex.height > height:
-                height = vertex.height
+
+            stats.width = max(stats.width, len(new_c))
+            stats.height = max(stats.height, vertex.height)
+            stats.sum_size += len(vertex.cliqueList)
+            stats.min_size = min(stats.min_size, len(vertex.cliqueList))
+            stats.max_size = max(stats.max_size, len(vertex.cliqueList))
+
             stack.extend(new_c)
-    return width, height
+    return stats
 
 
 def dfs_forest(forest):
     """
         Goes through a forest using DFS, and compute max children, its depth, and the level of each node 
     """
-    width, height = float("-inf"), float("-inf")
+    stats = TreeStatistics()
     for tree in forest.ctree:
-        w, h = dfs_tree(tree, tree[0])
-        if w > width:
-            width = w
-        if h > height:
-            height = h
-    return width, height
+        tree_stats = dfs_tree(tree, tree[0])
+
+        stats.num += len(tree)
+        stats.min_size = min(stats.min_size, tree_stats.min_size)
+        stats.max_size = max(stats.max_size, tree_stats.max_size)
+        stats.sum_size += tree_stats.sum_size
+        stats.width = max(tree_stats.width, stats.width)
+        stats.height = max(tree_stats.height, stats.height)
+        stats.sum_weight += tree_stats.sum_weight
+        stats.num_edges += tree_stats.num_edges
+
+    stats.avg_size = stats.sum_size / stats.num
+    stats.avg_weight = stats.sum_weight / stats.num_edges
+    return stats
 
 
 def check_clique(vlist, graph):

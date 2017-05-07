@@ -84,45 +84,17 @@ def post_process(run):
     out["nodes"] = len(graphs["nx_chordal"].nodes())
     out["edges"] = len(graphs["nx_chordal"].edges())
 
-    out["clique_trees"] = [{}, {}]
-
     temp_forest = cForest(1)
     temp_forest.ctree.append(graphs["tree"])
 
     # calculate tree output parameters
-    calculate_clique_tree_statistics(temp_forest, out["clique_trees"][0])
-    calculate_clique_tree_statistics(graphs["final_cforest"], out["clique_trees"][1])
+    out["clique_trees"] = [ dfs_forest(temp_forest),  dfs_forest(graphs["final_cforest"])]
 
     # convert clique forest to nx for export to json
     nx_ctrees = [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
-    nx_ctrees.insert(0, convert_tree_networkx(graphs["tree"]))
+    # nx_ctrees.insert(0, convert_tree_networkx(graphs["tree"]))
 
     return nx_ctrees
-
-
-def calculate_clique_tree_statistics(forest, out):
-    """
-        Print statistics for a given clique tree
-    """
-
-    max_clique_size, min_clique_size, sum_clique_size, num_c = float(
-        "-inf"), float("inf"), 0, 0
-    for tree in forest.ctree:
-        cliques = (len(c.cliqueList) for c in tree)
-        for clique in cliques:
-            max_clique_size = max(max_clique_size, clique)
-            min_clique_size = min(min_clique_size, clique)
-            sum_clique_size += clique
-        num_c += len(tree)
-
-    avg_clique_size = sum_clique_size / num_c
-
-    width, height = dfs_forest(forest)
-
-    out["num"], out["min"], out["max"] = num_c, min_clique_size, max_clique_size
-    out["avg"], out["width"], out["height"] = avg_clique_size, width, height
-
-    return num_c, min_clique_size, max_clique_size, avg_clique_size, width, height
 
 
 def print_statistics(run, file=sys.stdout):
@@ -145,9 +117,9 @@ def print_statistics(run, file=sys.stdout):
                 else:
                     for ctree in run[section][sub]:
                         print('    - ' + sub + ":", file=file)
-                        for c_value in ctree:
-                            print('         {0:30} {1!s:>22}'.format(c_value + ':', ctree[c_value]), file=file)
-                       
+                        for c_value in ctree.__slots__:
+                            print('         {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
+
 
 def tree_generation(n_vert, rand):
     """

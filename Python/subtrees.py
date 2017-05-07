@@ -30,7 +30,8 @@ class TreeNode(object):
         A class representing a tree node
     """
     __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList',
-                 'children', 'parent', 'marked', 'height', 'cc', 's')
+                 'children', 'parent', 'marked', 
+                 'height', 'cc', 's', 'weight')
 
     def __init__(self, uid):
         self.uid = uid
@@ -42,6 +43,8 @@ class TreeNode(object):
         self.parent = None
         self.marked = False
         self.height = 0
+        # the weight of the edge from this to his parent
+        self.weight = 0
         self.cc = 0
 
     def __str__(self):
