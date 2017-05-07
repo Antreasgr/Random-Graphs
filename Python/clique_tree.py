@@ -19,6 +19,13 @@ class TreeStatistics(object):
         self.width = float("-inf")
         self.height = float("-inf")
 
+    def __str__(self):
+        result = ''
+        for slot in self.__slots__:
+            result += '{0:30} {1!s:>22}\n'.format(slot + ':', getattr(self, slot))
+        return result
+
+
 
 def is_subset(list1, list2):
     """

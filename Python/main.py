@@ -19,6 +19,31 @@ from yaml import Loader, Dumper
 # from joblib import Parallel, delayed
 # import plotter
 
+def tree_generation(n_vert, rand):
+    """
+        Creates a random tree on n nodes
+        and create the adjacency lists for each node
+    """
+    tree = [TreeNode(0)]
+    for uid in range(0, n_vert - 1):
+        parent, _ = rand.next_element(tree)
+        newnode = TreeNode(uid + 1)
+
+        # update the adjacency lists
+        newnode.Ax.append(parent)
+        parent.Ax.append(newnode)
+
+        parent.Dx[newnode] = len(parent.Ax) - 1
+        newnode.Dx[parent] = len(newnode.Ax) - 1
+
+        # update helper, children list, parent pointer
+        parent.children.append(newnode)
+        newnode.parent = parent
+
+        # append to tree
+        tree.append(newnode)
+
+    return tree
 
 def chordal_generation(run, rand):
     """
@@ -102,7 +127,8 @@ def print_statistics(run, file=sys.stdout):
         Print all statistics in pretty format
     """
     s_all = {'parameters':{}, 'Times':{}, 'Verify':{}, 'Stats':{},
-             'Output': {"tree", "nx_chordal", "final_cforest"}}
+             'Output': {}}
+
     print("- Run:", file=file)
     for section in s_all:
         print("  " + section + ":", file=file)
@@ -119,33 +145,6 @@ def print_statistics(run, file=sys.stdout):
                         print('    - ' + sub + ":", file=file)
                         for c_value in ctree.__slots__:
                             print('         {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
-
-
-def tree_generation(n_vert, rand):
-    """
-        Creates a random tree on n nodes
-        and create the adjacency lists for each node
-    """
-    tree = [TreeNode(0)]
-    for uid in range(0, n_vert - 1):
-        parent, _ = rand.next_element(tree)
-        newnode = TreeNode(uid + 1)
-
-        # update the adjacency lists
-        newnode.Ax.append(parent)
-        parent.Ax.append(newnode)
-
-        parent.Dx[newnode] = len(parent.Ax) - 1
-        newnode.Dx[parent] = len(newnode.Ax) - 1
-
-        # update helper, children list, parent pointer
-        parent.children.append(newnode)
-        newnode.parent = parent
-
-        # append to tree
-        tree.append(newnode)
-
-    return tree
 
 
 def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVersion.Index):
@@ -180,11 +179,6 @@ if __name__ == '__main__':
 
     with io.open(filename, 'w') as file:
         print_statistics(RUNNER, file)
-
-    # del RUNNER["Output"]
-    # del RUNNER2["Output"]
-    # with io.open("test.yml", 'w') as file:
-    #     yaml.dump([RUNNER], file, Dumper=Dumper)
 
     nx_export_json(trees1 + [RUNNER["Graphs"]["nx_chordal"]])
 

@@ -3,6 +3,7 @@ from numpy import core
 import random
 from UnionFind import UnionFind
 from nx_converters import *
+from clique_tree import TreeStatistics
 
 """
     Implements the markenzon algorithm version 2 as described in paper
@@ -19,7 +20,7 @@ from nx_converters import *
 class MarkenzonParameters(object):
     __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques"]
 
-    def __init__(self, l, m, L, S, Q):
+    def __init__(self, l, m, L, S, Q, w_h = None):
         self.num_maximal_cliques = l
         self.num_edges = m
         self.edges_list = L
@@ -118,9 +119,28 @@ def main():
     print("- Merge cliques:")
     print(p_markenzon)
     nx_chordal = convert_markenzon_clique_tree_networkx2(p_markenzon.cliques, NUM_VERTICES)
+
+    # calculate statistics
+    stats = TreeStatistics()
+    stats.num = p_markenzon.num_maximal_cliques
+    stats.max_size = max(p_markenzon.cardinality_array)
+    stats.min_size = min(s for s in p_markenzon.cardinality_array if s > 0)
+    stats.sum_size = sum(s for s in p_markenzon.cardinality_array if s > 0)
+    stats.avg_size = stats.sum_size / stats.num
+    stats.num_edges = p_markenzon.num_edges
+    stats.width = 0
+    stats.height = 0
+    stats.sum_weight = sum(w for (_, _, w) in p_markenzon.edges_list)
+    stats.avg_weight = stats.sum_weight / stats.num_edges
+
+    
     print("- Stats:")
     print("\t nodes:", len(nx_chordal.nodes()))
     print("\t edges:", len(nx_chordal.edges()))
+    for slot in stats.__slots__:
+        print('     {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
+
+
     nx_export_json([nx_chordal])
 
 if __name__ == '__main__':
