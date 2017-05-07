@@ -18,9 +18,10 @@ from clique_tree import TreeStatistics
 """
 
 class MarkenzonParameters(object):
-    __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques"]
+    __slots__ = ["num_maximal_cliques", "num_edges", "edges_list",
+                 "cardinality_array", "cliques"]
 
-    def __init__(self, l, m, L, S, Q, w_h = None):
+    def __init__(self, l, m, L, S, Q):
         self.num_maximal_cliques = l
         self.num_edges = m
         self.edges_list = L
@@ -29,7 +30,7 @@ class MarkenzonParameters(object):
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}".format(
-            self.num_maximal_cliques, self.num_edges, 
+            self.num_maximal_cliques, self.num_edges,
             self.edges_list, self.cardinality_array, self.cliques)
 
     def __repr__(self):
@@ -91,7 +92,7 @@ def expand_cliques(n, rand):
 
             L.append((i, l, t))
         m += t
-
+    
     return MarkenzonParameters(l + 1, m, L, S, Q)
 
 NUM_VERTICES = 15
@@ -110,12 +111,6 @@ def main():
 
     merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
 
-    # # find clique tree edges
-    # for edge in clique_edges:
-    #     if (p_markenzon.cardinality_array[edge[0]] > 0 and
-    #             p_markenzon.cardinality_array[edge[1]] > 0):
-    #         p_markenzon.edges_list.append(edge)
-
     print("- Merge cliques:")
     print(p_markenzon)
     nx_chordal = convert_markenzon_clique_tree_networkx2(p_markenzon.cliques, NUM_VERTICES)
@@ -128,12 +123,14 @@ def main():
     stats.sum_size = sum(s for s in p_markenzon.cardinality_array if s > 0)
     stats.avg_size = stats.sum_size / stats.num
     stats.num_edges = p_markenzon.num_edges
-    stats.width = 0
-    stats.height = 0
+
     stats.sum_weight = sum(w for (_, _, w) in p_markenzon.edges_list)
     stats.avg_weight = stats.sum_weight / stats.num_edges
 
-    
+    # dfs?
+    stats.width = 0
+    stats.height = 0
+
     print("- Stats:")
     print("\t nodes:", len(nx_chordal.nodes()))
     print("\t edges:", len(nx_chordal.edges()))
