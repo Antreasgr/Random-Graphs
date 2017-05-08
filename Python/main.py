@@ -122,30 +122,38 @@ def post_process(run):
     return nx_ctrees
 
 
-def print_statistics(run, file=sys.stdout):
+def print_statistics(runners, file=sys.stdout):
     """
         Print all statistics in pretty format
     """
     s_all = {'parameters':{}, 'Times':{}, 'Verify':{}, 'Stats':{},
              'Output': {}}
 
-    print("- Run:", file=file)
-    for section in s_all:
-        print("  " + section + ":", file=file)
-        for sub in run[section]:
-            if sub not in s_all[section]:
-                if sub != "clique_trees":
-                    value = run[section][sub]
-                    if isinstance(value, float):
-                        print('    {0:35} {1:>22.15f}'.format(sub + ":", value), file=file)
-                    else:
-                        print('    {0:35} {1!s:>22}'.format(sub + ":", value), file=file)
-                else:
-                    for ctree in run[section][sub]:
-                        print('    - ' + sub + ":", file=file)
-                        for c_value in ctree.__slots__:
-                            print('         {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
+    for ii, run in enumerate(runners):
+        if ii == 0:
+            print("Run:", file=file)
 
+        for index, section in enumerate(s_all):
+            if index == 0:
+                print("- " + section + ":", file=file)
+            else:
+                print("  " + section + ":", file=file)
+            for sub in run[section]:
+                if sub not in s_all[section]:
+                    if sub != "clique_trees":
+                        value = run[section][sub]
+                        if isinstance(value, float):
+                            print('    {0:35} {1:>22.15f}'.format(sub + ":", value), file=file)
+                        else:
+                            print('    {0:35} {1!s:>22}'.format(sub + ":", value), file=file)
+                    else:
+                        print('    ' + sub + ":", file=file)
+                        for ctree in run[section][sub]:
+                            for cc, c_value in enumerate(ctree.__slots__):
+                                if cc == 0:
+                                    print('    - {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
+                                else:
+                                    print('      {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
 
 def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVersion.Index):
     """
@@ -157,30 +165,31 @@ def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVer
             'Verify': {},
             'Stats': {},
             'Graphs': {},
-            'Output':{}
+            'Output': {}
            }
 
 if __name__ == '__main__':
     NUM_VERTICES = 10
     PAR_K = 4
 
-    for i in range(254, 255):
+    Runners = []
+    for i in range(255, 266):
         randomizer = Randomizer(2 * NUM_VERTICES, i)
 
-        RUNNER = runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index)
-        chordal_generation(RUNNER, randomizer)
-        trees1 = post_process(RUNNER)
+        Runners.append(runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index))
+        chordal_generation(Runners[-1], randomizer)
+        trees1 = post_process(Runners[-1])
 
 
     print(".....Done")
     # RUNNER contains all data and statistics
-    filename = "Results/Run_{}_{}_{}.yml".format(NUM_VERTICES, PAR_K, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+    filename = "Results/SHET/Run_{}_{}_{}.yml".format(NUM_VERTICES, PAR_K, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     with io.open(filename, 'w') as file:
-        print_statistics(RUNNER, file)
+        print_statistics(Runners, file)
 
-    nx_export_json(trees1 + [RUNNER["Graphs"]["nx_chordal"]])
+    # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
 
     """
         Todo:

@@ -123,7 +123,9 @@ def dfs_forest(forest):
         stats.num_edges += tree_stats.num_edges
 
     stats.avg_size = stats.sum_size / stats.num
-    stats.avg_weight = stats.sum_weight / stats.num_edges
+    if stats.num_edges > 0:
+        stats.avg_weight = stats.sum_weight / stats.num_edges
+
     return stats
 
 
