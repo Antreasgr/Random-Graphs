@@ -92,7 +92,7 @@ def expand_cliques(n, rand):
 
             L.append((i, l, t))
         m += t
-    
+
     return MarkenzonParameters(l + 1, m, L, S, Q)
 
 NUM_VERTICES = 15
@@ -101,12 +101,16 @@ def main():
     """
         Initialize the algorithm
     """
+    runner = {"Times": {}, "Output": {}}
+
     randomizer = Randomizer(2 * NUM_VERTICES, 4)
-    p_markenzon = expand_cliques(NUM_VERTICES, randomizer)
+    with Timer("t_expand_cliques", runner["Times"]):
+        p_markenzon = expand_cliques(NUM_VERTICES, randomizer)
     print("- Expand cliques:")
     print(p_markenzon)
 
-    merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
+    with Timer("t_merge_cliques", runner["Times"]):
+        merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
 
     print("- Merge cliques:")
     print(p_markenzon)
@@ -128,14 +132,22 @@ def main():
     stats.width = 0
     stats.height = 0
 
-    print("- Stats:")
-    print("\t nodes:", len(nx_chordal.nodes()))
-    print("\t edges:", len(nx_chordal.edges()))
-    for slot in stats.__slots__:
-        print('     {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
+    runner["Output"]["clique_trees"] = [stats]
+    runner["Output"]["nodes"] = len(nx_chordal.nodes())
+    runner["Output"]["edges"] = len(nx_chordal.edges())
+
+    print("- Output:")
+    print("    nodes:", runner["Output"]["nodes"])
+    print("    edges:", runner["Output"]["edges"])
+    print("    clique_trees:")
+    for index, slot in enumerate(stats.__slots__):
+        if index == 0:
+            print('    - {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
+        else:
+            print('      {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
 
 
-    nx_export_json([nx_chordal])
+    # nx_export_json([nx_chordal])
 
 if __name__ == '__main__':
     main()
