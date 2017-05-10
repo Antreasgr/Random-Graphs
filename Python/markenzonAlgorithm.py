@@ -1,10 +1,11 @@
 from randomizer import *
 from numpy import core
-import random
+import os
 from UnionFind import UnionFind
 from nx_converters import *
 from clique_tree import TreeStatistics
-
+from datetime import datetime
+from Runners import *
 """
     Implements the markenzon algorithm version 2 as described in paper
     @param l holds the number of maximal cliques generated
@@ -17,9 +18,12 @@ from clique_tree import TreeStatistics
         which are the positions of its endpoints in the array Q
 """
 
+
 class MarkenzonParameters(object):
-    __slots__ = ["num_maximal_cliques", "num_edges", "edges_list",
-                 "cardinality_array", "cliques"]
+    __slots__ = [
+        "num_maximal_cliques", "num_edges", "edges_list", "cardinality_array",
+        "cliques"
+    ]
 
     def __init__(self, l, m, L, S, Q):
         self.num_maximal_cliques = l
@@ -30,8 +34,8 @@ class MarkenzonParameters(object):
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}".format(
-            self.num_maximal_cliques, self.num_edges,
-            self.edges_list, self.cardinality_array, self.cliques)
+            self.num_maximal_cliques, self.num_edges, self.edges_list,
+            self.cardinality_array, self.cliques)
 
     def __repr__(self):
         return self.__str__()
@@ -95,26 +99,28 @@ def expand_cliques(n, rand):
 
     return MarkenzonParameters(l + 1, m, L, S, Q)
 
-NUM_VERTICES = 15
-EDGES_BOUND = 50
-def main():
-    """
-        Initialize the algorithm
-    """
-    runner = {"Times": {}, "Output": {}}
 
-    randomizer = Randomizer(2 * NUM_VERTICES, 4)
+def Run_MVA(num_vertices, edges_bound):
+    """
+        Initialize and run the MVA algorithm
+    """
+    runner = runner_factory(num_vertices, edges_bound, "MVA", None)
+
+    randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        p_markenzon = expand_cliques(NUM_VERTICES, randomizer)
+        p_markenzon = expand_cliques(runner["parameters"]["n"], randomizer)
     print("- Expand cliques:")
     print(p_markenzon)
 
     with Timer("t_merge_cliques", runner["Times"]):
-        merge_cliques(p_markenzon, EDGES_BOUND, randomizer)
+        merge_cliques(p_markenzon, runner["parameters"]["k"], randomizer)
 
+    runner["Stats"][
+        "total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
     print("- Merge cliques:")
     print(p_markenzon)
-    nx_chordal = convert_markenzon_clique_tree_networkx2(p_markenzon.cliques, NUM_VERTICES)
+    nx_chordal = convert_markenzon_clique_tree_networkx2(
+        p_markenzon.cliques, num_vertices)
 
     # calculate statistics
     stats = TreeStatistics()
@@ -132,22 +138,27 @@ def main():
     stats.width = 0
     stats.height = 0
 
-    runner["Output"]["clique_trees"] = [stats]
     runner["Output"]["nodes"] = len(nx_chordal.nodes())
     runner["Output"]["edges"] = len(nx_chordal.edges())
+    runner["Output"]["clique_trees"] = [stats]
 
-    print("- Output:")
-    print("    nodes:", runner["Output"]["nodes"])
-    print("    edges:", runner["Output"]["edges"])
-    print("    clique_trees:")
-    for index, slot in enumerate(stats.__slots__):
-        if index == 0:
-            print('    - {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
-        else:
-            print('      {0:30} {1!s:>22}'.format(slot + ':', getattr(stats, slot)))
-
+    print_statistics([runner])
 
     # nx_export_json([nx_chordal])
+    return runner
 
+
+NUM_VERTICES = 15
+EDGES_BOUND = 50
 if __name__ == '__main__':
-    main()
+    Runners = []
+    for i in range(10):
+        Runners.append(Run_MVA(NUM_VERTICES, EDGES_BOUND))
+
+    filename = "Results/MVA/Run_{}_{}_{}.yml".format(
+        NUM_VERTICES, EDGES_BOUND,
+        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with io.open(filename, 'w') as file:
+        print_statistics(Runners, file)

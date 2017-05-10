@@ -34,7 +34,6 @@ class Timer(object):
 
 
 class Randomizer(object):
-
     def __init__(self, size, seed=None):
         self.size = size
         self.local_index = 0
@@ -54,16 +53,16 @@ class Randomizer(object):
         n = len(population)
         result = [None] * k
         pool = list(population)
-        for i in range(k):         # invariant:  non-selected at [0,n-i)
+        for i in range(k):  # invariant:  non-selected at [0,n-i)
             j = self.next_random(0, n - i)
             result[i] = pool[j]
-            pool[j] = pool[n - i - 1]   # move non-selected item into vacancy
+            pool[j] = pool[n - i - 1]  # move non-selected item into vacancy
         return result
 
     def next_random(self, low, high):
         self.local_index += 1
         if self.local_index >= self.size:
-          #  print("Run out of random, reseting")
+            #  print("Run out of random, reseting")
             self.local_index = 0
 
         return int(self.np_random[self.local_index] * (high - low) + low)

@@ -3,7 +3,7 @@ import yaml
 from yaml import Loader, Dumper
 from clique_tree import *
 
-path = "Results/SHET"
+path = "Results/MVA"
 files = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 for f in files:
     with open(f, 'r') as stream:

@@ -1,7 +1,3 @@
-"""
-    Create a random chordal graph
-"""
-import statistics
 import os
 
 import networkx as nx
@@ -12,12 +8,17 @@ from nx_converters import *
 from randomizer import *
 from subtrees import *
 from datetime import datetime
+from Runners import *
 
 import yaml
 from yaml import Loader, Dumper
 
 # from joblib import Parallel, delayed
 # import plotter
+"""
+    Create a random chordal graph
+"""
+
 
 def tree_generation(n_vert, rand):
     """
@@ -44,6 +45,7 @@ def tree_generation(n_vert, rand):
         tree.append(newnode)
 
     return tree
+
 
 def chordal_generation(run, rand):
     """
@@ -100,7 +102,7 @@ def post_process(run):
     stats["ncc"] = nx.number_connected_components(graphs["nx_chordal"])
 
     # calculate time, and ratios
-    stats["t_total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
+    stats["total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
     stats["ratio[total/chordal]"] = stats["t_total"] / float(times["t_chordal"])
     stats["ratio[total/forest]"] = stats["t_total"] / float(times["t_forestverify"])
     stats["ratio[total/[chordal+forest]]"] = stats["t_total"] / float(times["t_forestverify"] + times["t_chordal"])
@@ -113,7 +115,7 @@ def post_process(run):
     temp_forest.ctree.append(graphs["tree"])
 
     # calculate tree output parameters
-    out["clique_trees"] = [ dfs_forest(temp_forest),  dfs_forest(graphs["final_cforest"])]
+    out["clique_trees"] = [dfs_forest(temp_forest), dfs_forest(graphs["final_cforest"])]
 
     # convert clique forest to nx for export to json
     nx_ctrees = [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
@@ -121,52 +123,6 @@ def post_process(run):
 
     return nx_ctrees
 
-
-def print_statistics(runners, file=sys.stdout):
-    """
-        Print all statistics in pretty format
-    """
-    s_all = {'parameters':{}, 'Times':{}, 'Verify':{}, 'Stats':{},
-             'Output': {}}
-
-    for ii, run in enumerate(runners):
-        if ii == 0:
-            print("Run:", file=file)
-
-        for index, section in enumerate(s_all):
-            if index == 0:
-                print("- " + section + ":", file=file)
-            else:
-                print("  " + section + ":", file=file)
-            for sub in run[section]:
-                if sub not in s_all[section]:
-                    if sub != "clique_trees":
-                        value = run[section][sub]
-                        if isinstance(value, float):
-                            print('    {0:35} {1:>22.15f}'.format(sub + ":", value), file=file)
-                        else:
-                            print('    {0:35} {1!s:>22}'.format(sub + ":", value), file=file)
-                    else:
-                        print('    ' + sub + ":", file=file)
-                        for ctree in run[section][sub]:
-                            for cc, c_value in enumerate(ctree.__slots__):
-                                if cc == 0:
-                                    print('    - {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
-                                else:
-                                    print('      {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
-
-def runner_factory(num_of_vertices, parameter_k, seed=None, version=AlgorithmVersion.Index):
-    """
-        Creates a new runner object to initiliaze the algorithm
-    """
-    return {"parameters":
-            {"n": num_of_vertices, "k": parameter_k, "version": version, 'seed': seed},
-            'Times': {},
-            'Verify': {},
-            'Stats': {},
-            'Graphs': {},
-            'Output': {}
-           }
 
 if __name__ == '__main__':
     NUM_VERTICES = 10
@@ -176,10 +132,9 @@ if __name__ == '__main__':
     for i in range(255, 266):
         randomizer = Randomizer(2 * NUM_VERTICES, i)
 
-        Runners.append(runner_factory(NUM_VERTICES, PAR_K, i, AlgorithmVersion.Index))
+        Runners.append(runner_factory(NUM_VERTICES, PAR_K, "SHET", i, version=AlgorithmVersion.Index))
         chordal_generation(Runners[-1], randomizer)
         trees1 = post_process(Runners[-1])
-
 
     print(".....Done")
     # RUNNER contains all data and statistics
@@ -190,7 +145,6 @@ if __name__ == '__main__':
         print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
-
     """
         Todo:
         - clean the code
