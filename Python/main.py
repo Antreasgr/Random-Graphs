@@ -103,13 +103,14 @@ def post_process(run):
 
     # calculate time, and ratios
     stats["total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
-    stats["ratio[total/chordal]"] = stats["t_total"] / float(times["t_chordal"])
-    stats["ratio[total/forest]"] = stats["t_total"] / float(times["t_forestverify"])
-    stats["ratio[total/[chordal+forest]]"] = stats["t_total"] / float(times["t_forestverify"] + times["t_chordal"])
+    stats["ratio[total/chordal]"] = stats["total"] / float(times["t_chordal"])
+    stats["ratio[total/forest]"] = stats["total"] / float(times["t_forestverify"])
+    stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
     out["nodes"] = len(graphs["nx_chordal"].nodes())
     out["edges"] = len(graphs["nx_chordal"].edges())
+    out["edge_density"] = out["edges"] / ((out["nodes"] * (out["nodes"] - 1)) / 2)
 
     temp_forest = cForest(1)
     temp_forest.ctree.append(graphs["tree"])
@@ -125,8 +126,9 @@ def post_process(run):
 
 
 if __name__ == '__main__':
-    NUM_VERTICES = 10
-    PAR_K = 4
+    NUM_VERTICES = 100
+    PAR_K = 40
+    # EDGES_DENSITY = 0.1
 
     Runners = []
     for i in range(255, 266):

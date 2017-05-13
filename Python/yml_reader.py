@@ -20,7 +20,7 @@ def parse_data(path):
     for f in files:
         filename = os.path.splitext(f)[0]
         out_path = os.path.join(report_path, filename)
-        if os.path.exists(out_path + ".csv"):
+        if not os.path.exists(out_path + ".csv"):
             with open(os.path.join(path, f), 'r') as stream:
                 yml_data = yaml.load(stream, Loader=Loader)
                 acc = process_data(yml_data)

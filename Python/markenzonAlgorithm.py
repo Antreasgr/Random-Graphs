@@ -100,11 +100,15 @@ def expand_cliques(n, rand):
     return MarkenzonParameters(l + 1, m, L, S, Q)
 
 
-def Run_MVA(num_vertices, edges_bound):
+def Run_MVA(num_vertices, edge_density):
     """
         Initialize and run the MVA algorithm
+        edge_density = m/(n(n-1)/2) =>
+        m = edge_density * (n(n-1)/2)
     """
-    runner = runner_factory(num_vertices, edges_bound, "MVA", None)
+
+    edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
+    runner = runner_factory(num_vertices, edges_bound, "MVA", None, edge_density = edge_density)
 
     randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
@@ -148,19 +152,17 @@ def Run_MVA(num_vertices, edges_bound):
     return runner
 
 
-NUM_VERTICES = 15
-EDGES_BOUND = 50
+NUM_VERTICES = 100
+EDGES_DENSITY = 0.1
 if __name__ == '__main__':
     Runners = []
     for i in range(10):
-        Runners.append(Run_MVA(NUM_VERTICES, EDGES_BOUND))
+        Runners.append(Run_MVA(NUM_VERTICES, EDGES_DENSITY))
 
     filename = "Results/MVA/Run_{}_{}_{}.yml".format(
-        NUM_VERTICES, EDGES_BOUND,
+        NUM_VERTICES, EDGES_DENSITY,
         datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with io.open(filename, 'w') as file:
         print_statistics(Runners, file)
-
-
