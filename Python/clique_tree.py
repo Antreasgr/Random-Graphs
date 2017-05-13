@@ -25,6 +25,9 @@ class TreeStatistics(object):
             result += '{0:30} {1!s:>22}\n'.format(slot + ':', getattr(self, slot))
         return result
 
+    def __repr__(self):
+        return self.__str__()
+
 
 
 def is_subset(list1, list2):

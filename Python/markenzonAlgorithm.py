@@ -162,3 +162,5 @@ if __name__ == '__main__':
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with io.open(filename, 'w') as file:
         print_statistics(Runners, file)
+
+
