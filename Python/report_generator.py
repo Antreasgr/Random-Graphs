@@ -73,6 +73,7 @@ def print_data(run_stats, accumulative, report_file=sys.stdout, frmt="csv"):
         print("\n" + "-".center(3, "-"), file=report_file)
         print("## Clique trees", file=report_file)
         for tree in accumulative["Output"]["clique_trees"]:
+            print('\n', file=report_file)
             print_mean_std_vertical(((o, tree[o])
                                      for o in tree), frmt, report_file)
 
@@ -165,3 +166,4 @@ def print_mean_std(list_values,
 
 if __name__ == '__main__':
     parse_data("Results/MVA")
+    parse_data("Results/SHET")

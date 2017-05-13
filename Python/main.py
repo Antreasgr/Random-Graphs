@@ -127,14 +127,14 @@ def post_process(run):
 
 if __name__ == '__main__':
     NUM_VERTICES = 100
-    PAR_K = 40
+    PAR_K = 4
     # EDGES_DENSITY = 0.1
 
     Runners = []
-    for i in range(255, 266):
-        randomizer = Randomizer(2 * NUM_VERTICES, i)
+    for i in range(10):
+        randomizer = Randomizer(2 * NUM_VERTICES)
 
-        Runners.append(runner_factory(NUM_VERTICES, PAR_K, "SHET", i, version=AlgorithmVersion.Index))
+        Runners.append(runner_factory(NUM_VERTICES, PAR_K, "SHET", None, version=AlgorithmVersion.Index))
         chordal_generation(Runners[-1], randomizer)
         trees1 = post_process(Runners[-1])
 
