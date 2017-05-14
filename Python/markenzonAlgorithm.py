@@ -152,7 +152,7 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = 100
+NUM_VERTICES = 1000
 EDGES_DENSITY = 0.1
 if __name__ == '__main__':
     Runners = []

@@ -61,7 +61,7 @@ def chordal_generation(run, rand):
     print("Begin Run ".center(70, "-"))
     print("Parameters: ")
     print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format("n", "k", "seed", "version"))
-    print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format(n, k, rand.Seed, version))
+    print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format(n, k, rand.Seed if rand.Seed != None else "None", version))
 
     print("Times: ".center(70, "-"))
     with Timer("t_real_tree", run["Times"]):
@@ -126,8 +126,8 @@ def post_process(run):
 
 
 if __name__ == '__main__':
-    NUM_VERTICES = 100
-    PAR_K = 4
+    NUM_VERTICES = 1000
+    PAR_K = 40
     # EDGES_DENSITY = 0.1
 
     Runners = []
