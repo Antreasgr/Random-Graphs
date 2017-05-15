@@ -1,0 +1,461 @@
+Run:
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.008139342762495
+    t_subtrees_2:                            0.174814088576586
+    t_ctree:                                 0.253923734668964
+    t_chordal:                               0.154016656243429
+    t_forestverify:                          0.075895966070312
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     3
+    total:                                   0.436877166008045
+    ratio[total/chordal]:                    2.836557919537912
+    ratio[total/forest]:                     5.756263325027213
+    ratio[total/[chordal+forest]]:           1.900187826190247
+  Output:
+    nodes:                                                1000
+    edges:                                               72309
+    edge_density:                            0.144762762762763
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         217
+      sum_size:                                       17572
+      avg_size:                                      17.572
+      sum_weight:                                     16572
+      avg_weight:                         16.58858858858859
+      num_edges:                                        999
+      width:                                              9
+      height:                                            15
+    - num:                                               52
+      min_size:                                          11
+      max_size:                                         217
+      sum_size:                                        3260
+      avg_size:                           62.69230769230769
+      sum_weight:                                      2260
+      avg_weight:                         46.12244897959184
+      num_edges:                                         49
+      width:                                              6
+      height:                                             7
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.008334266417965
+    t_subtrees_2:                            0.195609131302759
+    t_ctree:                                 0.249721781472489
+    t_chordal:                               0.154929827484031
+    t_forestverify:                          0.070302237491432
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     1
+    total:                                   0.453665179193214
+    ratio[total/chordal]:                    2.928197794836994
+    ratio[total/forest]:                     6.453068855006297
+    ratio[total/[chordal+forest]]:           2.014212227031877
+  Output:
+    nodes:                                                1000
+    edges:                                               68100
+    edge_density:                            0.136336336336336
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         172
+      sum_size:                                       19599
+      avg_size:                                      19.599
+      sum_weight:                                     18599
+      avg_weight:                         18.61761761761762
+      num_edges:                                        999
+      width:                                             10
+      height:                                            13
+    - num:                                               49
+      min_size:                                          24
+      max_size:                                         172
+      sum_size:                                        3223
+      avg_size:                           65.77551020408163
+      sum_weight:                                      2223
+      avg_weight:                                   46.3125
+      num_edges:                                         48
+      width:                                              3
+      height:                                             9
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.006195568166611
+    t_subtrees_2:                            0.150257463083986
+    t_ctree:                                 0.244828207740142
+    t_chordal:                               0.130253038897340
+    t_forestverify:                          0.070677747160464
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     2
+    total:                                   0.401281238990739
+    ratio[total/chordal]:                    3.080782163608582
+    ratio[total/forest]:                     5.677617851622865
+    ratio[total/[chordal+forest]]:           1.997111775968955
+  Output:
+    nodes:                                                1000
+    edges:                                               68752
+    edge_density:                            0.137641641641642
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         171
+      sum_size:                                       17217
+      avg_size:                                      17.217
+      sum_weight:                                     16217
+      avg_weight:                        16.233233233233232
+      num_edges:                                        999
+      width:                                             11
+      height:                                            12
+    - num:                                               56
+      min_size:                                           3
+      max_size:                                         171
+      sum_size:                                        3248
+      avg_size:                                        58.0
+      sum_weight:                                      2248
+      avg_weight:                        41.629629629629626
+      num_edges:                                         54
+      width:                                              5
+      height:                                             6
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.006531137261756
+    t_subtrees_2:                            0.174018690823090
+    t_ctree:                                 0.188212273567669
+    t_chordal:                               0.125071005464690
+    t_forestverify:                          0.071344106136784
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     2
+    total:                                   0.368762101652516
+    ratio[total/chordal]:                    2.948421980637431
+    ratio[total/forest]:                     5.168781580156158
+    ratio[total/[chordal+forest]]:           1.877462984623778
+  Output:
+    nodes:                                                1000
+    edges:                                               66192
+    edge_density:                            0.132516516516517
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         143
+      sum_size:                                       19611
+      avg_size:                                      19.611
+      sum_weight:                                     18611
+      avg_weight:                         18.62962962962963
+      num_edges:                                        999
+      width:                                              8
+      height:                                            13
+    - num:                                               59
+      min_size:                                           1
+      max_size:                                         143
+      sum_size:                                        3534
+      avg_size:                          59.898305084745765
+      sum_weight:                                      2534
+      avg_weight:                         44.45614035087719
+      num_edges:                                         57
+      width:                                              5
+      height:                                             8
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.008441798732279
+    t_subtrees_2:                            0.208449513749116
+    t_ctree:                                 0.337958360756918
+    t_chordal:                               0.160759444409548
+    t_forestverify:                          0.085243767222239
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     2
+    total:                                   0.554849673238313
+    ratio[total/chordal]:                    3.451428158863169
+    ratio[total/forest]:                     6.508976448586163
+    ratio[total/[chordal+forest]]:           2.255457030653737
+  Output:
+    nodes:                                                1000
+    edges:                                               88131
+    edge_density:                            0.176438438438438
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         236
+      sum_size:                                       22759
+      avg_size:                                      22.759
+      sum_weight:                                     21759
+      avg_weight:                         21.78078078078078
+      num_edges:                                        999
+      width:                                              9
+      height:                                            13
+    - num:                                               41
+      min_size:                                          22
+      max_size:                                         236
+      sum_size:                                        3107
+      avg_size:                           75.78048780487805
+      sum_weight:                                      2107
+      avg_weight:                         54.02564102564103
+      num_edges:                                         39
+      width:                                              3
+      height:                                             9
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.013327179526393
+    t_subtrees_2:                            0.155112803104577
+    t_ctree:                                 0.182357736455025
+    t_chordal:                               0.104289617635573
+    t_forestverify:                          0.060729471910512
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     1
+    total:                                   0.350797719085995
+    ratio[total/chordal]:                    3.363687843902295
+    ratio[total/forest]:                     5.776399959527308
+    ratio[total/[chordal+forest]]:           2.125800839472140
+  Output:
+    nodes:                                                1000
+    edges:                                               55205
+    edge_density:                            0.110520520520521
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         129
+      sum_size:                                       19264
+      avg_size:                                      19.264
+      sum_weight:                                     18264
+      avg_weight:                         18.28228228228228
+      num_edges:                                        999
+      width:                                             12
+      height:                                            16
+    - num:                                               59
+      min_size:                                          13
+      max_size:                                         129
+      sum_size:                                        3351
+      avg_size:                           56.79661016949152
+      sum_weight:                                      2351
+      avg_weight:                         40.53448275862069
+      num_edges:                                         58
+      width:                                              4
+      height:                                            10
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.006130366033171
+    t_subtrees_2:                            0.150068342759764
+    t_ctree:                                 0.191162755448987
+    t_chordal:                               0.110684547299198
+    t_forestverify:                          0.065403543172688
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     2
+    total:                                   0.347361464241922
+    ratio[total/chordal]:                    3.138301350259384
+    ratio[total/forest]:                     5.311049637246209
+    ratio[total/[chordal+forest]]:           1.972657340488231
+  Output:
+    nodes:                                                1000
+    edges:                                               61862
+    edge_density:                            0.123847847847848
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         205
+      sum_size:                                       17949
+      avg_size:                                      17.949
+      sum_weight:                                     16949
+      avg_weight:                        16.965965965965967
+      num_edges:                                        999
+      width:                                             11
+      height:                                            13
+    - num:                                               50
+      min_size:                                           4
+      max_size:                                         205
+      sum_size:                                        2742
+      avg_size:                                       54.84
+      sum_weight:                                      1742
+      avg_weight:                        36.291666666666664
+      num_edges:                                         48
+      width:                                              5
+      height:                                             8
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.006614432133796
+    t_subtrees_2:                            0.168627054720635
+    t_ctree:                                 0.298241727180619
+    t_chordal:                               0.130474589602069
+    t_forestverify:                          0.057293558438863
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     1
+    total:                                   0.473483214035050
+    ratio[total/chordal]:                    3.628930472049111
+    ratio[total/forest]:                     8.264161398533103
+    ratio[total/[chordal+forest]]:           2.521637556609629
+  Output:
+    nodes:                                                1000
+    edges:                                               69666
+    edge_density:                            0.139471471471471
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         229
+      sum_size:                                       18437
+      avg_size:                                      18.437
+      sum_weight:                                     17437
+      avg_weight:                        17.454454454454453
+      num_edges:                                        999
+      width:                                             13
+      height:                                            13
+    - num:                                               55
+      min_size:                                          10
+      max_size:                                         229
+      sum_size:                                        2771
+      avg_size:                           50.38181818181818
+      sum_weight:                                      1771
+      avg_weight:                          32.7962962962963
+      num_edges:                                         54
+      width:                                              7
+      height:                                             7
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.007286253068939
+    t_subtrees_2:                            0.143281858923066
+    t_ctree:                                 0.168479923204859
+    t_chordal:                               0.111041281484779
+    t_forestverify:                          0.067895561885360
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     2
+    total:                                   0.319048035196864
+    ratio[total/chordal]:                    2.873238051026977
+    ratio[total/forest]:                     4.699100005027874
+    ratio[total/[chordal+forest]]:           1.783020361753557
+  Output:
+    nodes:                                                1000
+    edges:                                               60314
+    edge_density:                            0.120748748748749
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         143
+      sum_size:                                       17220
+      avg_size:                                       17.22
+      sum_weight:                                     16220
+      avg_weight:                        16.236236236236238
+      num_edges:                                        999
+      width:                                              8
+      height:                                            14
+    - num:                                               52
+      min_size:                                          17
+      max_size:                                         143
+      sum_size:                                        3170
+      avg_size:                           60.96153846153846
+      sum_weight:                                      2170
+      avg_weight:                                      43.4
+      num_edges:                                         50
+      width:                                              5
+      height:                                             8
+- parameters:
+    n:                                                    1000
+    k:                                                      20
+    seed:                                                 None
+    Algorithm:                                            SHET
+    version:                            AlgorithmVersion.Index
+  Times:
+    t_real_tree:                             0.007424167529201
+    t_subtrees_2:                            0.184058453883316
+    t_ctree:                                 0.262225229333996
+    t_chordal:                               0.158953925646355
+    t_forestverify:                          0.085883499149300
+  Verify:
+    graph_chordal:                                        True
+    tree_cliqueforest:                                    True
+  Stats:
+    ncc:                                                     1
+    total:                                   0.453707850746514
+    ratio[total/chordal]:                    2.854335612672672
+    ratio[total/forest]:                     5.282829125974302
+    ratio[total/[chordal+forest]]:           1.853098443284090
+  Output:
+    nodes:                                                1000
+    edges:                                               84647
+    edge_density:                            0.169463463463463
+    clique_trees:
+    - num:                                             1000
+      min_size:                                           0
+      max_size:                                         215
+      sum_size:                                       20025
+      avg_size:                                      20.025
+      sum_weight:                                     19025
+      avg_weight:                        19.044044044044043
+      num_edges:                                        999
+      width:                                             11
+      height:                                            11
+    - num:                                               46
+      min_size:                                          10
+      max_size:                                         215
+      sum_size:                                        3347
+      avg_size:                           72.76086956521739
+      sum_weight:                                      2347
+      avg_weight:                         52.15555555555556
+      num_edges:                                         45
+      width:                                              6
+      height:                                             7

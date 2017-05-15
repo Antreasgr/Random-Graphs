@@ -127,7 +127,7 @@ def post_process(run):
 
 if __name__ == '__main__':
     NUM_VERTICES = 1000
-    PAR_K = 40
+    PAR_K = 440
     # EDGES_DENSITY = 0.1
 
     Runners = []
