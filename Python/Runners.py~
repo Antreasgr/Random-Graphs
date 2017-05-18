@@ -9,7 +9,7 @@ def print_statistics(runners, file=sys.stdout):
 
     for i_run, run in enumerate(runners):
         if i_run == 0:
-            print(u"Run:", file=file)
+            print("Run:", file=file)
 
         for index, section in enumerate(s_all):
             if index == 0:
