@@ -1,4 +1,4 @@
-from __future__ import print_function
+# from __future__ import print_function
 import sys
 
 def print_statistics(runners, file=sys.stdout):

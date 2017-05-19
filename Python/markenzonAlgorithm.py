@@ -35,8 +35,8 @@ class MarkenzonParameters(object):
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}".format(
-            self.num_maximal_cliques, self.num_edges, self.edges_list,
-            self.cardinality_array, self.cliques)
+            self.num_maximal_cliques, self.num_edges, "Not printed for speed",
+            "Not printed for speed", "Not printed for speed")
 
     def __repr__(self):
         return self.__str__()
@@ -153,20 +153,22 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = 10000
-EDGES_DENSITY = 0.99
+NUM_VERTICES = [5, 15, 25]
+EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 if __name__ == '__main__':
-    Runners = []
-    for i in range(10):
-        Runners.append(Run_MVA(NUM_VERTICES, EDGES_DENSITY))
+    for num in NUM_VERTICES:
+        for edge_density in EDGES_DENSITY:
+            Runners = []
+            for i in range(10):
+                Runners.append(Run_MVA(num, edge_density))
 
-    filename = "Results/MVA/Run_{}_{}_{}.yml".format(
-        NUM_VERTICES, EDGES_DENSITY,
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/MVA/Run_{}_{}_{}.yml".format(
+                num, edge_density,
+                datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-    if not os.path.isdir(os.path.dirname(filename)):
-	    os.makedirs(os.path.dirname(filename))
+            if not os.path.isdir(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
 
-    with io.open(filename, 'wb') as file:
-        print_statistics(Runners, file)
-    print("Done")
+            with io.open(filename, 'w') as file:
+                print_statistics(Runners, file)
+            print("Done")
