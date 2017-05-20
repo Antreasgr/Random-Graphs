@@ -1,4 +1,4 @@
-from __future__ import print_function
+# from __future__ import print_function
 import sys
 
 def print_statistics(runners, file=sys.stdout):
@@ -9,7 +9,7 @@ def print_statistics(runners, file=sys.stdout):
 
     for i_run, run in enumerate(runners):
         if i_run == 0:
-            print("Run:", file=file)
+            print(u"Run:", file=file)
 
         for index, section in enumerate(s_all):
             if index == 0:

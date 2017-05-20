@@ -35,8 +35,8 @@ class MarkenzonParameters(object):
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}".format(
-            self.num_maximal_cliques, self.num_edges, self.edges_list,
-            self.cardinality_array, self.cliques)
+            self.num_maximal_cliques, self.num_edges, "Not printed for speed",
+            "Not printed for speed", "Not printed for speed")
 
     def __repr__(self):
         return self.__str__()
@@ -124,8 +124,8 @@ def Run_MVA(num_vertices, edge_density):
         "total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
     print("- Merge cliques:")
     print(p_markenzon)
-    nx_chordal = convert_markenzon_clique_tree_networkx2(
-        p_markenzon.cliques, num_vertices)
+    # nx_chordal = convert_markenzon_clique_tree_networkx2(
+    #    p_markenzon.cliques, num_vertices)
 
     # calculate statistics
     stats = TreeStatistics()
@@ -143,8 +143,10 @@ def Run_MVA(num_vertices, edge_density):
     stats.width = 0
     stats.height = 0
 
-    runner["Output"]["nodes"] = len(nx_chordal.nodes())
-    runner["Output"]["edges"] = len(nx_chordal.edges())
+    # runner["Output"]["nodes"] = len(nx_chordal.nodes())
+    runner["Output"]["nodes"] = num_vertices
+    # runner["Output"]["edges"] = len(nx_chordal.edges())
+    runner["Output"]["edges"] = p_markenzon.num_edges
     runner["Output"]["clique_trees"] = [stats]
 
     print_statistics([runner])
@@ -153,20 +155,22 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = 10000
-EDGES_DENSITY = 0.75
+NUM_VERTICES = [	50000, 100000]
+EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 if __name__ == '__main__':
-    Runners = []
-    for i in range(10):
-        Runners.append(Run_MVA(NUM_VERTICES, EDGES_DENSITY))
+    for num in NUM_VERTICES:
+        for edge_density in EDGES_DENSITY:
+            Runners = []
+            for i in range(10):
+                Runners.append(Run_MVA(num, edge_density))
 
-    filename = "Results/MVA/Run_{}_{}_{}.yml".format(
-        NUM_VERTICES, EDGES_DENSITY,
-        datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/MVA/Run_{}_{}_{}.yml".format(
+                num, edge_density,
+                datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-    if not os.path.isdir(os.path.dirname(filename)):
-	    os.makedirs(os.path.dirname(filename))
+            if not os.path.isdir(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
 
-    with io.open(filename, 'wb') as file:
-        print_statistics(Runners, file)
-    print("Done")
+            with io.open(filename, 'wb') as file:
+                print_statistics(Runners, file)
+            print("Done")

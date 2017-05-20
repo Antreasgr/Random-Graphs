@@ -124,8 +124,8 @@ def Run_MVA(num_vertices, edge_density):
         "total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
     print("- Merge cliques:")
     print(p_markenzon)
-    nx_chordal = convert_markenzon_clique_tree_networkx2(
-        p_markenzon.cliques, num_vertices)
+    # nx_chordal = convert_markenzon_clique_tree_networkx2(
+    #    p_markenzon.cliques, num_vertices)
 
     # calculate statistics
     stats = TreeStatistics()
@@ -143,8 +143,10 @@ def Run_MVA(num_vertices, edge_density):
     stats.width = 0
     stats.height = 0
 
-    runner["Output"]["nodes"] = len(nx_chordal.nodes())
-    runner["Output"]["edges"] = len(nx_chordal.edges())
+    # runner["Output"]["nodes"] = len(nx_chordal.nodes())
+    runner["Output"]["nodes"] = num_vertices
+    # runner["Output"]["edges"] = len(nx_chordal.edges())
+    runner["Output"]["edges"] = p_markenzon.num_edges
     runner["Output"]["clique_trees"] = [stats]
 
     print_statistics([runner])
@@ -153,7 +155,7 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = [2500, 5000, 25000, 50000, 100000]
+NUM_VERTICES = [	500000, 1000000]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 if __name__ == '__main__':
     for num in NUM_VERTICES:
@@ -169,6 +171,6 @@ if __name__ == '__main__':
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
+            with io.open(filename, 'wb') as file:
                 print_statistics(Runners, file)
             print("Done")
