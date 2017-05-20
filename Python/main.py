@@ -119,39 +119,36 @@ def post_process(run):
     out["clique_trees"] = [dfs_forest(temp_forest), dfs_forest(graphs["final_cforest"])]
 
     # convert clique forest to nx for export to json
-    nx_ctrees = [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
+    nx_ctrees = None # [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
     # nx_ctrees.insert(0, convert_tree_networkx(graphs["tree"]))
 
     return nx_ctrees
 
 
 if __name__ == '__main__':
-    NUM_VERTICES = 1000
-    PAR_K = 440
+    NUM_VERTICES = [2500, 5000, 10000, 50000, 100000]
+    PAR_K_FACTOR = [0.49, 0.33, 0.2, 0.1, 0.01]
     # EDGES_DENSITY = 0.1
+    for num in NUM_VERTICES:
+        for factor in PAR_K_FACTOR:
+            Runners = []
+            par_k = num // factor
+            par_k = max(1, par_k)
+            par_k = min(num // 2, par_k)
+            for i in range(10):
+                randomizer = Randomizer(2 * num)
 
-    Runners = []
-    for i in range(10):
-        randomizer = Randomizer(2 * NUM_VERTICES)
+                Runners.append(runner_factory(num, par_k, "SHET", None, version=AlgorithmVersion.Index))
+                chordal_generation(Runners[-1], randomizer)
+                trees1 = post_process(Runners[-1])
 
-        Runners.append(runner_factory(NUM_VERTICES, PAR_K, "SHET", None, version=AlgorithmVersion.Index))
-        chordal_generation(Runners[-1], randomizer)
-        trees1 = post_process(Runners[-1])
+            print(".....Done")
+            # RUNNER contains all data and statistics
+            filename = "Results/SHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    print(".....Done")
-    # RUNNER contains all data and statistics
-    filename = "Results/SHET/Run_{}_{}_{}.yml".format(NUM_VERTICES, PAR_K, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-    with io.open(filename, 'w') as file:
-        print_statistics(Runners, file)
+            with io.open(filename, 'w') as file:
+                print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
-    """
-        Todo:
-        - clean the code
-        - Randomizer(): we should keep it with linear parameter
-                        what happens for small/large parameter?
-                        does it affect on the quality of the random graph?
-                        does it affect on the running time?
-    """
+    
