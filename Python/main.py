@@ -126,13 +126,13 @@ def post_process(run):
 
 
 if __name__ == '__main__':
-    NUM_VERTICES = [2500, 5000, 10000, 50000, 100000]
+    NUM_VERTICES = [50, 2500, 5000, 10000, 50000, 100000]
     PAR_K_FACTOR = [0.49, 0.33, 0.2, 0.1, 0.01]
     # EDGES_DENSITY = 0.1
     for num in NUM_VERTICES:
         for factor in PAR_K_FACTOR:
             Runners = []
-            par_k = num // factor
+            par_k = num * factor
             par_k = max(1, par_k)
             par_k = min(num // 2, par_k)
             for i in range(10):
@@ -145,9 +145,10 @@ if __name__ == '__main__':
             print(".....Done")
             # RUNNER contains all data and statistics
             filename = "Results/SHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            if not os.path.isdir(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
+            with io.open(filename, 'wb') as file:
                 print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
