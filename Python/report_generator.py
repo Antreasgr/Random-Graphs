@@ -21,6 +21,7 @@ def parse_data(path):
         filename = os.path.splitext(f)[0]
         out_path = os.path.join(report_path, filename)
         if not os.path.exists(out_path + ".csv"):
+            print(filename)
             with open(os.path.join(path, f), 'r') as stream:
                 yml_data = yaml.load(stream, Loader=Loader)
                 acc = process_data(yml_data)

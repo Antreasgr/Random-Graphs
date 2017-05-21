@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class AlgorithmVersion(Enum):
     """
         The available versions of the algorithm
@@ -7,6 +8,24 @@ class AlgorithmVersion(Enum):
     Index = 0
     Dict = 1
     Hybrid = 2
+
+
+class SimpleGraph(object):
+    """
+       A class representing simple graph
+    """
+    __slots__ = ('nodes', 'edges')
+
+    def __init__(self):
+        self.nodes = []
+        self.edges = []
+
+    def add_nodes_from(self, iterable):
+        self.nodes = list(iterable)
+
+    def add_edge(self, node1, node2):
+        self.edges.append((node1, node2))
+
 
 class cForest(object):
     """
@@ -29,9 +48,7 @@ class TreeNode(object):
     """
         A class representing a tree node
     """
-    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList',
-                 'children', 'parent', 'marked', 
-                 'height', 'cc', 's', 'weight')
+    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList', 'children', 'parent', 'marked', 'height', 'cc', 's', 'weight')
 
     def __init__(self, uid):
         self.uid = uid
@@ -78,7 +95,7 @@ def sub_tree_gen(T, k, i, rand, version=AlgorithmVersion.Index):
 
         # add z to Ti
         tree_i.append(z)
-        z.cliqueList.append(i)   # add to the z node of T the {i} number of Ti
+        z.cliqueList.append(i)  # add to the z node of T the {i} number of Ti
 
         # fix y.Ax
         if zi != y.s:
@@ -114,5 +131,3 @@ def sub_tree_gen(T, k, i, rand, version=AlgorithmVersion.Index):
         node.s = 0
 
     return tree_i
-
-

@@ -25,11 +25,12 @@ def convert_tree_networkx(tree):
     return graph
 
 
-def convert_clique_tree_networkx2(clique_tree, num_vertices):
+def convert_clique_tree_networkx2(clique_tree, num_vertices, add=True):
     """
         Converts a clique tree to a networkx graph
     """
-    graph = nx.Graph(graph_type="fast")
+    # graph = nx.Graph(graph_type="fast")
+    graph = SimpleGraph()
     graph.add_nodes_from(range(num_vertices))
     seen = numpy.full(num_vertices, False, dtype=bool)
 
@@ -42,7 +43,7 @@ def convert_clique_tree_networkx2(clique_tree, num_vertices):
     while queue:
         clique = queue.popleft()
         queue.extend(clique.children)
-        is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen)
+        is_valid_clique = add_clique_networx(graph, clique.cliqueList, seen, add)
         if is_valid_clique == "valid":
             newnode = TreeNode(clique.uid)
             newnode.cliqueList = clique.cliqueList

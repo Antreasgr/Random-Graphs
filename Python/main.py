@@ -75,19 +75,19 @@ def chordal_generation(run, rand):
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree", run["Times"]):
-        nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n)
+        nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n, True)
 
-    with Timer("t_chordal", run["Times"]):
-        graph_chordal = Chordal(nx_chordal)
+    # with Timer("t_chordal", run["Times"]):
+    #    graph_chordal = Chordal(nx_chordal)
 
-    with Timer("t_forestverify", run["Times"]):
-        tree_cliqueforest = is_cliqueforest(final_cforest, nx_chordal)
+    # with Timer("t_forestverify", run["Times"]):
+    #    tree_cliqueforest = is_cliqueforest(final_cforest, nx_chordal)
 
     run["Graphs"]["tree"] = tree
     run["Graphs"]["nx_chordal"] = nx_chordal
     run["Graphs"]["final_cforest"] = final_cforest
-    run["Verify"]["graph_chordal"] = graph_chordal
-    run["Verify"]["tree_cliqueforest"] = tree_cliqueforest
+    # run["Verify"]["graph_chordal"] = graph_chordal
+    # run["Verify"]["tree_cliqueforest"] = tree_cliqueforest
 
     print("End Run".center(70, "-"))
 
@@ -99,18 +99,18 @@ def post_process(run):
     times = run["Times"]
 
     # get number of conected components
-    stats["ncc"] = nx.number_connected_components(graphs["nx_chordal"])
+    # stats["ncc"] = nx.number_connected_components(graphs["nx_chordal"])
 
     # calculate time, and ratios
     stats["total"] = times["t_real_tree"] + times["t_subtrees_2"] + times["t_ctree"]
-    stats["ratio[total/chordal]"] = stats["total"] / float(times["t_chordal"])
-    stats["ratio[total/forest]"] = stats["total"] / float(times["t_forestverify"])
-    stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
+    # stats["ratio[total/chordal]"] = stats["total"] / float(times["t_chordal"])
+    # stats["ratio[total/forest]"] = stats["total"] / float(times["t_forestverify"])
+    # stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
-    out["nodes"] = len(graphs["nx_chordal"].nodes())
-    out["edges"] = len(graphs["nx_chordal"].edges())
-    out["edge_density"] = out["edges"] / ((out["nodes"] * (out["nodes"] - 1)) / 2)
+    out["nodes"] = run["parameters"]["n"] # len(graphs["nx_chordal"].nodes())
+    out["edges"] = len(graphs["nx_chordal"].edges)# len(graphs["nx_chordal"].edges())
+    out["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
 
     temp_forest = cForest(1)
     temp_forest.ctree.append(graphs["tree"])
@@ -126,13 +126,13 @@ def post_process(run):
 
 
 if __name__ == '__main__':
-    NUM_VERTICES = [50, 2500, 5000, 10000, 50000, 100000]
+    NUM_VERTICES = [50, 500, 1000, 2500, 5000, 10000, 50000, 100000]
     PAR_K_FACTOR = [0.49, 0.33, 0.2, 0.1, 0.01]
     # EDGES_DENSITY = 0.1
     for num in NUM_VERTICES:
         for factor in PAR_K_FACTOR:
             Runners = []
-            par_k = num * factor
+            par_k = int(num * factor)
             par_k = max(1, par_k)
             par_k = min(num // 2, par_k)
             for i in range(10):
@@ -152,4 +152,4 @@ if __name__ == '__main__':
                 print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
-    
+
