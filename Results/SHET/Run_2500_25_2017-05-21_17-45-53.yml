@@ -1,0 +1,381 @@
+Run:
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         254
+      sum_size:                                       58951
+      avg_size:                                          23
+      sum_weight:                                     56451
+      avg_weight:                                        22
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            17
+    - num:                                               94
+      min_size:                                          20
+      max_size:                                         254
+      sum_size:                                        8547
+      avg_size:                                          90
+      sum_weight:                                      6047
+      avg_weight:                                        65
+      num_edges:                                         92
+      width:                                              6
+      height:                                             9
+    nodes:                                                2500
+    edges:                                              263890
+    edge_density:                            0.084478591436575
+  Stats:
+    total:                                   0.753898143768311
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.015016078948975
+    t_subtrees_2:                            0.514209032058716
+    t_ctree:                                 0.224673032760620
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         264
+      sum_size:                                       60221
+      avg_size:                                          24
+      sum_weight:                                     57721
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            19
+    - num:                                               98
+      min_size:                                          17
+      max_size:                                         264
+      sum_size:                                        8220
+      avg_size:                                          83
+      sum_weight:                                      5720
+      avg_weight:                                        58
+      num_edges:                                         97
+      width:                                              4
+      height:                                            10
+    nodes:                                                2500
+    edges:                                              228136
+    edge_density:                            0.073032733093237
+  Stats:
+    total:                                   0.746480226516724
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.014930963516235
+    t_subtrees_2:                            0.524417161941528
+    t_ctree:                                 0.207132101058960
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         395
+      sum_size:                                       58437
+      avg_size:                                          23
+      sum_weight:                                     55937
+      avg_weight:                                        22
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            15
+    - num:                                              109
+      min_size:                                          10
+      max_size:                                         395
+      sum_size:                                        9121
+      avg_size:                                          83
+      sum_weight:                                      6621
+      avg_weight:                                        61
+      num_edges:                                        108
+      width:                                              7
+      height:                                             9
+    nodes:                                                2500
+    edges:                                              293036
+    edge_density:                            0.093809043617447
+  Stats:
+    total:                                   0.869784832000732
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.111173868179321
+    t_subtrees_2:                            0.513762950897217
+    t_ctree:                                 0.244848012924194
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         238
+      sum_size:                                       62379
+      avg_size:                                          24
+      sum_weight:                                     59879
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             10
+      height:                                            15
+    - num:                                               97
+      min_size:                                          13
+      max_size:                                         238
+      sum_size:                                        8315
+      avg_size:                                          85
+      sum_weight:                                      5815
+      avg_weight:                                        60
+      num_edges:                                         96
+      width:                                              6
+      height:                                            10
+    nodes:                                                2500
+    edges:                                              238636
+    edge_density:                            0.076394077631052
+  Stats:
+    total:                                   0.784104585647583
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.015545845031738
+    t_subtrees_2:                            0.543289899826050
+    t_ctree:                                 0.225268840789795
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         314
+      sum_size:                                       66341
+      avg_size:                                          26
+      sum_weight:                                     63841
+      avg_weight:                                        25
+      num_edges:                                       2499
+      width:                                              9
+      height:                                            14
+    - num:                                               97
+      min_size:                                           2
+      max_size:                                         314
+      sum_size:                                        8992
+      avg_size:                                          92
+      sum_weight:                                      6492
+      avg_weight:                                        69
+      num_edges:                                         94
+      width:                                              6
+      height:                                            10
+    nodes:                                                2500
+    edges:                                              309106
+    edge_density:                            0.098953501400560
+  Stats:
+    total:                                   0.900058746337891
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.050583839416504
+    t_subtrees_2:                            0.580653905868530
+    t_ctree:                                 0.268821001052856
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         229
+      sum_size:                                       61093
+      avg_size:                                          24
+      sum_weight:                                     58593
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            15
+    - num:                                               98
+      min_size:                                          23
+      max_size:                                         229
+      sum_size:                                        8468
+      avg_size:                                          86
+      sum_weight:                                      5968
+      avg_weight:                                        62
+      num_edges:                                         95
+      width:                                              4
+      height:                                             9
+    nodes:                                                2500
+    edges:                                              240387
+    edge_density:                            0.076954621848739
+  Stats:
+    total:                                   0.815869092941284
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.059186935424805
+    t_subtrees_2:                            0.532938003540039
+    t_ctree:                                 0.223744153976440
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         298
+      sum_size:                                       60074
+      avg_size:                                          24
+      sum_weight:                                     57574
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            18
+    - num:                                              103
+      min_size:                                           1
+      max_size:                                         298
+      sum_size:                                        8168
+      avg_size:                                          79
+      sum_weight:                                      5668
+      avg_weight:                                        56
+      num_edges:                                        101
+      width:                                              8
+      height:                                            11
+    nodes:                                                2500
+    edges:                                              261454
+    edge_density:                            0.083698759503802
+  Stats:
+    total:                                   0.771677255630493
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.015331029891968
+    t_subtrees_2:                            0.521907091140747
+    t_ctree:                                 0.234439134597778
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         262
+      sum_size:                                       65078
+      avg_size:                                          26
+      sum_weight:                                     62578
+      avg_weight:                                        25
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            15
+    - num:                                              101
+      min_size:                                           1
+      max_size:                                         262
+      sum_size:                                        8822
+      avg_size:                                          87
+      sum_weight:                                      6322
+      avg_weight:                                        65
+      num_edges:                                         97
+      width:                                              6
+      height:                                             9
+    nodes:                                                2500
+    edges:                                              265964
+    edge_density:                            0.085142537014806
+  Stats:
+    total:                                   0.880810737609863
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.073348045349121
+    t_subtrees_2:                            0.564405918121338
+    t_ctree:                                 0.243056774139404
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         233
+      sum_size:                                       61075
+      avg_size:                                          24
+      sum_weight:                                     58575
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             10
+      height:                                            15
+    - num:                                              111
+      min_size:                                           3
+      max_size:                                         233
+      sum_size:                                        8941
+      avg_size:                                          80
+      sum_weight:                                      6441
+      avg_weight:                                        58
+      num_edges:                                        110
+      width:                                              5
+      height:                                            11
+    nodes:                                                2500
+    edges:                                              228272
+    edge_density:                            0.073076270508203
+  Stats:
+    total:                                   0.761341810226440
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.015477895736694
+    t_subtrees_2:                            0.529217958450317
+    t_ctree:                                 0.216645956039429
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                         215
+      sum_size:                                       60655
+      avg_size:                                          24
+      sum_weight:                                     58155
+      avg_weight:                                        23
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            18
+    - num:                                              108
+      min_size:                                          15
+      max_size:                                         215
+      sum_size:                                        8424
+      avg_size:                                          78
+      sum_weight:                                      5924
+      avg_weight:                                        56
+      num_edges:                                        104
+      width:                                              7
+      height:                                            11
+    nodes:                                                2500
+    edges:                                              220625
+    edge_density:                            0.070628251300520
+  Stats:
+    total:                                   0.753667116165161
+  parameters:
+    k:                                                      25
+    seed:                                                 None
+    version:                            AlgorithmVersion.Index
+    Algorithm:                                            SHET
+    n:                                                    2500
+  Times:
+    t_real_tree:                             0.015121936798096
+    t_subtrees_2:                            0.525261163711548
+    t_ctree:                                 0.213284015655518
