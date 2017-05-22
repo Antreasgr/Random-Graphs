@@ -17,14 +17,16 @@ class SimpleGraph(object):
     __slots__ = ('nodes', 'edges')
 
     def __init__(self):
-        self.nodes = []
-        self.edges = []
+        self.nodes = 0
+        self.edges = 0
 
     def add_nodes_from(self, iterable):
-        self.nodes = list(iterable)
+        # self.nodes = list(iterable)
+        self.nodes = len(iterable)
 
     def add_edge(self, node1, node2):
-        self.edges.append((node1, node2))
+        self.edges += 1
+        # self.edges.append((node1, node2))
 
 
 class cForest(object):
@@ -48,7 +50,8 @@ class TreeNode(object):
     """
         A class representing a tree node
     """
-    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList', 'children', 'parent', 'marked', 'height', 'cc', 's', 'weight')
+    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList', 'children', 'parent',
+                 'marked', 'height', 'cc', 's', 'weight')
 
     def __init__(self, uid):
         self.uid = uid

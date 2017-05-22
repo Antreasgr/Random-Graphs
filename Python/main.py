@@ -109,7 +109,7 @@ def post_process(run):
 
     # get output parameters
     out["nodes"] = run["parameters"]["n"] # len(graphs["nx_chordal"].nodes())
-    out["edges"] = len(graphs["nx_chordal"].edges)# len(graphs["nx_chordal"].edges())
+    out["edges"] = graphs["nx_chordal"].edges # len(graphs["nx_chordal"].edges())
     out["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
 
     temp_forest = cForest(1)
@@ -117,6 +117,8 @@ def post_process(run):
 
     # calculate tree output parameters
     out["clique_trees"] = [dfs_forest(temp_forest), dfs_forest(graphs["final_cforest"])]
+
+    stats["ncc"] = len(graphs["final_cforest"].ctree)
 
     # convert clique forest to nx for export to json
     nx_ctrees = None # [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
@@ -138,7 +140,7 @@ if __name__ == '__main__':
             for i in range(10):
                 randomizer = Randomizer(2 * num)
 
-                Runners.append(runner_factory(num, par_k, "SHET", None, version=AlgorithmVersion.Index))
+                Runners.append(runner_factory(num, par_k, "SHET", None, version=AlgorithmVersion.Dict))
                 chordal_generation(Runners[-1], randomizer)
                 trees1 = post_process(Runners[-1])
 
@@ -148,7 +150,7 @@ if __name__ == '__main__':
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'wb') as file:
+            with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
