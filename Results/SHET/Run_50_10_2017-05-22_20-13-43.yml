@@ -1,0 +1,391 @@
+Run:
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          22
+      sum_size:                                         427
+      avg_size:                                           8
+      sum_weight:                                       377
+      avg_weight:                                         7
+      num_edges:                                         49
+      width:                                              4
+      height:                                            10
+    - num:                                               11
+      min_size:                                           6
+      max_size:                                          22
+      sum_size:                                         160
+      avg_size:                                          14
+      sum_weight:                                       110
+      avg_weight:                                        11
+      num_edges:                                         10
+      width:                                              3
+      height:                                             6
+    nodes:                                                  50
+    edges:                                                 601
+    edge_density:                            0.490612244897959
+  Stats:
+    ncc:                                                     1
+    total:                                   0.005717992782593
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000383853912354
+    t_subtrees_2:                            0.004074096679688
+    t_ctree:                                 0.001260042190552
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          28
+      sum_size:                                         491
+      avg_size:                                           9
+      sum_weight:                                       441
+      avg_weight:                                         9
+      num_edges:                                         49
+      width:                                              5
+      height:                                             6
+    - num:                                                6
+      min_size:                                           5
+      max_size:                                          28
+      sum_size:                                         100
+      avg_size:                                          16
+      sum_weight:                                        50
+      avg_weight:                                        12
+      num_edges:                                          4
+      width:                                              2
+      height:                                             2
+    nodes:                                                  50
+    edges:                                                 624
+    edge_density:                            0.509387755102041
+  Stats:
+    ncc:                                                     2
+    total:                                   0.006261825561523
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000268936157227
+    t_subtrees_2:                            0.004648923873901
+    t_ctree:                                 0.001343965530396
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           2
+      max_size:                                          22
+      sum_size:                                         503
+      avg_size:                                          10
+      sum_weight:                                       453
+      avg_weight:                                         9
+      num_edges:                                         49
+      width:                                              4
+      height:                                            10
+    - num:                                               11
+      min_size:                                          10
+      max_size:                                          22
+      sum_size:                                         170
+      avg_size:                                          15
+      sum_weight:                                       120
+      avg_weight:                                        12
+      num_edges:                                         10
+      width:                                              2
+      height:                                             6
+    nodes:                                                  50
+    edges:                                                 589
+    edge_density:                            0.480816326530612
+  Stats:
+    ncc:                                                     1
+    total:                                   0.006170034408569
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000270843505859
+    t_subtrees_2:                            0.004506111145020
+    t_ctree:                                 0.001393079757690
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          42
+      sum_size:                                         623
+      avg_size:                                          12
+      sum_weight:                                       573
+      avg_weight:                                        11
+      num_edges:                                         49
+      width:                                              6
+      height:                                            10
+    - num:                                                4
+      min_size:                                          25
+      max_size:                                          42
+      sum_size:                                         131
+      avg_size:                                          32
+      sum_weight:                                        81
+      avg_weight:                                        27
+      num_edges:                                          3
+      width:                                              2
+      height:                                             2
+    nodes:                                                  50
+    edges:                                                1122
+    edge_density:                            0.915918367346939
+  Stats:
+    ncc:                                                     1
+    total:                                   0.008733749389648
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.001332998275757
+    t_subtrees_2:                            0.005689859390259
+    t_ctree:                                 0.001710891723633
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          30
+      sum_size:                                         471
+      avg_size:                                           9
+      sum_weight:                                       421
+      avg_weight:                                         8
+      num_edges:                                         49
+      width:                                              4
+      height:                                             6
+    - num:                                                8
+      min_size:                                           4
+      max_size:                                          30
+      sum_size:                                         158
+      avg_size:                                          19
+      sum_weight:                                       108
+      avg_weight:                                        15
+      num_edges:                                          7
+      width:                                              2
+      height:                                             4
+    nodes:                                                  50
+    edges:                                                 777
+    edge_density:                            0.634285714285714
+  Stats:
+    ncc:                                                     1
+    total:                                   0.005994081497192
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000305175781250
+    t_subtrees_2:                            0.004320859909058
+    t_ctree:                                 0.001368045806885
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           1
+      max_size:                                          28
+      sum_size:                                         510
+      avg_size:                                          10
+      sum_weight:                                       460
+      avg_weight:                                         9
+      num_edges:                                         49
+      width:                                              4
+      height:                                             7
+    - num:                                                8
+      min_size:                                           8
+      max_size:                                          28
+      sum_size:                                         157
+      avg_size:                                          19
+      sum_weight:                                       107
+      avg_weight:                                        15
+      num_edges:                                          7
+      width:                                              2
+      height:                                             3
+    nodes:                                                  50
+    edges:                                                 718
+    edge_density:                            0.586122448979592
+  Stats:
+    ncc:                                                     1
+    total:                                   0.006630897521973
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000269889831543
+    t_subtrees_2:                            0.004940032958984
+    t_ctree:                                 0.001420974731445
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          30
+      sum_size:                                         485
+      avg_size:                                           9
+      sum_weight:                                       435
+      avg_weight:                                         8
+      num_edges:                                         49
+      width:                                              7
+      height:                                             6
+    - num:                                                5
+      min_size:                                          16
+      max_size:                                          30
+      sum_size:                                         117
+      avg_size:                                          23
+      sum_weight:                                        67
+      avg_weight:                                        16
+      num_edges:                                          4
+      width:                                              3
+      height:                                             2
+    nodes:                                                  50
+    edges:                                                 812
+    edge_density:                            0.662857142857143
+  Stats:
+    ncc:                                                     1
+    total:                                   0.006249904632568
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000411987304688
+    t_subtrees_2:                            0.004415988922119
+    t_ctree:                                 0.001421928405762
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           1
+      max_size:                                          26
+      sum_size:                                         420
+      avg_size:                                           8
+      sum_weight:                                       370
+      avg_weight:                                         7
+      num_edges:                                         49
+      width:                                              6
+      height:                                             6
+    - num:                                                6
+      min_size:                                           9
+      max_size:                                          26
+      sum_size:                                          97
+      avg_size:                                          16
+      sum_weight:                                        47
+      avg_weight:                                         9
+      num_edges:                                          5
+      width:                                              3
+      height:                                             3
+    nodes:                                                  50
+    edges:                                                 581
+    edge_density:                            0.474285714285714
+  Stats:
+    ncc:                                                     1
+    total:                                   0.005374908447266
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000270843505859
+    t_subtrees_2:                            0.003900051116943
+    t_ctree:                                 0.001204013824463
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          35
+      sum_size:                                         512
+      avg_size:                                          10
+      sum_weight:                                       462
+      avg_weight:                                         9
+      num_edges:                                         49
+      width:                                              3
+      height:                                             9
+    - num:                                                8
+      min_size:                                           7
+      max_size:                                          35
+      sum_size:                                         162
+      avg_size:                                          20
+      sum_weight:                                       112
+      avg_weight:                                        16
+      num_edges:                                          7
+      width:                                              2
+      height:                                             4
+    nodes:                                                  50
+    edges:                                                 887
+    edge_density:                            0.724081632653061
+  Stats:
+    ncc:                                                     1
+    total:                                   0.006560087203979
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000269174575806
+    t_subtrees_2:                            0.004704952239990
+    t_ctree:                                 0.001585960388184
+- Verify:
+  Output:
+    clique_trees:
+    - num:                                               50
+      min_size:                                           0
+      max_size:                                          35
+      sum_size:                                         552
+      avg_size:                                          11
+      sum_weight:                                       502
+      avg_weight:                                        10
+      num_edges:                                         49
+      width:                                              7
+      height:                                             7
+    - num:                                                6
+      min_size:                                          16
+      max_size:                                          35
+      sum_size:                                         130
+      avg_size:                                          21
+      sum_weight:                                        80
+      avg_weight:                                        16
+      num_edges:                                          5
+      width:                                              3
+      height:                                             2
+    nodes:                                                  50
+    edges:                                                 873
+    edge_density:                            0.712653061224490
+  Stats:
+    ncc:                                                     1
+    total:                                   0.007055997848511
+  parameters:
+    k:                                                      10
+    seed:                                                 None
+    version:                             AlgorithmVersion.Dict
+    Algorithm:                                            SHET
+    n:                                                      50
+  Times:
+    t_real_tree:                             0.000311136245728
+    t_subtrees_2:                            0.005214929580688
+    t_ctree:                                 0.001529932022095

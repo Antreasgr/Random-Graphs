@@ -150,7 +150,7 @@ if __name__ == '__main__':
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'wb') as file:
+            with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
