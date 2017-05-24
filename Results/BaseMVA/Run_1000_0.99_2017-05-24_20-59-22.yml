@@ -1,0 +1,301 @@
+Run:
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                           7
+      max_size:                                         993
+      sum_size:                                        1000
+      avg_size:                                         500
+      sum_weight:                                         0
+      avg_weight:                                         0
+      num_edges:                                     492549
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              492549
+  Stats:
+    randoms:                                              3091
+    total:                                   0.017593145370483
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.964469909667969
+    t_merge_cliques:                         0.009165048599243
+    t_chordal:                               0.544909000396729
+    t_expand_cliques:                        0.008428096771240
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                4
+      min_size:                                           2
+      max_size:                                         994
+      sum_size:                                        1001
+      avg_size:                                         250
+      sum_weight:                                         1
+      avg_weight:                                         0
+      num_edges:                                     493526
+      width:                                              3
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              493526
+  Stats:
+    randoms:                                              3055
+    total:                                   0.017477989196777
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.947659969329834
+    t_merge_cliques:                         0.009176015853882
+    t_chordal:                               0.534068107604980
+    t_expand_cliques:                        0.008301973342896
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                           9
+      max_size:                                         992
+      sum_size:                                        1001
+      avg_size:                                         500
+      sum_weight:                                         1
+      avg_weight:                                         0
+      num_edges:                                     491572
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              491572
+  Stats:
+    randoms:                                              3007
+    total:                                   0.016501903533936
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.969084978103638
+    t_merge_cliques:                         0.008614063262939
+    t_chordal:                               0.534870147705078
+    t_expand_cliques:                        0.007887840270996
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                5
+      min_size:                                           2
+      max_size:                                         994
+      sum_size:                                        1004
+      avg_size:                                         200
+      sum_weight:                                         4
+      avg_weight:                                         0
+      num_edges:                                     493527
+      width:                                              4
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              493527
+  Stats:
+    randoms:                                              3057
+    total:                                   0.016989707946777
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.949702978134155
+    t_merge_cliques:                         0.009060859680176
+    t_chordal:                               0.538707971572876
+    t_expand_cliques:                        0.007928848266602
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                          12
+      max_size:                                         992
+      sum_size:                                        1004
+      avg_size:                                         502
+      sum_weight:                                         4
+      avg_weight:                                         0
+      num_edges:                                     491596
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              491596
+  Stats:
+    randoms:                                              3071
+    total:                                   0.016914844512939
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.931297063827515
+    t_merge_cliques:                         0.008865833282471
+    t_chordal:                               0.526673078536987
+    t_expand_cliques:                        0.008049011230469
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                           6
+      max_size:                                         994
+      sum_size:                                        1000
+      avg_size:                                         500
+      sum_weight:                                         0
+      avg_weight:                                         0
+      num_edges:                                     493536
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              493536
+  Stats:
+    randoms:                                              2971
+    total:                                   0.016652345657349
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.931909084320068
+    t_merge_cliques:                         0.008967161178589
+    t_chordal:                               0.529376029968262
+    t_expand_cliques:                        0.007685184478760
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                           8
+      max_size:                                         992
+      sum_size:                                        1000
+      avg_size:                                         500
+      sum_weight:                                         0
+      avg_weight:                                         0
+      num_edges:                                     491564
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              491564
+  Stats:
+    randoms:                                              3045
+    total:                                   0.017044782638550
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.958048105239868
+    t_merge_cliques:                         0.008982896804810
+    t_chordal:                               0.540239095687866
+    t_expand_cliques:                        0.008061885833740
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                          20
+      max_size:                                         984
+      sum_size:                                        1004
+      avg_size:                                         502
+      sum_weight:                                         4
+      avg_weight:                                         0
+      num_edges:                                     483820
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              483820
+  Stats:
+    randoms:                                              3096
+    total:                                   0.017381906509399
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.923579931259155
+    t_merge_cliques:                         0.009182929992676
+    t_chordal:                               0.516731023788452
+    t_expand_cliques:                        0.008198976516724
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                4
+      min_size:                                           1
+      max_size:                                         994
+      sum_size:                                        1003
+      avg_size:                                         250
+      sum_weight:                                         3
+      avg_weight:                                         0
+      num_edges:                                     493531
+      width:                                              3
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              493531
+  Stats:
+    randoms:                                              3068
+    total:                                   0.016784667968750
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.931220054626465
+    t_merge_cliques:                         0.008854866027832
+    t_chordal:                               0.527305841445923
+    t_expand_cliques:                        0.007929801940918
+- Verify:
+    is_chordal:                                           True
+  Output:
+    clique_trees:
+    - num:                                                2
+      min_size:                                          17
+      max_size:                                         983
+      sum_size:                                        1000
+      avg_size:                                         500
+      sum_weight:                                         0
+      avg_weight:                                         0
+      num_edges:                                     482789
+      width:                                              1
+      height:                                             1
+    nodes:                                                1000
+    edges:                                              482789
+  Stats:
+    randoms:                                              3016
+    total:                                   0.016870975494385
+  parameters:
+    edge_density:                            0.990000000000000
+    seed:                                                 None
+    edges_bound:                        494505.000000000000000
+    Algorithm:                                             MVA
+    n:                                                    1000
+  Times:
+    t_convert_nx:                            0.910855054855347
+    t_merge_cliques:                         0.009012937545776
+    t_chordal:                               0.512449979782104
+    t_expand_cliques:                        0.007858037948608
