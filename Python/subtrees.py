@@ -28,6 +28,9 @@ class SimpleGraph(object):
         self.edges += 1
         # self.edges.append((node1, node2))
 
+    def size(self):
+        return self.edges
+
 
 class cForest(object):
     """

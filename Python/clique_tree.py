@@ -2,10 +2,9 @@ from subtrees import *
 import unittest
 from LexBFS import LexBFS
 
+
 class TreeStatistics(object):
-    __slots__ = ['num', 'min_size', 'max_size', 'sum_size',
-                 'avg_size', 'sum_weight', 'avg_weight',
-                 'num_edges', 'width', 'height']
+    __slots__ = ['num', 'min_size', 'max_size', 'sum_size', 'avg_size', 'sum_weight', 'avg_weight', 'num_edges', 'width', 'height']
 
     def __init__(self):
         self.num = 0
@@ -29,7 +28,6 @@ class TreeStatistics(object):
         return self.__str__()
 
 
-
 def is_subset(list1, list2):
     """
         Returns whether the list1 is subset of list2
@@ -50,6 +48,7 @@ def is_subset(list1, list2):
 
     return True
 
+
 def common_values(list1, list2):
     """
         Returns the common values of two sorted arrays
@@ -58,7 +57,7 @@ def common_values(list1, list2):
     while i < len_a and j < len_b:
         if list1[i] > list2[j]:
             j += 1
-        elif  list1[i] < list2[j]:
+        elif list1[i] < list2[j]:
             i += 1
         else:
             common += 1
@@ -78,6 +77,7 @@ def dfs(graph, root):
             visited.add(vertex)
             stack.extend(set(vertex.Ax) - visited)
     return visited
+
 
 def dfs_tree(tree, root):
     """
@@ -214,8 +214,7 @@ def PerfectEliminationOrdering(G):
         if leftNeighbors[v]:
             parent[v] = B[max([position[w] for w in leftNeighbors[v]])]
             if not leftNeighbors[v] - {parent[v]} <= leftNeighbors[parent[v]]:
-                raise ValueError(
-                    "Input to PerfectEliminationOrdering is not chordal")
+                raise ValueError("Input to PerfectEliminationOrdering is not chordal")
     B.reverse()
     return B
 

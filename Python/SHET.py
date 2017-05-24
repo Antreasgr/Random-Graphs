@@ -108,8 +108,8 @@ def post_process(run):
     # stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
-    out["nodes"] = run["parameters"]["n"] # len(graphs["nx_chordal"].nodes())
-    out["edges"] = graphs["nx_chordal"].edges # len(graphs["nx_chordal"].edges())
+    out["nodes"] = run["parameters"]["n"]  # len(graphs["nx_chordal"].nodes())
+    out["edges"] = graphs["nx_chordal"].size()  # len(graphs["nx_chordal"].edges())
     out["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
 
     temp_forest = cForest(1)
@@ -121,7 +121,7 @@ def post_process(run):
     stats["ncc"] = len(graphs["final_cforest"].ctree)
 
     # convert clique forest to nx for export to json
-    nx_ctrees = None # [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
+    nx_ctrees = None  # [convert_tree_networkx(tree) for tree in graphs["final_cforest"].ctree]
     # nx_ctrees.insert(0, convert_tree_networkx(graphs["tree"]))
 
     return nx_ctrees
@@ -140,9 +140,13 @@ if __name__ == '__main__':
             for i in range(10):
                 randomizer = Randomizer(2 * num)
 
-                Runners.append(runner_factory(num, par_k, "SHET", None, version=AlgorithmVersion.Dict))
+                Runners.append(runner_factory(num, "SHET", None, k=par_k, version=AlgorithmVersion.Dict))
+
                 chordal_generation(Runners[-1], randomizer)
                 trees1 = post_process(Runners[-1])
+                Runners[-1]["Stats"]["randoms"] = randomizer.total_count
+                # cleanup some memory
+                del Runners[-1]["Graphs"]
 
             print(".....Done")
             # RUNNER contains all data and statistics
@@ -154,4 +158,3 @@ if __name__ == '__main__':
                 print_statistics(Runners, file)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
-

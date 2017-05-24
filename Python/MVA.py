@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
+import collections
+
 from randomizer import *
 from numpy import core
-import os
 from UnionFind import UnionFind
 from nx_converters import *
 from clique_tree import TreeStatistics
@@ -20,7 +22,7 @@ from Runners import *
 """
 
 
-class MarkenzonParameters(object):
+class MVAParameters(object):
     __slots__ = [
         "num_maximal_cliques", "num_edges", "edges_list", "cardinality_array",
         "cliques"
@@ -98,7 +100,24 @@ def expand_cliques(n, rand):
             L.append((i, l, t))
         m += t
 
-    return MarkenzonParameters(l + 1, m, L, S, Q)
+    return MVAParameters(l + 1, m, L, S, Q)
+
+
+def dfs_width_height(parameters):
+    """
+        Calculates the width and height of the MVA clique tree using dfs
+    """
+    dfs_dict = {}
+    for (i, j, w) in parameters.edges_list:
+        if i not in dfs_dict:
+            dfs_dict[i] = TreeNode(i)
+        if j not in dfs_dict:
+            dfs_dict[j] = TreeNode(j)
+        dfs_dict[i].children.append(dfs_dict[j])
+
+    w_h = dfs_tree(None, dfs_dict[0])
+
+    return (w_h.width, w_h.height)
 
 
 def Run_MVA(num_vertices, edge_density):
@@ -109,44 +128,49 @@ def Run_MVA(num_vertices, edge_density):
     """
 
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
-    runner = runner_factory(num_vertices, edges_bound, "MVA", None, edge_density = edge_density)
+    runner = runner_factory(
+        num_vertices, "MVA", None, edges_bound=edges_bound, edge_density=edge_density)
 
     randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        p_markenzon = expand_cliques(runner["parameters"]["n"], randomizer)
+        p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
     print("- Expand cliques:")
-    print(p_markenzon)
+    print(p_mva)
 
     with Timer("t_merge_cliques", runner["Times"]):
-        merge_cliques(p_markenzon, runner["parameters"]["k"], randomizer)
+        merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
 
     runner["Stats"][
         "total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
+
     print("- Merge cliques:")
-    print(p_markenzon)
-    # nx_chordal = convert_markenzon_clique_tree_networkx2(
-    #    p_markenzon.cliques, num_vertices)
+    print(p_mva)
+
+    with Timer("t_convert_nx", runner["Times"]):
+        nx_chordal = convert_markenzon_clique_tree_networkx2(
+            p_mva.cliques, num_vertices)
+
+    with Timer("t_chordal", runner["Times"]):
+        runner["Verify"]["is_chordal"] = Chordal(nx_chordal)
 
     # calculate statistics
     stats = TreeStatistics()
-    stats.num = p_markenzon.num_maximal_cliques
-    stats.max_size = max(p_markenzon.cardinality_array)
-    stats.min_size = min(s for s in p_markenzon.cardinality_array if s > 0)
-    stats.sum_size = sum(s for s in p_markenzon.cardinality_array if s > 0)
+    stats.num = p_mva.num_maximal_cliques
+    stats.max_size = max(p_mva.cardinality_array)
+    stats.min_size = min(s for s in p_mva.cardinality_array if s > 0)
+    stats.sum_size = sum(s for s in p_mva.cardinality_array if s > 0)
     stats.avg_size = stats.sum_size / stats.num
-    stats.num_edges = p_markenzon.num_edges
+    stats.num_edges = p_mva.num_edges
 
-    stats.sum_weight = sum(w for (_, _, w) in p_markenzon.edges_list)
+    stats.sum_weight = sum(w for (_, _, w) in p_mva.edges_list)
     stats.avg_weight = stats.sum_weight / stats.num_edges
 
-    # dfs?
-    stats.width = 0
-    stats.height = 0
+    # dfs for width and height
+    stats.width, stats.height = dfs_width_height(p_mva)
 
-    # runner["Output"]["nodes"] = len(nx_chordal.nodes())
+    runner["Stats"]["randoms"] = randomizer.total_count
     runner["Output"]["nodes"] = num_vertices
-    # runner["Output"]["edges"] = len(nx_chordal.edges())
-    runner["Output"]["edges"] = p_markenzon.num_edges
+    runner["Output"]["edges"] = p_mva.num_edges
     runner["Output"]["clique_trees"] = [stats]
 
     print_statistics([runner])
@@ -155,7 +179,7 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = [	500000, 1000000]
+NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000, 50000, 100000, 500000, 1000000]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 if __name__ == '__main__':
     for num in NUM_VERTICES:
@@ -164,9 +188,7 @@ if __name__ == '__main__':
             for i in range(10):
                 Runners.append(Run_MVA(num, edge_density))
 
-            filename = "Results/MVA/Run_{}_{}_{}.yml".format(
-                num, edge_density,
-                datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/BaseMVA/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))

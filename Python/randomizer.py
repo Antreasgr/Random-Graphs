@@ -37,6 +37,7 @@ class Randomizer(object):
     def __init__(self, size, seed=None):
         self.size = size
         self.local_index = 0
+        self.total_count = 0
         self.Seed = seed
         self.Rstate = RandomState(seed)
         self.np_random = self.Rstate.random_sample(size)
@@ -61,6 +62,7 @@ class Randomizer(object):
 
     def next_random(self, low, high):
         self.local_index += 1
+        self.total_count += 1
         if self.local_index >= self.size:
             #  print("Run out of random, reseting")
             self.local_index = 0

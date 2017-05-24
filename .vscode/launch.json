@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            "program": "${workspaceRoot}\\Python\\main.py",
+            "program": "${file}",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
                 "WaitOnAbnormalExit",
@@ -19,7 +19,7 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            "program": "${workspaceRoot}\\Python\\markenzonAlgorithm.py",
+            "program": "${workspaceRoot}\\Python\\MVA.py",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
                 "WaitOnAbnormalExit",

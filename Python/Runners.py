@@ -34,14 +34,13 @@ def print_statistics(runners, file=sys.stdout):
                                     print('      {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
 
 
-def runner_factory(num_of_vertices, parameter_k, algorithm="", seed=None, **kwargs):
+def runner_factory(num_of_vertices, algorithm="", seed=None, **kwargs):
     """
         Creates a new runner object to initiliaze the algorithm
     """
     run_dict = {
         "parameters": {
             "n": num_of_vertices,
-            "k": parameter_k,
             'seed': seed,
             'Algorithm': algorithm
         },
