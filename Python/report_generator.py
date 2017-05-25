@@ -2,6 +2,7 @@ import os
 import yaml
 import statistics
 import sys
+import csv
 from yaml import Loader, Dumper
 from clique_tree import *
 
@@ -9,30 +10,35 @@ from clique_tree import *
 #     yaml.dump([TreeStatistics(), TreeStatistics()], stream, Dumper=Dumper)
 
 
-def parse_data(path):
+def parse_data(path, output=True):
+    all_data = []
     report_path = path + "/Reports"
     files = [
-        f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))
+        file for file in os.listdir(path)
+        if os.path.isfile(os.path.join(path, file))
     ]
 
     os.makedirs(os.path.dirname(report_path + "/"), exist_ok=True)
 
-    for f in files:
-        filename = os.path.splitext(f)[0]
+    for file in files:
+        filename = os.path.splitext(file)[0]
         out_path = os.path.join(report_path, filename)
-        if not os.path.exists(out_path + ".csv"):
+        if not output or not os.path.exists(out_path + ".csv"):
             print(filename)
-            with open(os.path.join(path, f), 'r') as stream:
+            with open(os.path.join(path, file), 'r') as stream:
                 yml_data = yaml.load(stream, Loader=Loader)
                 acc = process_data(yml_data)
+                all_data.append(acc)
                 # print to stdout
-                print_data(yml_data, acc)
+                # print_data(yml_data, acc)
 
                 # print csv and md format
-                formats = ["csv"]
-                for frmt in ["csv", "md"]:
-                    with open(out_path + "." + frmt, 'w') as out_file:
-                        print_data(yml_data, acc, out_file, frmt)
+                if output:
+                    for frmt in ["csv", "md"]:
+                        with open(out_path + "." + frmt, 'w') as out_file:
+                            print_data(yml_data, acc, out_file, frmt)
+
+    return all_data
 
 
 def process_data(run_stats):
@@ -55,6 +61,7 @@ def process_data(run_stats):
 
                             accumulative[section][t][tree_index][
                                 treesection].append(tree[treesection])
+    accumulative["Parameters"] = run_stats["Run"][0]["parameters"]
     return accumulative
 
 
@@ -165,6 +172,104 @@ def print_mean_std(list_values,
             print(line, file=report_file)
 
 
+def sort_data_fn(a):
+    par = a["Parameters"]
+    k = par["k"] if "k" in par else par["edge_density"]
+    return par["Algorithm"], par["n"], k
+
+
+def generate_accumulative_report(all_data_filename):
+    with open(all_data_filename, 'r') as stream:
+        all_data = yaml.load(stream, Loader=Loader)
+
+    mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "MVA"]
+    shet_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
+
+    del all_data
+    mva_data.sort(key=sort_data_fn)
+    shet_data.sort(key=sort_data_fn)
+    lines = []
+
+    for i, datum in enumerate(mva_data):
+        ct = datum["Output"]["clique_trees"][0]
+        if i == 0:
+            lines.append([datum["Parameters"]["Algorithm"]])
+            columns_stats = [o for o in datum["Stats"]]
+            columns_ct = [o for o in ct]
+            lines.append(["n", "e.d"] + [
+                header if not twice else ""
+                for header in columns_stats for twice in range(2)
+            ] + [
+                header if not twice else ""
+                for header in columns_ct for twice in range(2)
+            ])
+
+            lines.append(["", ""] + [
+                twice for header in columns_stats for twice in ["mean", "std"]
+            ] + [twice for header in columns_ct for twice in ["mean", "std"]])
+
+        lines.append(get_accumulative_line(i, datum, ct, columns_stats, columns_ct))
+
+    for i, datum in enumerate(shet_data):
+        ct = datum["Output"]["clique_trees"][1]
+        if i == 0:
+            lines.append([datum["Parameters"]["Algorithm"]])
+            columns_stats = [o for o in datum["Stats"]]
+            columns_ct = [o for o in ct]
+            lines.append(["n", "k/n."] + [
+                header if not twice else ""
+                for header in columns_stats for twice in range(2)
+            ] + [
+                header if not twice else ""
+                for header in columns_ct for twice in range(2)
+            ])
+
+            lines.append(["", ""] + [
+                twice for header in columns_stats for twice in ["mean", "std"]
+            ] + [twice for header in columns_ct for twice in ["mean", "std"]])
+
+        lines.append(get_accumulative_line(i, datum, ct, columns_stats, columns_ct))
+
+    return lines
+
+
+def get_accumulative_line(i, datum, ct, columns_stats, columns_ct):
+    par = datum["Parameters"]
+    stats = datum["Stats"]
+
+    l = [
+        par["n"], par["edge_density"]
+        if "edge_density" in par else float(par["k"]) / par["n"]
+    ]
+
+    l.extend([
+        fn(stats[k]) if k in stats else ""
+        for k in columns_stats for fn in [statistics.mean, statistics.stdev]
+    ])
+
+    l.extend([
+        fn(ct[k])
+        for k in columns_ct for fn in [statistics.mean, statistics.stdev]
+    ])
+
+    return l
+
+def localize_floats(row):
+    return [
+        str(el).replace('.', ',') if isinstance(el, float) else el 
+        for el in row
+    ]
+
 if __name__ == '__main__':
-    parse_data("Results/MVA")
-    parse_data("Results/SHET")
+    # mva_data = parse_data("Results/BaseMVA", False)
+    # shet_data = parse_data("Results/SHET", False)
+
+    # print("Done...")
+    # with open(os.path.join("Results", "all_data.yml"), 'w') as stream:
+    #     yaml.dump(mva_data + shet_data, stream)
+
+    all_lines = generate_accumulative_report(os.path.join("Results", "all_data.yml"))
+    print(all_lines)
+    with open(os.path.join("Results", "final_report.csv"), 'w') as stream:
+        writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+        writer.writerows((localize_floats(row) for row in all_lines))
