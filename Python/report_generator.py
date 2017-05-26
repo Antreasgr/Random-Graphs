@@ -193,49 +193,64 @@ def generate_accumulative_report(all_data_filename):
     for i, datum in enumerate(mva_data):
         ct = datum["Output"]["clique_trees"][0]
         if i == 0:
-            lines.append([datum["Parameters"]["Algorithm"]])
-            columns_stats = [o for o in datum["Stats"]]
-            columns_ct = [o for o in ct]
-            lines.append(["n", "e.d"] + [
-                header if not twice else ""
-                for header in columns_stats for twice in range(2)
-            ] + [
-                header if not twice else ""
-                for header in columns_ct for twice in range(2)
-            ])
+            header_lines, columns_stats, columns_times, columns_ct = accumulative_header(
+                ["n", "e.d."], datum, ct)
+            lines.extend(header_lines)
 
-            lines.append(["", ""] + [
-                twice for header in columns_stats for twice in ["mean", "std"]
-            ] + [twice for header in columns_ct for twice in ["mean", "std"]])
-
-        lines.append(get_accumulative_line(i, datum, ct, columns_stats, columns_ct))
+        other_lines = accumulative_line(i, datum, ct, columns_stats,
+                                        columns_times, columns_ct)
+        lines.append(other_lines)
 
     for i, datum in enumerate(shet_data):
         ct = datum["Output"]["clique_trees"][1]
         if i == 0:
-            lines.append([datum["Parameters"]["Algorithm"]])
-            columns_stats = [o for o in datum["Stats"]]
-            columns_ct = [o for o in ct]
-            lines.append(["n", "k/n."] + [
-                header if not twice else ""
-                for header in columns_stats for twice in range(2)
-            ] + [
-                header if not twice else ""
-                for header in columns_ct for twice in range(2)
-            ])
+            header_lines, columns_stats, columns_times, columns_ct = accumulative_header(
+                ["n", "k/n."], datum, ct)
+            lines.extend(header_lines)
 
-            lines.append(["", ""] + [
-                twice for header in columns_stats for twice in ["mean", "std"]
-            ] + [twice for header in columns_ct for twice in ["mean", "std"]])
-
-        lines.append(get_accumulative_line(i, datum, ct, columns_stats, columns_ct))
+        other_lines = accumulative_line(i, datum, ct, columns_stats,
+                                        columns_times, columns_ct)
+        lines.append(other_lines)
 
     return lines
 
 
-def get_accumulative_line(i, datum, ct, columns_stats, columns_ct):
+def accumulative_header(parameters, datum, ct):
+    columns_stats = [o for o in datum["Stats"]]
+    columns_times = [o for o in datum["Times"]]
+    columns_ct = [o for o in ct]
+
+    l_1 = [datum["Parameters"]["Algorithm"]]
+    l_11 = ["" for _ in parameters] + ["Stats"] + ["" for _ in range(2 * len(columns_stats) - 1)]
+    l_11 += ["Times"] + ["" for _ in range(2 * len(columns_times) - 1)]
+    l_11 += ["Clique Tree"] + ["" for _ in range(2 * len(columns_ct) - 1)]
+
+    l_2 = parameters
+    l_2 += [
+        header if not twice else ""
+        for header in columns_stats for twice in range(2)
+    ]
+    l_2 += [
+        header if not twice else ""
+        for header in columns_times for twice in range(2)
+    ]
+    l_2 += [
+        header if not twice else ""
+        for header in columns_ct for twice in range(2)
+    ]
+
+    l_3 = ["", ""]
+    l_3 += [twice for header in columns_stats for twice in ["mean", "std"]]
+    l_3 += [twice for header in columns_times for twice in ["mean", "std"]]
+    l_3 += [twice for header in columns_ct for twice in ["mean", "std"]]
+
+    return [l_1, l_11, l_2, l_3], columns_stats, columns_times, columns_ct
+
+
+def accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct):
     par = datum["Parameters"]
     stats = datum["Stats"]
+    times = datum["Times"]
 
     l = [
         par["n"], par["edge_density"]
@@ -248,17 +263,24 @@ def get_accumulative_line(i, datum, ct, columns_stats, columns_ct):
     ])
 
     l.extend([
+        fn(times[k]) if k in times else ""
+        for k in columns_times for fn in [statistics.mean, statistics.stdev]
+    ])
+
+    l.extend([
         fn(ct[k])
         for k in columns_ct for fn in [statistics.mean, statistics.stdev]
     ])
 
     return l
 
+
 def localize_floats(row):
     return [
-        str(el).replace('.', ',') if isinstance(el, float) else el 
+        str(el).replace('.', ',') if isinstance(el, float) else el
         for el in row
     ]
+
 
 if __name__ == '__main__':
     # mva_data = parse_data("Results/BaseMVA", False)
@@ -268,8 +290,14 @@ if __name__ == '__main__':
     # with open(os.path.join("Results", "all_data.yml"), 'w') as stream:
     #     yaml.dump(mva_data + shet_data, stream)
 
-    all_lines = generate_accumulative_report(os.path.join("Results", "all_data.yml"))
+    all_lines = generate_accumulative_report(
+        os.path.join("Results", "all_data.yml"))
     print(all_lines)
     with open(os.path.join("Results", "final_report.csv"), 'w') as stream:
-        writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+        writer = csv.writer(
+            stream,
+            delimiter=';',
+            quotechar='"',
+            quoting=csv.QUOTE_MINIMAL,
+            lineterminator='\n')
         writer.writerows((localize_floats(row) for row in all_lines))
