@@ -185,9 +185,16 @@ def generate_accumulative_report(all_data_filename):
     mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "MVA"]
     shet_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
 
+    
+
     del all_data
+    for d in shet_data:
+        if "edge_density" in d["Output"]:
+            d["Stats"]["edge_density"] = d["Output"]["edge_density"]
+            
     mva_data.sort(key=sort_data_fn)
     shet_data.sort(key=sort_data_fn)
+
     lines = []
 
     for i, datum in enumerate(mva_data):
