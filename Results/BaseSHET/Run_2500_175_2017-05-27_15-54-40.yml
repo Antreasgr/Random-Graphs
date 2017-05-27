@@ -1,0 +1,401 @@
+Run:
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.020048809446195
+    t_subtrees_2:                            4.650098946831548
+    t_ctree:                                 2.080352269154474
+  Verify:
+  Stats:
+    total:                                   6.750500025432217
+    ncc:                                                     1
+    randoms:                                            927423
+  Output:
+    nodes:                                                2500
+    edges:                                             2058797
+    edge_density:                            0.659078671468587
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           3
+      max_size:                                        1583
+      sum_size:                                      462462
+      avg_size:                                    184.9848
+      sum_weight:                                    459962
+      avg_weight:                        184.05842336934774
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            17
+    - num:                                               27
+      min_size:                                          80
+      max_size:                                        1583
+      sum_size:                                       17758
+      avg_size:                           657.7037037037037
+      sum_weight:                                     15258
+      avg_weight:                         586.8461538461538
+      num_edges:                                         26
+      width:                                              5
+      height:                                             8
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.176982888018529
+    t_subtrees_2:                            4.611523508108121
+    t_ctree:                                 2.032287015110171
+  Verify:
+  Stats:
+    total:                                   6.820793411236821
+    ncc:                                                     1
+    randoms:                                            982975
+  Output:
+    nodes:                                                2500
+    edges:                                             1963827
+    edge_density:                            0.628676110444178
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                        1500
+      sum_size:                                      490238
+      avg_size:                                    196.0952
+      sum_weight:                                    487738
+      avg_weight:                         195.1732693077231
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            17
+    - num:                                               27
+      min_size:                                          69
+      max_size:                                        1500
+      sum_size:                                       15962
+      avg_size:                           591.1851851851852
+      sum_weight:                                     13462
+      avg_weight:                         517.7692307692307
+      num_edges:                                         26
+      width:                                              4
+      height:                                             8
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.033959057825427
+    t_subtrees_2:                            4.275384547635298
+    t_ctree:                                 1.976700641200068
+  Verify:
+  Stats:
+    total:                                   6.286044246660794
+    ncc:                                                     1
+    randoms:                                            923277
+  Output:
+    nodes:                                                2500
+    edges:                                             1644960
+    edge_density:                            0.526597839135654
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                        1218
+      sum_size:                                      460389
+      avg_size:                                    184.1556
+      sum_weight:                                    457889
+      avg_weight:                        183.22889155662264
+      num_edges:                                       2499
+      width:                                             10
+      height:                                            15
+    - num:                                               29
+      min_size:                                          40
+      max_size:                                        1218
+      sum_size:                                       16547
+      avg_size:                           570.5862068965517
+      sum_weight:                                     14047
+      avg_weight:                        501.67857142857144
+      num_edges:                                         28
+      width:                                              5
+      height:                                             7
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.050461347923147
+    t_subtrees_2:                            3.899440183166860
+    t_ctree:                                 1.803041014886929
+  Verify:
+  Stats:
+    total:                                   5.752942545976936
+    ncc:                                                     1
+    randoms:                                            745851
+  Output:
+    nodes:                                                2500
+    edges:                                             1789905
+    edge_density:                            0.572998799519808
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           1
+      max_size:                                        1406
+      sum_size:                                      371676
+      avg_size:                                    148.6704
+      sum_weight:                                    369176
+      avg_weight:                         147.7294917967187
+      num_edges:                                       2499
+      width:                                             14
+      height:                                            15
+    - num:                                               26
+      min_size:                                          68
+      max_size:                                        1406
+      sum_size:                                       15680
+      avg_size:                           603.0769230769231
+      sum_weight:                                     13180
+      avg_weight:                                     527.2
+      num_edges:                                         25
+      width:                                              3
+      height:                                             7
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.022006922352432
+    t_subtrees_2:                            4.045236299781095
+    t_ctree:                                 2.235860434615034
+  Verify:
+  Stats:
+    total:                                   6.303103656748561
+    ncc:                                                     1
+    randoms:                                            838673
+  Output:
+    nodes:                                                2500
+    edges:                                             2548919
+    edge_density:                            0.815980472188876
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                        1880
+      sum_size:                                      418087
+      avg_size:                                    167.2348
+      sum_weight:                                    415587
+      avg_weight:                        166.30132052821128
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            14
+    - num:                                               15
+      min_size:                                           3
+      max_size:                                        1880
+      sum_size:                                       12721
+      avg_size:                           848.0666666666667
+      sum_weight:                                     10221
+      avg_weight:                         730.0714285714286
+      num_edges:                                         14
+      width:                                              5
+      height:                                             3
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.023781376830556
+    t_subtrees_2:                            3.689304217896733
+    t_ctree:                                 1.899176302191165
+  Verify:
+  Stats:
+    total:                                   5.612261896918454
+    ncc:                                                     1
+    randoms:                                            784281
+  Output:
+    nodes:                                                2500
+    edges:                                             2073136
+    edge_density:                            0.663668987595038
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                        1598
+      sum_size:                                      390891
+      avg_size:                                    156.3564
+      sum_weight:                                    388391
+      avg_weight:                        155.41856742697078
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            14
+    - num:                                               23
+      min_size:                                         219
+      max_size:                                        1598
+      sum_size:                                       16960
+      avg_size:                           737.3913043478261
+      sum_weight:                                     14460
+      avg_weight:                         657.2727272727273
+      num_edges:                                         22
+      width:                                              4
+      height:                                             5
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.018278451438562
+    t_subtrees_2:                            4.233668822889456
+    t_ctree:                                 1.852337941066139
+  Verify:
+  Stats:
+    total:                                   6.104285215394157
+    ncc:                                                     1
+    randoms:                                            907711
+  Output:
+    nodes:                                                2500
+    edges:                                             1892473
+    edge_density:                            0.605833693477391
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           2
+      max_size:                                        1400
+      sum_size:                                      452606
+      avg_size:                                    181.0424
+      sum_weight:                                    450106
+      avg_weight:                        180.11444577831134
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            18
+    - num:                                               35
+      min_size:                                         189
+      max_size:                                        1400
+      sum_size:                                       21567
+      avg_size:                                       616.2
+      sum_weight:                                     19067
+      avg_weight:                         560.7941176470588
+      num_edges:                                         34
+      width:                                              5
+      height:                                            10
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.027827324209369
+    t_subtrees_2:                            4.228845570230419
+    t_ctree:                                 1.841978991250983
+  Verify:
+  Stats:
+    total:                                   6.098651885690771
+    ncc:                                                     1
+    randoms:                                            895485
+  Output:
+    nodes:                                                2500
+    edges:                                             1880161
+    edge_density:                            0.601892276910764
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           0
+      max_size:                                        1268
+      sum_size:                                      446493
+      avg_size:                                    178.5972
+      sum_weight:                                    443993
+      avg_weight:                        177.66826730692276
+      num_edges:                                       2499
+      width:                                             12
+      height:                                            16
+    - num:                                               14
+      min_size:                                         587
+      max_size:                                        1268
+      sum_size:                                       12631
+      avg_size:                           902.2142857142857
+      sum_weight:                                     10131
+      avg_weight:                         779.3076923076923
+      num_edges:                                         13
+      width:                                              3
+      height:                                             5
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.027428259706682
+    t_subtrees_2:                            3.820137293209314
+    t_ctree:                                 1.782956702696254
+  Verify:
+  Stats:
+    total:                                   5.630522255612249
+    ncc:                                                     1
+    randoms:                                            794159
+  Output:
+    nodes:                                                2500
+    edges:                                             1667964
+    edge_density:                            0.533962064825930
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           3
+      max_size:                                        1436
+      sum_size:                                      395830
+      avg_size:                                     158.332
+      sum_weight:                                    393330
+      avg_weight:                        157.39495798319328
+      num_edges:                                       2499
+      width:                                             11
+      height:                                            17
+    - num:                                               38
+      min_size:                                         130
+      max_size:                                        1436
+      sum_size:                                       18707
+      avg_size:                           492.2894736842105
+      sum_weight:                                     16207
+      avg_weight:                        438.02702702702703
+      num_edges:                                         37
+      width:                                              6
+      height:                                             8
+- parameters:
+    n:                                                    2500
+    seed:                                                 None
+    Algorithm:                                            SHET
+    k:                                                     175
+    version:                             AlgorithmVersion.Dict
+  Times:
+    t_real_tree:                             0.190549374247041
+    t_subtrees_2:                            3.981477808565785
+    t_ctree:                                 1.907709250274223
+  Verify:
+  Stats:
+    total:                                   6.079736433087049
+    ncc:                                                     1
+    randoms:                                            822455
+  Output:
+    nodes:                                                2500
+    edges:                                             2067187
+    edge_density:                            0.661764545818327
+    clique_trees:
+    - num:                                             2500
+      min_size:                                           2
+      max_size:                                        1606
+      sum_size:                                      409978
+      avg_size:                                    163.9912
+      sum_weight:                                    407478
+      avg_weight:                         163.0564225690276
+      num_edges:                                       2499
+      width:                                             10
+      height:                                            15
+    - num:                                               30
+      min_size:                                         148
+      max_size:                                        1606
+      sum_size:                                       19079
+      avg_size:                           635.9666666666667
+      sum_weight:                                     16579
+      avg_weight:                         571.6896551724138
+      num_edges:                                         29
+      width:                                              5
+      height:                                             8
