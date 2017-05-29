@@ -290,17 +290,17 @@ def localize_floats(row):
 
 
 if __name__ == '__main__':
-    mva_data = parse_data("Results/BaseMVA", False)
-    shet_data = parse_data("Results/BaseSHET", False)
+    mva_data = parse_data("Results/TreeMVA", False)
+    shet_data = [] #parse_data("Results/BaseSHET", False)
 
     print("Done...")
     with open(os.path.join("Results", "all_data.yml"), 'w') as stream:
         yaml.dump(mva_data + shet_data, stream)
 
     all_lines = generate_accumulative_report(
-        os.path.join("Results", "all_data.yml"))
+        os.path.join("Results", "all_data_tree.yml"))
     print(all_lines)
-    with open(os.path.join("Results", "final_report.csv"), 'w') as stream:
+    with open(os.path.join("Results", "final_report_tree.csv"), 'w') as stream:
         writer = csv.writer(
             stream,
             delimiter=';',

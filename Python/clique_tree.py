@@ -4,7 +4,11 @@ from LexBFS import LexBFS
 
 
 class TreeStatistics(object):
-    __slots__ = ['num', 'min_size', 'max_size', 'sum_size', 'avg_size', 'sum_weight', 'avg_weight', 'num_edges', 'width', 'height']
+    __slots__ = [
+        'num', 'min_size', 'max_size', 'sum_size', 'avg_size', 'sum_weight',
+        'avg_weight', 'num_edges', 'width', 'height', 'min_weight',
+        'max_weight'
+    ]
 
     def __init__(self):
         self.num = 0
@@ -14,6 +18,8 @@ class TreeStatistics(object):
         self.avg_size = 0
         self.sum_weight = 0
         self.avg_weight = 0
+        self.min_weight = float("inf")
+        self.max_weight = float("-inf")
         self.num_edges = 0
         self.width = float("-inf")
         self.height = float("-inf")
@@ -21,7 +27,8 @@ class TreeStatistics(object):
     def __str__(self):
         result = ''
         for slot in self.__slots__:
-            result += '{0:30} {1!s:>22}\n'.format(slot + ':', getattr(self, slot))
+            result += '{0:30} {1!s:>22}\n'.format(slot + ':',
+                                                  getattr(self, slot))
         return result
 
     def __repr__(self):
@@ -103,6 +110,9 @@ def dfs_tree(tree, root):
             stats.sum_size += len(vertex.cliqueList)
             stats.min_size = min(stats.min_size, len(vertex.cliqueList))
             stats.max_size = max(stats.max_size, len(vertex.cliqueList))
+            if new_c:
+                stats.min_weight = min(stats.min_weight, min(c.weight for c in new_c))
+                stats.max_weight = max(stats.max_weight, max(c.weight for c in new_c))
 
             stack.extend(new_c)
     return stats
@@ -110,7 +120,7 @@ def dfs_tree(tree, root):
 
 def dfs_forest(forest):
     """
-        Goes through a forest using DFS, and compute max children, its depth, and the level of each node 
+        Goes through a forest using DFS, and compute max children, its depth, and the level of each node
     """
     stats = TreeStatistics()
     for tree in forest.ctree:
@@ -123,6 +133,8 @@ def dfs_forest(forest):
         stats.width = max(tree_stats.width, stats.width)
         stats.height = max(tree_stats.height, stats.height)
         stats.sum_weight += tree_stats.sum_weight
+        stats.min_weight = min(stats.min_weight, tree_stats.min_weight)
+        stats.max_weight = max(stats.max_weight, tree_stats.max_weight)
         stats.num_edges += tree_stats.num_edges
 
     stats.avg_size = stats.sum_size / stats.num
@@ -214,7 +226,8 @@ def PerfectEliminationOrdering(G):
         if leftNeighbors[v]:
             parent[v] = B[max([position[w] for w in leftNeighbors[v]])]
             if not leftNeighbors[v] - {parent[v]} <= leftNeighbors[parent[v]]:
-                raise ValueError("Input to PerfectEliminationOrdering is not chordal")
+                raise ValueError(
+                    "Input to PerfectEliminationOrdering is not chordal")
     B.reverse()
     return B
 

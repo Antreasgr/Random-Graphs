@@ -103,6 +103,19 @@ def expand_cliques(n, rand):
     return MVAParameters(l + 1, m, L, S, Q)
 
 
+def expand_tree(n, rand):
+    Q, S, L, m, l = [set([0])], [1], [], 0, 0
+    for u in range(1, n):
+        i = rand.next_random(0, l + 1)
+        Q.append(set([u]))
+        S.append(1)
+        l += 1
+        L.append((i, l, 0))
+        m += 0
+
+    return MVAParameters(l + 1, m, L, S, Q)
+
+
 def dfs_width_height(parameters):
     """
         Calculates the width and height of the MVA clique tree using dfs
@@ -129,11 +142,17 @@ def Run_MVA(num_vertices, edge_density):
 
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
     runner = runner_factory(
-        num_vertices, "MVA", None, edges_bound=edges_bound, edge_density=edge_density)
+        num_vertices,
+        "MVA",
+        None,
+        edges_bound=edges_bound,
+        edge_density=edge_density)
 
     randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+        # p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+        p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+
     print("- Expand cliques:")
     print(p_mva)
 
@@ -160,17 +179,20 @@ def Run_MVA(num_vertices, edge_density):
     stats.min_size = min(s for s in p_mva.cardinality_array if s > 0)
     stats.sum_size = sum(s for s in p_mva.cardinality_array if s > 0)
     stats.avg_size = stats.sum_size / stats.num
-    stats.num_edges = p_mva.num_edges
+    stats.num_edges = len(p_mva.edges_list)
 
-    stats.sum_weight = sum(w for (_, _, w) in p_mva.edges_list)
-    stats.avg_weight = stats.sum_weight / stats.num_edges
+    if (p_mva.edges_list):
+        stats.sum_weight = sum(w for (_, _, w) in p_mva.edges_list)
+        stats.min_weight = min(w for (_, _, w) in p_mva.edges_list)
+        stats.max_weight = max(w for (_, _, w) in p_mva.edges_list)
+        stats.avg_weight = stats.sum_weight / stats.num_edges
 
     # dfs for width and height
     stats.width, stats.height = dfs_width_height(p_mva)
 
     runner["Stats"]["randoms"] = randomizer.total_count
     runner["Output"]["nodes"] = num_vertices
-    runner["Output"]["edges"] = p_mva.num_edges
+    runner["Stats"]["edges"] = p_mva.num_edges
     runner["Output"]["clique_trees"] = [stats]
 
     print_statistics([runner])
@@ -179,7 +201,9 @@ def Run_MVA(num_vertices, edge_density):
     return runner
 
 
-NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000, 50000, 100000, 500000, 1000000]
+NUM_VERTICES = [
+    50, 100, 500, 1000, 2500, 5000, 10000, 50000, 100000, 500000, 1000000
+]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 if __name__ == '__main__':
     for num in NUM_VERTICES:
@@ -188,11 +212,13 @@ if __name__ == '__main__':
             for i in range(10):
                 Runners.append(Run_MVA(num, edge_density))
 
-            filename = "Results/BaseMVA/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/TreeMVA/Run_{}_{}_{}.yml".format(
+                num, edge_density,
+                datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'wb') as file:
+            with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
             print("Done")
