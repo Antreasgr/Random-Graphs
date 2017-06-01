@@ -7,7 +7,7 @@ class TreeStatistics(object):
     __slots__ = [
         'num', 'min_size', 'max_size', 'sum_size', 'avg_size', 'sum_weight',
         'avg_weight', 'num_edges', 'width', 'height', 'min_weight',
-        'max_weight'
+        'max_weight', 'distribution_size', 'distribution_weight'
     ]
 
     def __init__(self):
@@ -23,6 +23,8 @@ class TreeStatistics(object):
         self.num_edges = 0
         self.width = float("-inf")
         self.height = float("-inf")
+        self.distribution_size = {}
+        self.distribution_weight = {}
 
     def __str__(self):
         result = ''
@@ -98,6 +100,8 @@ def dfs_tree(tree, root):
         vertex = stack.pop()
         if vertex not in visited:
             visited.add(vertex)
+            size = len(vertex.cliqueList)
+
             new_c = set(vertex.children) - visited
             stats.num_edges += len(new_c)
             for c in new_c:
@@ -105,11 +109,20 @@ def dfs_tree(tree, root):
                 stats.sum_weight += c.weight
                 c.height = vertex.height + 1
 
+                if c.weight not in stats.distribution_weight:
+                    stats.distribution_weight[c.weight] = 0
+                stats.distribution_weight[c.weight] += 1
+
             stats.width = max(stats.width, len(new_c))
             stats.height = max(stats.height, vertex.height)
-            stats.sum_size += len(vertex.cliqueList)
-            stats.min_size = min(stats.min_size, len(vertex.cliqueList))
-            stats.max_size = max(stats.max_size, len(vertex.cliqueList))
+            stats.sum_size += size
+            stats.min_size = min(stats.min_size, size)
+            stats.max_size = max(stats.max_size, size)
+
+            if size not in stats.distribution_size:
+                stats.distribution_size[size] = 0
+            stats.distribution_size[size] += 1
+
             if new_c:
                 stats.min_weight = min(stats.min_weight, min(c.weight for c in new_c))
                 stats.max_weight = max(stats.max_weight, max(c.weight for c in new_c))

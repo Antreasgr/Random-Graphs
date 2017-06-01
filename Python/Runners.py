@@ -1,5 +1,7 @@
 from __future__ import print_function
 import sys
+import collections
+
 
 def print_statistics(runners, file=sys.stdout):
     """
@@ -28,8 +30,12 @@ def print_statistics(runners, file=sys.stdout):
                         print('    ' + sub + ":", file=file)
                         for ctree in run[section][sub]:
                             for i_ctree, c_value in enumerate(ctree.__slots__):
+                                attr_value = getattr(ctree, c_value)
                                 if i_ctree == 0:
-                                    print('    - {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
+                                    print('    - {0:30} {1!s:>22}'.format(c_value + ':', attr_value), file=file)
+                                elif isinstance(attr_value, collections.Counter):
+                                    print('      {0:30} {1!s:>22}'.format(c_value + ':', '!!python/object/apply:collections.Counter'), file=file)
+                                    print('      - {0:}'.format(dict.__repr__(attr_value)), file=file)
                                 else:
                                     print('      {0:30} {1!s:>22}'.format(c_value + ':', getattr(ctree, c_value)), file=file)
 

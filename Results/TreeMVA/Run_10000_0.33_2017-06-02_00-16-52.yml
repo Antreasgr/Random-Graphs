@@ -1,0 +1,361 @@
+Run:
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.060428743431430
+    t_merge_cliques:                         0.172338514572175
+    t_convert_nx:                           42.914106913101250
+    t_chordal:                              36.401081331667001
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.232767258003605
+    randoms:                                             29653
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              517
+      min_size:                                           2
+      max_size:                                        5498
+      sum_size:                                       10516
+      avg_size:                          20.340425531914892
+      sum_weight:                                       516
+      avg_weight:                                       1.0
+      num_edges:                                        516
+      width:                                            325
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5498: 1, 1616: 1, 85: 1, 12: 3, 75: 1, 66: 1, 207: 1, 36: 1, 165: 1, 121: 1, 72: 1, 2: 253, 108: 1, 117: 1, 43: 2, 4: 43, 13: 3, 34: 1, 3: 94, 23: 2, 10: 3, 6: 18, 26: 2, 11: 9, 100: 1, 15: 6, 14: 4, 29: 1, 18: 3, 19: 3, 16: 2, 7: 12, 30: 1, 8: 5, 5: 25, 17: 3, 24: 3, 9: 2, 22: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 516}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.065795461178823
+    t_merge_cliques:                         0.181285888922048
+    t_convert_nx:                           40.672740139368670
+    t_chordal:                              25.071353347550485
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.247081350100871
+    randoms:                                             29806
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              426
+      min_size:                                           2
+      max_size:                                        5147
+      sum_size:                                       10425
+      avg_size:                          24.471830985915492
+      sum_weight:                                       425
+      avg_weight:                                       1.0
+      num_edges:                                        425
+      width:                                            250
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5147: 1, 2527: 1, 264: 1, 15: 3, 69: 1, 35: 1, 27: 1, 115: 1, 57: 1, 3: 69, 26: 2, 14: 4, 94: 1, 12: 7, 36: 1, 10: 8, 21: 4, 6: 12, 59: 1, 4: 36, 7: 12, 44: 1, 22: 2, 17: 3, 23: 1, 8: 10, 2: 203, 16: 3, 11: 1, 29: 2, 5: 20, 24: 1, 25: 2, 13: 3, 9: 4, 20: 1, 53: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 425}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.065995846861824
+    t_merge_cliques:                         0.177270665072228
+    t_convert_nx:                           43.330112028227177
+    t_chordal:                              37.358254780666357
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.243266511934053
+    randoms:                                             29541
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              671
+      min_size:                                           2
+      max_size:                                        5645
+      sum_size:                                       10670
+      avg_size:                          15.901639344262295
+      sum_weight:                                       670
+      avg_weight:                                       1.0
+      num_edges:                                        670
+      width:                                            389
+      height:                                             5
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5645: 1, 431: 1, 122: 1, 904: 1, 5: 35, 218: 1, 89: 1, 14: 4, 26: 2, 34: 1, 114: 1, 17: 3, 131: 1, 37: 2, 59: 1, 27: 2, 19: 8, 6: 16, 2: 340, 21: 1, 48: 1, 4: 51, 18: 2, 8: 9, 7: 18, 25: 1, 30: 2, 13: 4, 9: 12, 15: 3, 12: 6, 49: 1, 16: 3, 22: 1, 23: 1, 3: 122, 11: 4, 10: 6, 52: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 670}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.066825382140905
+    t_merge_cliques:                         0.180706579717025
+    t_convert_nx:                           43.540090620755109
+    t_chordal:                              37.620207001482413
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.247531961857931
+    randoms:                                             29699
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              423
+      min_size:                                           2
+      max_size:                                        5596
+      sum_size:                                       10422
+      avg_size:                          24.638297872340427
+      sum_weight:                                       422
+      avg_weight:                                       1.0
+      num_edges:                                        422
+      width:                                            244
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5596: 1, 756: 1, 583: 1, 51: 1, 814: 1, 193: 1, 4: 41, 125: 1, 97: 1, 88: 1, 21: 2, 37: 1, 36: 1, 69: 1, 105: 1, 9: 7, 17: 2, 14: 1, 16: 4, 35: 2, 38: 1, 60: 1, 5: 22, 8: 9, 3: 67, 2: 206, 10: 3, 13: 1, 46: 1, 7: 11, 6: 16, 55: 1, 63: 1, 18: 1, 24: 1, 12: 3, 11: 5, 15: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 422}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.066615096654459
+    t_merge_cliques:                         0.178492778775762
+    t_convert_nx:                           43.760935784069261
+    t_chordal:                              35.510804611670210
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.245107875430222
+    randoms:                                             29341
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              809
+      min_size:                                           2
+      max_size:                                        5692
+      sum_size:                                       10808
+      avg_size:                          13.359703337453647
+      sum_weight:                                       808
+      avg_weight:                                       1.0
+      num_edges:                                        808
+      width:                                            500
+      height:                                             5
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5692: 1, 624: 1, 326: 1, 70: 1, 38: 2, 20: 2, 72: 1, 207: 1, 16: 6, 14: 2, 63: 1, 65: 1, 59: 1, 10: 7, 71: 1, 40: 1, 29: 1, 23: 4, 46: 2, 30: 2, 42: 1, 27: 1, 41: 1, 13: 2, 9: 8, 17: 2, 22: 1, 25: 1, 8: 20, 4: 74, 2: 398, 21: 1, 55: 1, 32: 2, 11: 3, 6: 23, 5: 45, 7: 24, 15: 1, 19: 3, 39: 1, 3: 148, 28: 1, 12: 7, 24: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 808}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.066501760969913
+    t_merge_cliques:                         0.184922189249392
+    t_convert_nx:                           44.357698343421816
+    t_chordal:                              26.585220412302988
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.251423950219305
+    randoms:                                             29727
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              478
+      min_size:                                           2
+      max_size:                                        5662
+      sum_size:                                       10477
+      avg_size:                          21.918410041841003
+      sum_weight:                                       477
+      avg_weight:                                       1.0
+      num_edges:                                        477
+      width:                                            316
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5662: 1, 736: 1, 40: 1, 476: 1, 143: 1, 85: 1, 175: 1, 30: 2, 50: 1, 152: 1, 146: 1, 121: 1, 21: 3, 75: 1, 12: 4, 110: 1, 13: 1, 54: 1, 33: 1, 57: 2, 23: 2, 47: 1, 32: 1, 9: 9, 45: 1, 41: 1, 17: 3, 4: 34, 18: 3, 15: 1, 8: 12, 44: 1, 11: 4, 16: 3, 42: 1, 6: 19, 2: 224, 25: 1, 7: 16, 35: 1, 10: 8, 46: 1, 14: 3, 3: 75, 5: 23, 19: 3}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 477}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.066638992732351
+    t_merge_cliques:                         0.178072549175795
+    t_convert_nx:                           43.296347552751286
+    t_chordal:                              39.699278099483308
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.244711541908146
+    randoms:                                             29452
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              663
+      min_size:                                           2
+      max_size:                                        5527
+      sum_size:                                       10662
+      avg_size:                          16.081447963800905
+      sum_weight:                                       662
+      avg_weight:                                       1.0
+      num_edges:                                        662
+      width:                                            414
+      height:                                             5
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5527: 1, 1516: 1, 257: 1, 48: 1, 36: 2, 124: 1, 7: 11, 195: 1, 18: 1, 70: 1, 8: 14, 15: 3, 12: 6, 2: 340, 20: 3, 28: 1, 33: 2, 43: 2, 6: 35, 11: 2, 34: 2, 41: 1, 3: 106, 21: 1, 45: 1, 29: 1, 4: 51, 5: 39, 42: 1, 31: 1, 17: 4, 9: 8, 13: 8, 10: 5, 19: 1, 26: 1, 14: 2, 16: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 662}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.068253343488323
+    t_merge_cliques:                         0.171838062424285
+    t_convert_nx:                           44.271584729860024
+    t_chordal:                              38.069778254637185
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.240091405912608
+    randoms:                                             29066
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                             1046
+      min_size:                                           2
+      max_size:                                        5726
+      sum_size:                                       11045
+      avg_size:                          10.559273422562141
+      sum_weight:                                      1045
+      avg_weight:                                       1.0
+      num_edges:                                       1045
+      width:                                            687
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5726: 1, 75: 1, 35: 1, 223: 1, 68: 1, 76: 1, 6: 40, 297: 1, 40: 1, 59: 1, 26: 3, 39: 1, 45: 1, 28: 1, 54: 2, 5: 48, 27: 2, 11: 10, 2: 561, 73: 1, 32: 3, 3: 193, 44: 1, 83: 1, 37: 1, 9: 9, 23: 1, 29: 3, 30: 2, 17: 3, 21: 1, 14: 6, 15: 3, 12: 5, 22: 2, 20: 2, 33: 2, 7: 17, 4: 77, 13: 4, 25: 2, 19: 1, 8: 17, 18: 1, 10: 9, 16: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 1045}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.066845181748249
+    t_merge_cliques:                         0.179618966794806
+    t_convert_nx:                           44.632543181066467
+    t_chordal:                              26.759913373303789
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.246464148543055
+    randoms:                                             29570
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              545
+      min_size:                                           2
+      max_size:                                        5488
+      sum_size:                                       10544
+      avg_size:                          19.346788990825686
+      sum_weight:                                       544
+      avg_weight:                                       1.0
+      num_edges:                                        544
+      width:                                            337
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5488: 1, 1589: 1, 191: 1, 12: 4, 246: 1, 467: 1, 4: 53, 108: 1, 45: 1, 26: 1, 9: 10, 18: 1, 49: 2, 47: 2, 7: 9, 52: 2, 54: 1, 3: 107, 36: 1, 10: 7, 24: 1, 5: 34, 2: 262, 6: 19, 14: 2, 8: 6, 13: 5, 63: 1, 17: 2, 15: 1, 19: 2, 21: 1, 16: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 544}
+- parameters:
+    n:                                                   10000
+    seed:                                                 None
+    Algorithm:                                         TreeMVA
+    edges_bound:                        16498350.000000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.064817770215996
+    t_merge_cliques:                         0.175467535300413
+    t_convert_nx:                           44.148864373029937
+    t_chordal:                              37.588737573612889
+  Verify:
+    is_chordal:                                           True
+  Stats:
+    total:                                   0.240285305516409
+    randoms:                                             29280
+    edges:                                            16498350
+  Output:
+    nodes:                                               10000
+    clique_trees:
+    - num:                                              862
+      min_size:                                           2
+      max_size:                                        5717
+      sum_size:                                       10861
+      avg_size:                          12.599767981438514
+      sum_weight:                                       861
+      avg_weight:                                       1.0
+      num_edges:                                        861
+      width:                                            548
+      height:                                             4
+      min_weight:                                         1
+      max_weight:                                         1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {5717: 1, 219: 1, 327: 1, 77: 1, 121: 1, 41: 2, 73: 1, 60: 1, 10: 6, 19: 2, 14: 4, 63: 1, 5: 44, 165: 1, 68: 1, 127: 1, 12: 4, 42: 1, 15: 5, 59: 1, 117: 1, 9: 7, 22: 2, 27: 3, 20: 2, 3: 147, 177: 1, 32: 1, 51: 1, 2: 448, 57: 1, 8: 12, 49: 1, 4: 87, 6: 18, 13: 6, 7: 26, 40: 1, 31: 1, 11: 11, 34: 1, 21: 1, 23: 1, 17: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {1: 861}

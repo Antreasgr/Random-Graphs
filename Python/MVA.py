@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import collections
+import yaml
 
 from randomizer import *
 from numpy import core
@@ -104,19 +105,28 @@ def expand_cliques(n, rand):
 
 
 def expand_tree(n, rand):
-    Q, S, L, m, l = [set([0])], [1], [], 0, 0
-    for u in range(1, n):
-        i = rand.next_random(0, l + 1)
-        Q.append(set([u]))
-        S.append(1)
+    # we use lists instead of set because set is not indexable
+    # and we cannot select a random element easily
+
+    Q, S, L, m, l = [[0, 1]], [2], [], 1, 1
+    for u in range(2, n):
+        i = rand.next_random(0, l)
+        x, _ = rand.next_element(Q[i])
+
+        Q.append([x, u])
+        S.append(2)
         l += 1
-        L.append((i, l, 0))
-        m += 0
+        L.append((i, l - 1, 1))
+        m += 1
 
-    return MVAParameters(l + 1, m, L, S, Q)
+    # convert to set for the rest of the algorithm
+    for i, n in enumerate(Q):
+        Q[i] = set(Q[i])
+
+    return MVAParameters(l, m, L, S, Q)
 
 
-def dfs_width_height(parameters):
+def dfs_mva_width_height(parameters):
     """
         Calculates the width and height of the MVA clique tree using dfs
     """
@@ -128,22 +138,19 @@ def dfs_width_height(parameters):
             dfs_dict[j] = TreeNode(j)
         dfs_dict[i].children.append(dfs_dict[j])
 
-    w_h = dfs_tree(None, dfs_dict[0])
-
-    return (w_h.width, w_h.height)
+    dfs_stats = dfs_tree(None, dfs_dict[0])
+    return (dfs_stats.width, dfs_stats.height)
 
 
 def Run_MVA(num_vertices, edge_density):
     """
         Initialize and run the MVA algorithm
-        edge_density = m/(n(n-1)/2) =>
-        m = edge_density * (n(n-1)/2)
     """
 
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
     runner = runner_factory(
         num_vertices,
-        "MVA",
+        "TreeMVA",
         None,
         edges_bound=edges_bound,
         edge_density=edge_density)
@@ -181,14 +188,20 @@ def Run_MVA(num_vertices, edge_density):
     stats.avg_size = stats.sum_size / stats.num
     stats.num_edges = len(p_mva.edges_list)
 
-    if (p_mva.edges_list):
+    # distribution of size
+    stats.distribution_size = collections.Counter((s for s in p_mva.cardinality_array if s > 0))
+
+    if p_mva.edges_list:
         stats.sum_weight = sum(w for (_, _, w) in p_mva.edges_list)
         stats.min_weight = min(w for (_, _, w) in p_mva.edges_list)
         stats.max_weight = max(w for (_, _, w) in p_mva.edges_list)
         stats.avg_weight = stats.sum_weight / stats.num_edges
+        # distribution of weight
+        stats.distribution_weight = collections.Counter(
+            (w for _, _, w in p_mva.edges_list))
 
     # dfs for width and height
-    stats.width, stats.height = dfs_width_height(p_mva)
+    stats.width, stats.height = dfs_mva_width_height(p_mva)
 
     runner["Stats"]["randoms"] = randomizer.total_count
     runner["Output"]["nodes"] = num_vertices
@@ -205,11 +218,12 @@ NUM_VERTICES = [
     50, 100, 500, 1000, 2500, 5000, 10000, 50000, 100000, 500000, 1000000
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
+
 if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
-            for i in range(10):
+            for _ in range(10):
                 Runners.append(Run_MVA(num, edge_density))
 
             filename = "Results/TreeMVA/Run_{}_{}_{}.yml".format(
@@ -221,4 +235,5 @@ if __name__ == '__main__':
 
             with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
+            
             print("Done")
