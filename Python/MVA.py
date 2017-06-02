@@ -54,6 +54,8 @@ def merge_cliques(m_parameters, upper_bound, rand):
 
     final_edges = []
 
+    m_parameters.edges_list.sort(key=lambda e: e[2])
+
     while m_parameters.edges_list and m_parameters.num_edges < upper_bound:
         (a, b, omega), index = rand.next_element(m_parameters.edges_list)
         del m_parameters.edges_list[index]
@@ -142,7 +144,7 @@ def dfs_mva_width_height(parameters):
     return (dfs_stats.width, dfs_stats.height)
 
 
-def Run_MVA(num_vertices, edge_density):
+def Run_MVA(num_vertices, edge_density, algorithm_name):
     """
         Initialize and run the MVA algorithm
     """
@@ -150,15 +152,15 @@ def Run_MVA(num_vertices, edge_density):
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
     runner = runner_factory(
         num_vertices,
-        "TreeMVA",
+        algorithm_name,
         None,
         edges_bound=edges_bound,
         edge_density=edge_density)
 
     randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        # p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
-        p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+        p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+        # p_mva = expand_tree(runner["parameters"]["n"], randomizer)
 
     print("- Expand cliques:")
     print(p_mva)
@@ -172,12 +174,12 @@ def Run_MVA(num_vertices, edge_density):
     print("- Merge cliques:")
     print(p_mva)
 
-    with Timer("t_convert_nx", runner["Times"]):
-        nx_chordal = convert_markenzon_clique_tree_networkx2(
-            p_mva.cliques, num_vertices)
+    # with Timer("t_convert_nx", runner["Times"]):
+    #     nx_chordal = convert_markenzon_clique_tree_networkx2(
+    #         p_mva.cliques, num_vertices)
 
-    with Timer("t_chordal", runner["Times"]):
-        runner["Verify"]["is_chordal"] = Chordal(nx_chordal)
+    # with Timer("t_chordal", runner["Times"]):
+    #     runner["Verify"]["is_chordal"] = Chordal(nx_chordal)
 
     # calculate statistics
     stats = TreeStatistics()
@@ -189,7 +191,8 @@ def Run_MVA(num_vertices, edge_density):
     stats.num_edges = len(p_mva.edges_list)
 
     # distribution of size
-    stats.distribution_size = collections.Counter((s for s in p_mva.cardinality_array if s > 0))
+    stats.distribution_size = collections.Counter(
+        (s for s in p_mva.cardinality_array if s > 0))
 
     if p_mva.edges_list:
         stats.sum_weight = sum(w for (_, _, w) in p_mva.edges_list)
@@ -215,18 +218,31 @@ def Run_MVA(num_vertices, edge_density):
 
 
 NUM_VERTICES = [
-    50, 100, 500, 1000, 2500, 5000, 10000, 50000, 100000, 500000, 1000000
+    50,
+    100,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,  # 50000, 100000, 500000, 1000000
 ]
-EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
+EDGES_DENSITY = [
+    0.1,
+    0.33,
+    0.5,
+    0.75,
+]  # 0.99]
+
+NAME = "SortMinSepMVA"
 
 if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_MVA(num, edge_density))
+                Runners.append(Run_MVA(num, edge_density, NAME))
 
-            filename = "Results/TreeMVA/Run_{}_{}_{}.yml".format(
+            filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(
                 num, edge_density,
                 datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
@@ -235,5 +251,5 @@ if __name__ == '__main__':
 
             with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
-            
+
             print("Done")
