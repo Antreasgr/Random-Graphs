@@ -5,9 +5,21 @@ from LexBFS import LexBFS
 
 class TreeStatistics(object):
     __slots__ = [
-        'num', 'min_size', 'max_size', 'sum_size', 'avg_size', 'sum_weight',
-        'avg_weight', 'num_edges', 'width', 'height', 'min_weight',
-        'max_weight', 'distribution_size', 'distribution_weight'
+        'num',
+        'num_edges',
+        'max_clique_edge_distribution',
+        'min_size',
+        'max_size',
+        'avg_size',
+        'sum_size',
+        'min_weight',
+        'max_weight',
+        'avg_weight',
+        'sum_weight',
+        'width',
+        'height',
+        'distribution_size',
+        'distribution_weight',
     ]
 
     def __init__(self):
@@ -23,6 +35,7 @@ class TreeStatistics(object):
         self.num_edges = 0
         self.width = float("-inf")
         self.height = float("-inf")
+        self.max_clique_edge_distribution = 0
         self.distribution_size = {}
         self.distribution_weight = {}
 
@@ -124,8 +137,10 @@ def dfs_tree(tree, root):
             stats.distribution_size[size] += 1
 
             if new_c:
-                stats.min_weight = min(stats.min_weight, min(c.weight for c in new_c))
-                stats.max_weight = max(stats.max_weight, max(c.weight for c in new_c))
+                stats.min_weight = min(stats.min_weight,
+                                       min(c.weight for c in new_c))
+                stats.max_weight = max(stats.max_weight,
+                                       max(c.weight for c in new_c))
 
             stack.extend(new_c)
     return stats
