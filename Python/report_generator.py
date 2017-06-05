@@ -1,10 +1,10 @@
 import os
-import yaml
 import statistics
 import sys
 import csv
 import collections
-from yaml import Loader, Dumper
+# from yaml import Loader, Dumper
+from ruamel import yaml
 from clique_tree import *
 
 
@@ -21,7 +21,7 @@ def parse_data(path, output=True):
         if not output or not os.path.exists(out_path + ".csv"):
             print(filename)
             with open(os.path.join(path, file), 'r') as stream:
-                yml_data = yaml.load(stream, Loader=Loader)
+                yml_data = yaml.load(stream)
                 acc = process_data(yml_data)
                 all_data.append(acc)
                 # print to stdout
@@ -50,11 +50,17 @@ def process_data(run_stats):
                         while len(accumulative[section][t]) < tree_index + 1:
                             accumulative[section][t].append({})
                         for treesection in tree:
+                            # if treesection == "max_clique_edge_distribution":
+                            #     tree[treesection] = (tree["max_size"] * (tree["max_size"] - 1) / 2) / run["Output"]["edges"]
+
                             if not treesection in accumulative[section][t][tree_index]:
                                 accumulative[section][t][tree_index][treesection] = []
 
                             accumulative[section][t][tree_index][treesection].append(tree[treesection])
+
+
     accumulative["Parameters"] = run_stats["Run"][0]["parameters"]
+
     return accumulative
 
 
@@ -152,9 +158,9 @@ def sort_data_fn(a):
 
 def generate_accumulative_report(all_data_filename, name):
     with open(all_data_filename, 'r') as stream:
-        all_data = yaml.load(stream, Loader=Loader)
+        all_data = yaml.load(stream, yaml.RoundTripLoader)
 
-    mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
+    mva_data = [] # [d for d in all_data if d["Parameters"]["Algorithm"] == name]
     shet_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
 
     del all_data
@@ -201,7 +207,7 @@ def accumulative_header(parameters, datum, ct):
     orderby = TreeStatistics.__slots__
     columns_ct = [o for o in ct if not o.startswith("distribution")]
     columns_ct.sort(key=lambda h: index_of(orderby, h))
-  
+
     l_1 = [datum["Parameters"]["Algorithm"]]
     l_11 = ["" for _ in parameters] + ["Stats"] + ["" for _ in range(2 * len(columns_stats) - 1)]
     l_11 += ["Times"] + ["" for _ in range(2 * len(columns_times) - 1)]
@@ -231,7 +237,17 @@ def accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct):
 
     l.extend([fn(times[k]) if k in times else "" for k in columns_times for fn in [statistics.mean, statistics.stdev]])
 
-    l.extend([fn(ct[k]) for k in columns_ct if (len(ct[k]) and not isinstance(ct[k][0], dict)) for fn in [statistics.mean, statistics.stdev]])
+    all_values = (ct[k] for k in columns_ct if len(ct[k]) and not isinstance(ct[k][0], dict))
+    sanitize_values = []
+    for array_of_values in all_values:
+        col = [vv for vv in array_of_values if not isinstance(vv, str)]
+        if col:
+            sanitize_values.append(col)
+
+    if sanitize_values:
+        l.extend([fn(v) for v in sanitize_values for fn in [statistics.mean, statistics.stdev]])
+    else:
+        l.extend([0, 0])
 
     return l
 
@@ -240,15 +256,15 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-NAME = "SortedMinSepReverseMVA"
+NAME = "SHET"
 if __name__ == '__main__':
-    mva_data = parse_data("Results/" + NAME, False)
-    shet_data = []  #parse_data("Results/BaseSHET", False)
+    # mva_data = [] # parse_data("Results/" + NAME, False)
+    # shet_data = parse_data("Results/" + NAME, False)
 
-    print("Done...")
-    if mva_data or shet_data:
-        with open(os.path.join("Results", "all_data_" + NAME + ".yml"), 'w') as stream:
-            yaml.dump(mva_data + shet_data, stream)
+    # print("Done...")
+    # if mva_data or shet_data:
+    #     with open(os.path.join("Results", "all_data_" + NAME + ".yml"), 'w') as stream:
+    #         yaml.dump(mva_data + shet_data, stream)
 
     all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + NAME + ".yml"), NAME)
     print(all_lines)

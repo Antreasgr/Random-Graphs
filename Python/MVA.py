@@ -47,31 +47,23 @@ def split_edges(m_parameters, upper_bound, rand):
     dis_set = UnionFind()
     [dis_set[i] for i in range(m_parameters.num_maximal_cliques)]
 
-    final_edges = []
     while m_parameters.edges_list and m_parameters.num_edges < upper_bound:
         (x, y, sep, omega), index = rand.next_element(m_parameters.edges_list)
         i = dis_set[x]
         j = dis_set[y]
 
-        edges_x = m_parameters.cardinality_array[i] - omega
-        edges_y = m_parameters.cardinality_array[j] - omega
-
         x_sep, y_sep = m_parameters.cliques[i] - set(sep), m_parameters.cliques[j] - set(sep)
-        if m_parameters.num_edges + 1 > upper_bound:
-            break
-
-        if len(x_sep) == 0 and len(y_sep) == 0:
-            # no other vertices what to do?
-            print("all vertices common case")
-            continue
+        if len(x_sep) == 0 or len(y_sep) == 0:
+            # not valid clique tree
+            raise Exception("Not valid clique tree")
         elif len(x_sep) == 1 and len(y_sep) == 1:
             # merge {x,y}
             dis_set.union(x, y)
             m_parameters.cliques[i].update(m_parameters.cliques[j])
-            m_parameters.cardinality_array[i] = edges_y + edges_x + omega
+            m_parameters.cardinality_array[i] += 1
             m_parameters.cliques[j] = set()
             m_parameters.cardinality_array[j] = 0
-            m_parameters.num_edges += edges_y * edges_x
+            m_parameters.num_edges += 1
             m_parameters.num_maximal_cliques -= 1
             # delete old edge
             del m_parameters.edges_list[index]

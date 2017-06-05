@@ -164,6 +164,8 @@ def dfs_forest(forest):
         stats.min_weight = min(stats.min_weight, tree_stats.min_weight)
         stats.max_weight = max(stats.max_weight, tree_stats.max_weight)
         stats.num_edges += tree_stats.num_edges
+        stats.distribution_size.update(tree_stats.distribution_size)
+        stats.distribution_weight.update(tree_stats.distribution_weight)
 
     stats.avg_size = stats.sum_size / stats.num
     if stats.num_edges > 0:

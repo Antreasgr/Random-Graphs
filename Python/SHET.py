@@ -117,7 +117,10 @@ def post_process(run):
 
     # calculate tree output parameters
     out["clique_trees"] = [dfs_forest(temp_forest), dfs_forest(graphs["final_cforest"])]
-
+    
+    ct_stats = out["clique_trees"][1]
+    ct_stats.max_clique_edge_distribution = (ct_stats.max_size * (ct_stats.max_size - 1) / 2) / out["edges"]
+    
     stats["ncc"] = len(graphs["final_cforest"].ctree)
 
     # convert clique forest to nx for export to json
@@ -157,7 +160,7 @@ if __name__ == '__main__':
 
             print(".....Done")
             # RUNNER contains all data and statistics
-            filename = "Results/BaseSHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/SHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
             if not os.path.isdir(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename))
 
