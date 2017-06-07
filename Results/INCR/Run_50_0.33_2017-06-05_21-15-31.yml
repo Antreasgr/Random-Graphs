@@ -1,0 +1,341 @@
+Run:
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000326352039632
+    t_merge_cliques:                         0.006772487567216
+  Verify:
+  Stats:
+    total:                                   0.007098839606848
+    randoms:                                               787
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               28
+      num_edges:                                         27
+      max_clique_edge_distribution:     0.22469135802469137
+      min_size:                                           7
+      max_size:                                          14
+      avg_size:                          10.214285714285714
+      sum_size:                                         286
+      min_weight:                                         5
+      max_weight:                                        11
+      avg_weight:                          8.74074074074074
+      sum_weight:                                       236
+      width:                                              3
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {12: 7, 11: 6, 8: 5, 7: 2, 10: 5, 14: 1, 9: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {11: 6, 9: 5, 6: 2, 10: 5, 8: 2, 7: 6, 5: 1}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000278218527511
+    t_merge_cliques:                         0.006256332458510
+  Verify:
+  Stats:
+    total:                                   0.006534550986020
+    randoms:                                               781
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               22
+      num_edges:                                         21
+      max_clique_edge_distribution:     0.25925925925925924
+      min_size:                                           6
+      max_size:                                          15
+      avg_size:                          10.545454545454545
+      sum_size:                                         232
+      min_weight:                                         5
+      max_weight:                                        13
+      avg_weight:                         8.666666666666666
+      sum_weight:                                       182
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {11: 3, 14: 4, 9: 5, 10: 5, 8: 1, 13: 1, 15: 1, 6: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {8: 3, 9: 4, 10: 2, 12: 1, 5: 4, 6: 1, 7: 2, 11: 1, 13: 3}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000274122058394
+    t_merge_cliques:                         0.005988013731364
+  Verify:
+  Stats:
+    total:                                   0.006262135789758
+    randoms:                                               783
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               24
+      num_edges:                                         23
+      max_clique_edge_distribution:     0.25925925925925924
+      min_size:                                           6
+      max_size:                                          15
+      avg_size:                          10.166666666666666
+      sum_size:                                         244
+      min_weight:                                         4
+      max_weight:                                        13
+      avg_weight:                         8.434782608695652
+      sum_weight:                                       194
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {9: 6, 13: 2, 11: 3, 8: 4, 7: 1, 6: 1, 12: 3, 15: 2, 10: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {7: 5, 11: 2, 10: 4, 8: 5, 4: 2, 9: 2, 6: 1, 12: 1, 13: 1}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000274804803247
+    t_merge_cliques:                         0.009722969448533
+  Verify:
+  Stats:
+    total:                                   0.009997774251780
+    randoms:                                               781
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               22
+      num_edges:                                         21
+      max_clique_edge_distribution:      0.1925925925925926
+      min_size:                                           6
+      max_size:                                          13
+      avg_size:                          10.181818181818182
+      sum_size:                                         224
+      min_weight:                                         5
+      max_weight:                                        11
+      avg_weight:                         8.285714285714286
+      sum_weight:                                       174
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {11: 2, 12: 6, 8: 1, 10: 4, 7: 2, 6: 1, 13: 2, 9: 4}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {11: 4, 9: 3, 6: 3, 7: 2, 8: 7, 10: 1, 5: 1}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000302797342211
+    t_merge_cliques:                         0.006984821216433
+  Verify:
+  Stats:
+    total:                                   0.007287618558644
+    randoms:                                               786
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               27
+      num_edges:                                         26
+      max_clique_edge_distribution:      0.1925925925925926
+      min_size:                                           7
+      max_size:                                          13
+      avg_size:                           10.25925925925926
+      sum_size:                                         277
+      min_weight:                                         6
+      max_weight:                                        12
+      avg_weight:                          8.73076923076923
+      sum_weight:                                       227
+      width:                                              2
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {10: 10, 13: 2, 11: 8, 9: 4, 7: 1, 8: 1, 12: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {11: 1, 9: 9, 10: 4, 8: 8, 6: 2, 12: 1, 7: 1}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000276511665379
+    t_merge_cliques:                         0.006279887155931
+  Verify:
+  Stats:
+    total:                                   0.006556398821309
+    randoms:                                               785
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               26
+      num_edges:                                         25
+      max_clique_edge_distribution:     0.16296296296296298
+      min_size:                                           9
+      max_size:                                          12
+      avg_size:                          10.384615384615385
+      sum_size:                                         270
+      min_weight:                                         7
+      max_weight:                                        11
+      avg_weight:                                       8.8
+      sum_weight:                                       220
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {11: 5, 12: 7, 9: 9, 10: 5}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {8: 7, 11: 4, 10: 4, 7: 5, 9: 5}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000278901272363
+    t_merge_cliques:                         0.005601238772261
+  Verify:
+  Stats:
+    total:                                   0.005880140044624
+    randoms:                                               781
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               22
+      num_edges:                                         21
+      max_clique_edge_distribution:     0.22469135802469137
+      min_size:                                           7
+      max_size:                                          14
+      avg_size:                          10.136363636363637
+      sum_size:                                         223
+      min_weight:                                         5
+      max_weight:                                        11
+      avg_weight:                         8.238095238095237
+      sum_weight:                                       173
+      width:                                              1
+      height:                                             2
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {11: 4, 12: 2, 10: 5, 7: 1, 8: 2, 9: 6, 14: 2}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {9: 6, 7: 6, 8: 5, 5: 1, 10: 1, 11: 2}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000291873424566
+    t_merge_cliques:                         0.005642203463428
+  Verify:
+  Stats:
+    total:                                   0.005934076887994
+    randoms:                                               783
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               24
+      num_edges:                                         23
+      max_clique_edge_distribution:      0.1925925925925926
+      min_size:                                           8
+      max_size:                                          13
+      avg_size:                          10.291666666666666
+      sum_size:                                         247
+      min_weight:                                         6
+      max_weight:                                        11
+      avg_weight:                         8.565217391304348
+      sum_weight:                                       197
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {10: 12, 11: 2, 12: 4, 9: 4, 13: 1, 8: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {7: 2, 9: 11, 8: 7, 6: 1, 11: 2}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000275487548099
+    t_merge_cliques:                         0.008970925993189
+  Verify:
+  Stats:
+    total:                                   0.009246413541288
+    randoms:                                               781
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               22
+      num_edges:                                         21
+      max_clique_edge_distribution:     0.25925925925925924
+      min_size:                                           7
+      max_size:                                          15
+      avg_size:                          10.272727272727273
+      sum_size:                                         226
+      min_weight:                                         5
+      max_weight:                                        13
+      avg_weight:                         8.380952380952381
+      sum_weight:                                       176
+      width:                                              2
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {9: 5, 12: 5, 8: 3, 13: 1, 15: 1, 10: 3, 14: 1, 7: 2, 11: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {8: 5, 11: 4, 7: 5, 13: 1, 9: 2, 6: 1, 10: 1, 5: 2}
+- parameters:
+    n:                                                      50
+    seed:                                                 None
+    Algorithm:                                            INCR
+    edges_bound:                           404.250000000000000
+    edge_density:                            0.330000000000000
+  Times:
+    t_expand_cliques:                        0.000571457441782
+    t_merge_cliques:                         0.006641400555481
+  Verify:
+  Stats:
+    total:                                   0.007212857997264
+    randoms:                                               786
+    edges:                                                 405
+  Output:
+    nodes:                                                  50
+    clique_trees:
+    - num:                                               27
+      num_edges:                                         26
+      max_clique_edge_distribution:      0.1925925925925926
+      min_size:                                           5
+      max_size:                                          13
+      avg_size:                          10.148148148148149
+      sum_size:                                         274
+      min_weight:                                         4
+      max_weight:                                        12
+      avg_weight:                         8.615384615384615
+      sum_weight:                                       224
+      width:                                              1
+      height:                                             1
+      distribution_size:             !!python/object/apply:collections.Counter
+      - {11: 6, 9: 6, 8: 3, 10: 3, 13: 4, 12: 3, 5: 1, 7: 1}
+      distribution_weight:           !!python/object/apply:collections.Counter
+      - {7: 6, 11: 3, 12: 2, 8: 7, 10: 5, 9: 1, 6: 1, 4: 1}

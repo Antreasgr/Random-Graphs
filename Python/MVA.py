@@ -103,9 +103,9 @@ def split_edges(m_parameters, upper_bound, rand):
             dis_set[m_parameters.num_maximal_cliques]
 
             # add x-z edge
-            m_parameters.edges_list.append((x, m_parameters.num_maximal_cliques, [x_random] + sep, omega + 1))
+            m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, [x_random] + sep, omega + 1))
             # add y-z edge
-            m_parameters.edges_list.append((y, m_parameters.num_maximal_cliques, [y_random] + sep, omega + 1))
+            m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, [y_random] + sep, omega + 1))
 
             m_parameters.num_maximal_cliques += 1
             # update num of edges
@@ -189,7 +189,7 @@ def expand_tree(n, rand):
         Q.append([x, u])
         S.append(2)
         l += 1
-        L.append((i, l - 1, 1))
+        L.append((i, l - 1, [x], 1))
         m += 1
 
     # convert to set for the rest of the algorithm
@@ -252,7 +252,7 @@ def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
     return runner
 
 
-def Run_MVA(num_vertices, edge_density, algorithm_name):
+def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=None):
     """
         Initialize and run the MVA algorithm
     """
@@ -262,20 +262,24 @@ def Run_MVA(num_vertices, edge_density, algorithm_name):
 
     randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
-        # p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+        if init_tree:
+            p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+            print("- Expand tree:")
+        else:
+            p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+            print("- Expand cliques:")
 
-    print("- Expand cliques:")
     print(p_mva)
 
-    with Timer("t_merge_cliques", runner["Times"]):
-        merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
+    if incr:
+        with Timer("t_merge_cliques", runner["Times"]):
+            split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
+            print("- Split edges:")
+    else:
+        with Timer("t_merge_cliques", runner["Times"]):
+            merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
+            print("- Merge cliques:")
 
-    # with Timer("t_merge_cliques", runner["Times"]):
-    #     split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
-
-    print("- Merge cliques:")
-    # print("- Split edges:")
     print(p_mva)
 
     runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + \
@@ -292,24 +296,24 @@ def Run_MVA(num_vertices, edge_density, algorithm_name):
 
 
 NUM_VERTICES = [
-    500,
-    100,
-    500,
-    1000,
+    # 50,
+    # 100,
+    # 500,
+    # 1000,
     2500,
     5000,
     10000,  # 50000, 100000, 500000, 1000000
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 
-NAME = "SortedMinSepReverseMVA"
+NAME = "INCR"
 
 if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_MVA(num, edge_density, NAME))
+                Runners.append(Run_MVA(num, edge_density, NAME, True, True))
 
             filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
