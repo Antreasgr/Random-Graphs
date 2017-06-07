@@ -3,8 +3,9 @@ import statistics
 import sys
 import csv
 import collections
-# from yaml import Loader, Dumper
-from ruamel import yaml
+import yaml
+from yaml import Loader, Dumper
+# from ruamel import yaml
 from clique_tree import *
 
 
@@ -158,10 +159,10 @@ def sort_data_fn(a):
 
 def generate_accumulative_report(all_data_filename, name):
     with open(all_data_filename, 'r') as stream:
-        all_data = yaml.load(stream, yaml.RoundTripLoader)
+        all_data = yaml.load(stream, Loader=Loader)
 
-    mva_data = [] # [d for d in all_data if d["Parameters"]["Algorithm"] == name]
-    shet_data = [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
+    mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
+    shet_data = [] # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
 
     del all_data
     for d in shet_data:
@@ -256,15 +257,15 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-NAME = "SHET"
+NAME = "INCR"
 if __name__ == '__main__':
-    # mva_data = [] # parse_data("Results/" + NAME, False)
-    # shet_data = parse_data("Results/" + NAME, False)
+    mva_data = parse_data("Results/" + NAME, False)
+    shet_data = []# parse_data("Results/" + NAME, False)
 
-    # print("Done...")
-    # if mva_data or shet_data:
-    #     with open(os.path.join("Results", "all_data_" + NAME + ".yml"), 'w') as stream:
-    #         yaml.dump(mva_data + shet_data, stream)
+    print("Done...")
+    if mva_data or shet_data:
+        with open(os.path.join("Results", "all_data_" + NAME + ".yml"), 'w') as stream:
+            yaml.dump(mva_data + shet_data, stream)
 
     all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + NAME + ".yml"), NAME)
     print(all_lines)
