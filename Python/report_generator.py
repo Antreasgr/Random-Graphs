@@ -257,7 +257,7 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-NAME = "INCR"
+NAME = "INCR1.x"
 if __name__ == '__main__':
     mva_data = parse_data("Results/" + NAME, False)
     shet_data = []# parse_data("Results/" + NAME, False)
