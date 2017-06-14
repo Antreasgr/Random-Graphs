@@ -56,14 +56,16 @@ def split_edges(m_parameters, upper_bound, rand):
         if len(x_sep) == 0 or len(y_sep) == 0:
             # not valid clique tree
             raise Exception("Not valid clique tree")
-        elif len(x_sep) == 1 and len(y_sep) == 1:
+        elif len(x_sep) <= 4 or len(y_sep) <= 4:
             # merge {x,y}
+            edges_added = len(x_sep) * len(y_sep)
+            # print(edges_added)
             dis_set.union(x, y)
             m_parameters.cliques[i].update(m_parameters.cliques[j])
-            m_parameters.cardinality_array[i] += 1
+            m_parameters.cardinality_array[i] += len(y_sep)
             m_parameters.cliques[j] = set()
             m_parameters.cardinality_array[j] = 0
-            m_parameters.num_edges += 1
+            m_parameters.num_edges += edges_added
             m_parameters.num_maximal_cliques -= 1
             # delete old edge
             del m_parameters.edges_list[index]
@@ -91,9 +93,19 @@ def split_edges(m_parameters, upper_bound, rand):
             m_parameters.num_edges += 1
         else:
             # make new z node
-            x_random, _ = rand.next_element(list(x_sep))
-            y_random, _ = rand.next_element(list(y_sep))
-            z = set([x_random, y_random] + sep)
+            # x_random, _ = rand.next_element(list(x_sep))
+            # y_random, _ = rand.next_element(list(y_sep))
+
+            # z = set([x_random, y_random] + sep)
+            xlen = rand.next_random(1, len(x_sep))
+            ylen = rand.next_random(1, len(y_sep))
+
+            x_random = rand.sample(x_sep, xlen)
+            y_random = rand.sample(y_sep, ylen)
+
+            z = set(x_random + y_random + sep)
+            edges_added = xlen * ylen
+            # print(str(edges_added) + " / " + str(len(x_sep) * len(y_sep)))
 
             # add node to list
             m_parameters.cliques.append(z)
@@ -103,13 +115,16 @@ def split_edges(m_parameters, upper_bound, rand):
             dis_set[m_parameters.num_maximal_cliques]
 
             # add x-z edge
-            m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, [x_random] + sep, omega + 1))
+            # m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, [x_random] + sep, omega + 1))
+            m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, x_random + sep, omega + edges_added))
             # add y-z edge
-            m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, [y_random] + sep, omega + 1))
+            # m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, [y_random] + sep, omega + 1))
+            m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, y_random + sep, omega + edges_added))
 
             m_parameters.num_maximal_cliques += 1
             # update num of edges
-            m_parameters.num_edges += 1
+            # m_parameters.num_edges += 1
+            m_parameters.num_edges += edges_added
 
             # delete old edge
             del m_parameters.edges_list[index]
@@ -204,6 +219,9 @@ def dfs_mva_width_height(parameters):
         Calculates the width and height of the MVA clique tree using dfs
     """
     dfs_dict = {}
+    if not parameters.edges_list:
+        return 1, 1
+
     for (i, j, sep, w) in parameters.edges_list:
         if i not in dfs_dict:
             dfs_dict[i] = TreeNode(i)
@@ -244,6 +262,7 @@ def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
     runner["Stats"]["randoms"] = randomizer.total_count
     runner["Output"]["nodes"] = num_vertices
     runner["Stats"]["edges"] = p_mva.num_edges
+    runner["Stats"]["actual_edge_density"] = p_mva.num_edges / ((num_vertices * (num_vertices - 1)) / 2)
     runner["Output"]["clique_trees"] = [stats]
 
     print_statistics([runner])
@@ -260,7 +279,7 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=Non
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
     runner = runner_factory(num_vertices, algorithm_name, None, edges_bound=edges_bound, edge_density=edge_density)
 
-    randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
+    randomizer = Randomizer(3 * num_vertices, runner["parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
         if init_tree:
             p_mva = expand_tree(runner["parameters"]["n"], randomizer)
@@ -272,18 +291,17 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=Non
     print(p_mva)
 
     if incr:
-        with Timer("t_merge_cliques", runner["Times"]):
+        with Timer("t_split_edges", runner["Times"]):
             split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
             print("- Split edges:")
+        runner["Stats"]["total"] = runner["Times"]["t_split_edges"] + runner["Times"]["t_expand_cliques"]
     else:
         with Timer("t_merge_cliques", runner["Times"]):
             merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
             print("- Merge cliques:")
+        runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
 
     print(p_mva)
-
-    runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + \
-        runner["Times"]["t_expand_cliques"]
 
     # with Timer("t_convert_nx", runner["Times"]):
     #     nx_chordal = convert_markenzon_clique_tree_networkx2(
@@ -299,12 +317,12 @@ NUM_VERTICES = [
     # 50,
     # 100,
     # 500,
-    # 1000,
-    2500,
-    5000,
-    10000,  # 50000, 100000, 500000, 1000000
+    1000,
+    # 2500,
+    # 5000,
+    # 10000,  # 50000, 100000, 500000, 1000000
 ]
-EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
+EDGES_DENSITY = [0.75]  # [0.1, 0.33, 0.5, 0.75, 0.99]
 
 NAME = "INCR"
 
@@ -312,15 +330,15 @@ if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
-            for _ in range(10):
+            for _ in range(1):
                 Runners.append(Run_MVA(num, edge_density, NAME, True, True))
 
-            filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-            if not os.path.isdir(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
+            # if not os.path.isdir(os.path.dirname(filename)):
+            #     os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
-                print_statistics(Runners, file)
+            # with io.open(filename, 'w') as file:
+            #     print_statistics(Runners, file)
 
             print("Done")
