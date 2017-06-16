@@ -40,15 +40,15 @@ class MVAParameters(object):
         return self.__str__()
 
 
-def split_edges(m_parameters, upper_bound, rand):
+def split_edges(m_parameters, upper_bound, rand, k=1):
     """
-        Split clique tree edges
+        INCR Algorithm. Split clique tree edges
     """
     dis_set = UnionFind()
     [dis_set[i] for i in range(m_parameters.num_maximal_cliques)]
-    k = m_parameters.num_maximal_cliques * 0.1
-
+    loops = 0
     while m_parameters.edges_list and m_parameters.num_edges < upper_bound:
+        loops += 1
         (x, y, sep, omega), index = rand.next_element(m_parameters.edges_list)
         i = dis_set[x]
         j = dis_set[y]
@@ -57,10 +57,9 @@ def split_edges(m_parameters, upper_bound, rand):
         if len(x_sep) == 0 or len(y_sep) == 0:
             # not valid clique tree
             raise Exception("Not valid clique tree")
-        elif len(x_sep) <= k or len(y_sep) <= k:
+        elif len(x_sep) <= k and len(y_sep) <= k:
             # merge {x,y}
             edges_added = len(x_sep) * len(y_sep)
-            # print(edges_added)
             dis_set.union(x, y)
             m_parameters.cliques[i].update(m_parameters.cliques[j])
             m_parameters.cardinality_array[i] += len(y_sep)
@@ -70,40 +69,37 @@ def split_edges(m_parameters, upper_bound, rand):
             m_parameters.num_maximal_cliques -= 1
             # delete old edge
             del m_parameters.edges_list[index]
-        # REDUDUNT FOR NOW
-        # elif len(x_sep) == 1:
-        #     # merge {x,z}
-        #     y_random, _ = rand.next_element(list(y_sep))
+        elif len(x_sep) <= k:
+            # merge {x,z}
+            ylen = rand.next_random(1, len(y_sep))
+            y_random = list(y_sep)[0:ylen]
 
-        #     m_parameters.cliques[i].update([y_random])
-        #     m_parameters.cardinality_array[i] += 1
-        #     # update the edge min-seperator
-        #     m_parameters.edges_list[index] = (x, y, [y_random] + sep, omega + 1)
+            m_parameters.cliques[i].update(y_random)
+            m_parameters.cardinality_array[i] += ylen
+            # update the edge min-seperator
+            m_parameters.edges_list[index] = (x, y, y_random + sep, omega + ylen)
 
-        #     # update num of edges
-        #     m_parameters.num_edges += 1
-        # elif len(y_sep) == 1:
-        #     # merge {y,z}
-        #     x_random, _ = rand.next_element(list(x_sep))
+            # update num of edges
+            m_parameters.num_edges += ylen
+        elif len(y_sep) <= k:
+            # merge {y,z}
+            xlen = rand.next_random(1, len(x_sep))
+            x_random = list(x_sep)[0:xlen]
 
-        #     m_parameters.cliques[j].update([x_random])
-        #     m_parameters.cardinality_array[j] += 1
-        #     # update the edge min-seperator
-        #     m_parameters.edges_list[index] = (x, y, [x_random] + sep, omega + 1)
+            m_parameters.cliques[j].update(x_random)
+            m_parameters.cardinality_array[j] += xlen
+            # update the edge min-seperator
+            m_parameters.edges_list[index] = (x, y, x_random + sep, omega + xlen)
 
-        #     # update num of edges
-        #     m_parameters.num_edges += 1
+            # update num of edges
+            m_parameters.num_edges += xlen
         else:
             # make new z node
-            # x_random, _ = rand.next_element(list(x_sep))
-            # y_random, _ = rand.next_element(list(y_sep))
-
-            # z = set([x_random, y_random] + sep)
             xlen = rand.next_random(1, len(x_sep))
             ylen = rand.next_random(1, len(y_sep))
 
-            x_random = rand.sample(x_sep, xlen)
-            y_random = rand.sample(y_sep, ylen)
+            x_random = list(x_sep)[0:xlen]
+            y_random = list(y_sep)[0:ylen]
 
             z = set(x_random + y_random + sep)
             edges_added = xlen * ylen
@@ -113,24 +109,19 @@ def split_edges(m_parameters, upper_bound, rand):
             m_parameters.cliques.append(z)
             m_parameters.cardinality_array.append(len(z))
 
-            # fix union find structure
-            dis_set[m_parameters.num_maximal_cliques]
-
             # add x-z edge
-            # m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, [x_random] + sep, omega + 1))
             m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, x_random + sep, omega + edges_added))
             # add y-z edge
-            # m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, [y_random] + sep, omega + 1))
             m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, y_random + sep, omega + edges_added))
 
             m_parameters.num_maximal_cliques += 1
             # update num of edges
-            # m_parameters.num_edges += 1
             m_parameters.num_edges += edges_added
 
             # delete old edge
             del m_parameters.edges_list[index]
 
+    return loops
 
 def merge_cliques(m_parameters, upper_bound, rand):
     """
@@ -294,9 +285,11 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=Non
 
     if incr:
         with Timer("t_split_edges", runner["Times"]):
-            split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
+            loops = split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
             print("- Split edges:")
         runner["Stats"]["total"] = runner["Times"]["t_split_edges"] + runner["Times"]["t_expand_cliques"]
+        runner["Stats"]["loops"] = loops / ((num_vertices * (num_vertices - 1)) / 2)
+        print("    loops:", runner["Stats"]["loops"])
     else:
         with Timer("t_merge_cliques", runner["Times"]):
             merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
