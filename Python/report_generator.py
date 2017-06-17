@@ -8,6 +8,11 @@ from yaml import Loader, Dumper
 # from ruamel import yaml
 from clique_tree import *
 
+# import numpy as np
+# import matplotlib
+# matplotlib.use('Qt5Agg')
+# import matplotlib.pyplot as plt
+
 
 def parse_data(path, output=True):
     all_data = []
@@ -191,6 +196,7 @@ def generate_accumulative_report(all_data_filename, name):
         other_lines = accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct)
         lines.append(other_lines)
 
+    generate_histograms(mva_data, shet_data)
     return lines
 
 
@@ -256,24 +262,31 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-def run_reports(name):
-    mva_data = parse_data("Results/" + name, False)
-    shet_data = []  # parse_data("Results/" + name, False)
+def generate_histograms(mva_data, shet_data):
+    # d = mva_data[-1]["Output"]["clique_trees"][0]["distribution_size"][0]
+    # plt.bar(list(d.keys()), list(d.values()), color='g')
+    # plt.show()
+    return
 
-    print("Done...")
-    if mva_data or shet_data:
-        with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
-            yaml.dump(mva_data + shet_data, stream)
+
+def run_reports(name):
+    # mva_data = parse_data("Results/" + name, False)
+    # shet_data = []  # parse_data("Results/" + name, False)
+
+    # print("Done...")
+    # if mva_data or shet_data:
+    #     with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
+    #         yaml.dump(mva_data + shet_data, stream)
 
     all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + name + ".yml"), name)
     print(all_lines)
-    if all_lines:
-        with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
-            writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-            writer.writerows((localize_floats(row) for row in all_lines))
+    # if all_lines:
+    #     with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
+    #         writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+    #         writer.writerows((localize_floats(row) for row in all_lines))
         # cleanup
 
 
-NAME = "INCR_k_1_rev_2"
+NAME = "INCR_k_1e-5"
 if __name__ == '__main__':
     run_reports(NAME)
