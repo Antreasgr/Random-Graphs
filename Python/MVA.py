@@ -40,89 +40,6 @@ class MVAParameters(object):
         return self.__str__()
 
 
-def split_edges(m_parameters, upper_bound, rand, k=1):
-    """
-        INCR Algorithm. Split clique tree edges
-    """
-    dis_set = UnionFind()
-    [dis_set[i] for i in range(m_parameters.num_maximal_cliques)]
-    loops = 0
-    while m_parameters.edges_list and m_parameters.num_edges < upper_bound:
-        loops += 1
-        (x, y, sep, omega), index = rand.next_element(m_parameters.edges_list)
-        i = dis_set[x]
-        j = dis_set[y]
-
-        x_sep, y_sep = m_parameters.cliques[i] - set(sep), m_parameters.cliques[j] - set(sep)
-        if len(x_sep) == 0 or len(y_sep) == 0:
-            # not valid clique tree
-            raise Exception("Not valid clique tree")
-        elif len(x_sep) <= k and len(y_sep) <= k:
-            # merge {x,y}
-            edges_added = len(x_sep) * len(y_sep)
-            dis_set.union(x, y)
-            m_parameters.cliques[i].update(m_parameters.cliques[j])
-            m_parameters.cardinality_array[i] += len(y_sep)
-            m_parameters.cliques[j] = set()
-            m_parameters.cardinality_array[j] = 0
-            m_parameters.num_edges += edges_added
-            m_parameters.num_maximal_cliques -= 1
-            # delete old edge
-            del m_parameters.edges_list[index]
-        elif len(x_sep) <= k:
-            # merge {x,z}
-            ylen = rand.next_random(1, len(y_sep))
-            y_random = list(y_sep)[0:ylen]
-
-            m_parameters.cliques[i].update(y_random)
-            m_parameters.cardinality_array[i] += ylen
-            # update the edge min-seperator
-            m_parameters.edges_list[index] = (x, y, y_random + sep, omega + ylen)
-
-            # update num of edges
-            m_parameters.num_edges += ylen
-        elif len(y_sep) <= k:
-            # merge {y,z}
-            xlen = rand.next_random(1, len(x_sep))
-            x_random = list(x_sep)[0:xlen]
-
-            m_parameters.cliques[j].update(x_random)
-            m_parameters.cardinality_array[j] += xlen
-            # update the edge min-seperator
-            m_parameters.edges_list[index] = (x, y, x_random + sep, omega + xlen)
-
-            # update num of edges
-            m_parameters.num_edges += xlen
-        else:
-            # make new z node
-            xlen = rand.next_random(1, len(x_sep))
-            ylen = rand.next_random(1, len(y_sep))
-
-            x_random = list(x_sep)[0:xlen]
-            y_random = list(y_sep)[0:ylen]
-
-            z = set(x_random + y_random + sep)
-            edges_added = xlen * ylen
-            # print(str(edges_added) + " / " + str(len(x_sep) * len(y_sep)))
-
-            # add node to list
-            m_parameters.cliques.append(z)
-            m_parameters.cardinality_array.append(len(z))
-
-            # add x-z edge
-            m_parameters.edges_list.append((x, len(m_parameters.cliques) - 1, x_random + sep, omega + edges_added))
-            # add y-z edge
-            m_parameters.edges_list.append((y, len(m_parameters.cliques) - 1, y_random + sep, omega + edges_added))
-
-            m_parameters.num_maximal_cliques += 1
-            # update num of edges
-            m_parameters.num_edges += edges_added
-
-            # delete old edge
-            del m_parameters.edges_list[index]
-
-    return loops
-
 def merge_cliques(m_parameters, upper_bound, rand):
     """
         Merge cliques
@@ -264,7 +181,7 @@ def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
     return runner
 
 
-def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=None):
+def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None):
     """
         Initialize and run the MVA algorithm
     """
@@ -283,18 +200,10 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None, incr=Non
 
     print(p_mva)
 
-    if incr:
-        with Timer("t_split_edges", runner["Times"]):
-            loops = split_edges(p_mva, runner["parameters"]["edges_bound"], randomizer)
-            print("- Split edges:")
-        runner["Stats"]["total"] = runner["Times"]["t_split_edges"] + runner["Times"]["t_expand_cliques"]
-        runner["Stats"]["loops"] = loops / ((num_vertices * (num_vertices - 1)) / 2)
-        print("    loops:", runner["Stats"]["loops"])
-    else:
-        with Timer("t_merge_cliques", runner["Times"]):
-            merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
-            print("- Merge cliques:")
-        runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
+    with Timer("t_merge_cliques", runner["Times"]):
+        merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
+        print("- Merge cliques:")
+    runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
 
     print(p_mva)
 
@@ -319,14 +228,14 @@ NUM_VERTICES = [
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 
-NAME = "INCR1.x"
+NAME = "MVA"
 
 if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_MVA(num, edge_density, NAME, True, True))
+                Runners.append(Run_MVA(num, edge_density, NAME, True))
 
             # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 

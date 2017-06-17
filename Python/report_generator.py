@@ -59,7 +59,6 @@ def process_data(run_stats):
 
                             accumulative[section][t][tree_index][treesection].append(tree[treesection])
 
-
     accumulative["Parameters"] = run_stats["Run"][0]["parameters"]
 
     return accumulative
@@ -162,7 +161,7 @@ def generate_accumulative_report(all_data_filename, name):
         all_data = yaml.load(stream, Loader=Loader)
 
     mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
-    shet_data = [] # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
+    shet_data = []  # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
 
     del all_data
     for d in shet_data:
@@ -257,19 +256,24 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-NAME = "INCR1.x"
-if __name__ == '__main__':
-    mva_data = parse_data("Results/" + NAME, False)
-    shet_data = []# parse_data("Results/" + NAME, False)
+def run_reports(name):
+    mva_data = parse_data("Results/" + name, False)
+    shet_data = []  # parse_data("Results/" + name, False)
 
     print("Done...")
     if mva_data or shet_data:
-        with open(os.path.join("Results", "all_data_" + NAME + ".yml"), 'w') as stream:
+        with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
             yaml.dump(mva_data + shet_data, stream)
 
-    all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + NAME + ".yml"), NAME)
+    all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + name + ".yml"), name)
     print(all_lines)
     if all_lines:
-        with open(os.path.join("Results", "final_report_" + NAME + ".csv"), 'w') as stream:
+        with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
             writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
             writer.writerows((localize_floats(row) for row in all_lines))
+        # cleanup
+
+
+NAME = "INCR_k_1_rev_2"
+if __name__ == '__main__':
+    run_reports(NAME)
