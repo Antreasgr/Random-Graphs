@@ -4,14 +4,12 @@ import sys
 import csv
 import collections
 import yaml
+from yaml import CLoader
 from yaml import Loader, Dumper
 # from ruamel import yaml
 from clique_tree import *
-
-# import numpy as np
-# import matplotlib
-# matplotlib.use('Qt5Agg')
-# import matplotlib.pyplot as plt
+import json
+import xlsxwriter
 
 
 def parse_data(path, output=True):
@@ -163,7 +161,7 @@ def sort_data_fn(a):
 
 def generate_accumulative_report(all_data_filename, name):
     with open(all_data_filename, 'r') as stream:
-        all_data = yaml.load(stream, Loader=Loader)
+        all_data = yaml.load(stream, Loader=CLoader)
 
     mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
     shet_data = []  # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
@@ -196,7 +194,6 @@ def generate_accumulative_report(all_data_filename, name):
         other_lines = accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct)
         lines.append(other_lines)
 
-    generate_histograms(mva_data, shet_data)
     return lines
 
 
@@ -262,13 +259,6 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-def generate_histograms(mva_data, shet_data):
-    # d = mva_data[-1]["Output"]["clique_trees"][0]["distribution_size"][0]
-    # plt.bar(list(d.keys()), list(d.values()), color='g')
-    # plt.show()
-    return
-
-
 def run_reports(name):
     # mva_data = parse_data("Results/" + name, False)
     # shet_data = []  # parse_data("Results/" + name, False)
@@ -284,9 +274,92 @@ def run_reports(name):
     #     with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
     #         writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
     #         writer.writerows((localize_floats(row) for row in all_lines))
-        # cleanup
 
+
+# cleanup
+
+
+def excel_reports(algorithms):
+    # read ALL data
+    all_data = {}
+    # for name in algorithms:
+    #     all_data_filename = os.path.join("Results", "all_data_" + name + ".yml")
+    #     with open(all_data_filename, 'r') as stream:
+    #         all_data[name] = yaml.load(stream, Loader=CLoader)
+
+    #     all_data[name].sort(key=sort_data_fn)
+
+    # print(all_data.keys())
+
+    # with open(os.path.join("Results", "all_data.json"), 'w') as stream:
+    #         json.dump(all_data, stream)
+
+    with open(os.path.join("Results", "all_data.json"), 'r') as stream:
+        all_data = json.load(stream)
+
+    for name in algorithms:
+        all_data[name].sort(key=sort_data_fn)
+
+    # get headers from the first algorithm
+    stats_headers = [h for h in all_data[algorithms[0]][0]["Stats"]]
+    ct_headers = [h for h in all_data[algorithms[0]][0]["Output"]["clique_trees"][-1] if not h.startswith("distribution")]
+
+    rows = []
+    rows.append(["n"] + [h for h in stats_headers for name in algorithms] + [h for h in ct_headers for name in algorithms])
+    rows.append([""] + [name for h in stats_headers for name in algorithms] + [name for h in ct_headers for name in algorithms])
+
+    indexes = [(name, 0) for name in algorithms]
+    while [j < len(all_data[name]) for name, j in indexes].count(True) == len(indexes):
+        rown = all_data[indexes[0][0]][indexes[0][1]]["Parameters"]["n"]
+
+        # check at least n is same for all algorithms
+        valid_for_algorithm = []
+        for name, i in indexes:
+            if all_data[name][i]["Parameters"]["n"] != rown:
+                # raise Exception("{0} != {1}, missing row".format(all_data[name][i]["Parameters"]["n"], rown))
+                print("{0} in {2} != {1} in {3}, missing row".format(all_data[name][i]["Parameters"]["n"], rown, name, indexes[0][0]))
+            else:
+                valid_for_algorithm.append(name)
+        
+        stat_values = []
+        for stat in stats_headers:
+            for name, i in indexes:
+                if name in valid_for_algorithm:
+                    if stat in all_data[name][i]["Stats"]:
+                       stat_values.append(statistics.mean(all_data[name][i]["Stats"][stat]))
+                       continue
+                stat_values.append("")
+
+        ct_values = []
+        for h in ct_headers:
+            for name, i in indexes:
+                if name in valid_for_algorithm:
+                    # sanitize for -inf, inf
+                    values_10 = [vv for vv in all_data[name][i]["Output"]["clique_trees"][-1][h] if not isinstance(vv, str)]
+                    if values_10:
+                        col_value = statistics.mean(values_10)
+                    else:
+                        # all values are inf
+                        col_value = 'inf'
+                    ct_values.append(col_value)
+                else:
+                    ct_values.append("")
+
+        rows.append([rown] + stat_values + ct_values)
+
+        indexes = [(name, i + 1) if name in valid_for_algorithm else (name, i) for name, i in indexes]
+
+    print(rows)
+    workbook = xlsxwriter.Workbook(os.path.join("Results", "comparison.xlsx"))
+    worksheet = workbook.add_worksheet("data")
+
+    for row_index, row in enumerate(rows):
+        for col_index, cell in enumerate(row):
+            worksheet.write(row_index, col_index, cell)
+
+    workbook.close()
 
 NAME = "INCR_k_1e-5"
 if __name__ == '__main__':
-    run_reports(NAME)
+    # run_reports(NAME)
+    excel_reports(["SHET", "MVA", "INCR_k_1e-5", "INCR_k_1_rev_2"])
