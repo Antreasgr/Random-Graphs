@@ -4,7 +4,7 @@ import sys
 import csv
 import collections
 import yaml
-from yaml import CLoader
+# from yaml import CLoader
 from yaml import Loader, Dumper
 # from ruamel import yaml
 from clique_tree import *
@@ -161,7 +161,7 @@ def sort_data_fn(a):
 
 def generate_accumulative_report(all_data_filename, name):
     with open(all_data_filename, 'r') as stream:
-        all_data = yaml.load(stream, Loader=CLoader)
+        all_data = yaml.load(stream, Loader=Loader)
 
     mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
     shet_data = []  # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
@@ -196,14 +196,13 @@ def generate_accumulative_report(all_data_filename, name):
 
     return lines
 
+def index_of(order_list, value):
+    try:
+        return order_list.index(value)
+    except ValueError:
+        return -1
 
 def accumulative_header(parameters, datum, ct):
-    def index_of(order_list, value):
-        try:
-            return order_list.index(value)
-        except ValueError:
-            return -1
-
     columns_stats = [o for o in datum["Stats"]]
     columns_times = [o for o in datum["Times"]]
 
@@ -260,20 +259,20 @@ def localize_floats(row):
 
 
 def run_reports(name):
-    # mva_data = parse_data("Results/" + name, False)
-    # shet_data = []  # parse_data("Results/" + name, False)
+    mva_data = parse_data("Results/" + name, False)
+    shet_data = []  # parse_data("Results/" + name, False)
 
-    # print("Done...")
-    # if mva_data or shet_data:
-    #     with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
-    #         yaml.dump(mva_data + shet_data, stream)
+    print("Done...")
+    if mva_data or shet_data:
+        with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
+            yaml.dump(mva_data + shet_data, stream)
 
     all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + name + ".yml"), name)
     print(all_lines)
-    # if all_lines:
-    #     with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
-    #         writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-    #         writer.writerows((localize_floats(row) for row in all_lines))
+    if all_lines:
+        with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
+            writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+            writer.writerows((localize_floats(row) for row in all_lines))
 
 
 # cleanup
@@ -285,7 +284,7 @@ def excel_reports(algorithms):
     # for name in algorithms:
     #     all_data_filename = os.path.join("Results", "all_data_" + name + ".yml")
     #     with open(all_data_filename, 'r') as stream:
-    #         all_data[name] = yaml.load(stream, Loader=CLoader)
+    #         all_data[name] = yaml.load(stream, Loader=Loader)
 
     #     all_data[name].sort(key=sort_data_fn)
 
@@ -293,16 +292,28 @@ def excel_reports(algorithms):
 
     # with open(os.path.join("Results", "all_data.json"), 'w') as stream:
     #         json.dump(all_data, stream)
-
+        
     with open(os.path.join("Results", "all_data.json"), 'r') as stream:
         all_data = json.load(stream)
 
     for name in algorithms:
         all_data[name].sort(key=sort_data_fn)
+        for d in all_data[name]:
+            if "edge_density" in d["Output"]:
+                d["Stats"]["edge_density"] = d["Output"]["edge_density"]
+            elif "actual_edge_density" in d["Stats"]:
+                d["Stats"]["edge_density"] = d["Stats"]["actual_edge_density"]
+            elif "edge_density" not in d["Stats"]:
+                d["Stats"]["edge_density"] = [d["Parameters"]["edge_density"]]
+            
 
     # get headers from the first algorithm
     stats_headers = [h for h in all_data[algorithms[0]][0]["Stats"]]
+    stats_headers.sort()
     ct_headers = [h for h in all_data[algorithms[0]][0]["Output"]["clique_trees"][-1] if not h.startswith("distribution")]
+
+    orderby = TreeStatistics.__slots__
+    ct_headers.sort(key=lambda h: index_of(orderby, h))
 
     rows = []
     rows.append(["n"] + [h for h in stats_headers for name in algorithms] + [h for h in ct_headers for name in algorithms])
@@ -359,7 +370,7 @@ def excel_reports(algorithms):
 
     workbook.close()
 
-NAME = "INCR_k_1e-5"
+NAME = "MVA2"
 if __name__ == '__main__':
     # run_reports(NAME)
-    excel_reports(["SHET", "MVA", "INCR_k_1e-5", "INCR_k_1_rev_2"])
+    excel_reports(["SHET", "MVA2", "INCR_k_1e-5", "INCR_k_1_rev_2"])

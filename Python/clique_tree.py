@@ -5,9 +5,9 @@ from LexBFS import LexBFS
 
 class TreeStatistics(object):
     __slots__ = [
+        'max_clique_edge_distribution',
         'num',
         'num_edges',
-        'max_clique_edge_distribution',
         'min_size',
         'max_size',
         'avg_size',

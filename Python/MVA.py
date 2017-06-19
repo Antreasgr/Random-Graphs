@@ -9,6 +9,8 @@ from UnionFind import UnionFind
 from nx_converters import *
 from clique_tree import TreeStatistics
 from Runners import *
+from report_generator import *
+
 """
     Implements the markenzon algorithm version 2 as described in paper
     @param l holds the number of maximal cliques generated
@@ -228,21 +230,23 @@ NUM_VERTICES = [
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 
-NAME = "MVA"
+NAME = "MVA2"
 
 if __name__ == '__main__':
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_MVA(num, edge_density, NAME, True))
+                Runners.append(Run_MVA(num, edge_density, NAME, False))
 
-            # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-            # if not os.path.isdir(os.path.dirname(filename)):
-            #     os.makedirs(os.path.dirname(filename))
+            if not os.path.isdir(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename))
 
-            # with io.open(filename, 'w') as file:
-            #     print_statistics(Runners, file)
-
+            with io.open(filename, 'w') as file:
+                print_statistics(Runners, file)
+            
             print("Done")
+
+    # run_reports(NAME)
