@@ -9,7 +9,9 @@ from yaml import Loader, Dumper
 # from ruamel import yaml
 from clique_tree import *
 import json
-import xlsxwriter
+# import xlsxwriter
+from openpyxl import Workbook
+from openpyxl.writer.write_only import WriteOnlyCell
 
 
 def parse_data(path, output=True):
@@ -361,14 +363,19 @@ def excel_reports(algorithms):
         indexes = [(name, i + 1) if name in valid_for_algorithm else (name, i) for name, i in indexes]
 
     print(rows)
-    workbook = xlsxwriter.Workbook(os.path.join("Results", "comparison.xlsx"))
-    worksheet = workbook.add_worksheet("data")
+    workbook = Workbook(write_only=True)
+    worksheet = workbook.create_sheet("data")
 
     for row_index, row in enumerate(rows):
-        for col_index, cell in enumerate(row):
-            worksheet.write(row_index, col_index, cell)
+        if row_index == 0:
+            cells = [WriteOnlyCell(worksheet, value=v) for v in row] 
+            for cell in cells:
+                cell.style = "Headline 1"
+            worksheet.append(cells)
+        else:
+            worksheet.append(row)
 
-    workbook.close()
+    workbook.save(os.path.join("Results", "comparison.xlsx"))
 
 NAME = "MVA2"
 if __name__ == '__main__':
