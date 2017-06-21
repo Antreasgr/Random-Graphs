@@ -5,21 +5,8 @@ from LexBFS import LexBFS
 
 class TreeStatistics(object):
     __slots__ = [
-        'max_clique_edge_distribution',
-        'num',
-        'num_edges',
-        'min_size',
-        'max_size',
-        'avg_size',
-        'sum_size',
-        'min_weight',
-        'max_weight',
-        'avg_weight',
-        'sum_weight',
-        'width',
-        'height',
-        'distribution_size',
-        'distribution_weight',
+        'max_clique_edge_distribution', 'num', 'num_edges', 'min_size', 'max_size', 'avg_size', 'sum_size', 'min_weight', 'max_weight', 'avg_weight',
+        'sum_weight', 'width', 'height', 'distribution_size', 'distribution_weight', 'degrees_var' , 'diameter'
     ]
 
     def __init__(self):
@@ -35,6 +22,8 @@ class TreeStatistics(object):
         self.num_edges = 0
         self.width = float("-inf")
         self.height = float("-inf")
+        self.degrees_var = 0
+        self.diameter = 0
         self.max_clique_edge_distribution = 0
         self.distribution_size = {}
         self.distribution_weight = {}
@@ -42,8 +31,7 @@ class TreeStatistics(object):
     def __str__(self):
         result = ''
         for slot in self.__slots__:
-            result += '{0:30} {1!s:>22}\n'.format(slot + ':',
-                                                  getattr(self, slot))
+            result += '{0:30} {1!s:>22}\n'.format(slot + ':', getattr(self, slot))
         return result
 
     def __repr__(self):
@@ -101,20 +89,24 @@ def dfs(graph, root):
     return visited
 
 
-def dfs_tree(tree, root):
+def dfs_tree(root, num_vertices):
     """
         Goes through a tree using DFS, and compute max children, its depth, and the level of each node
     """
     visited, stack = set(), [root]
 
     stats = TreeStatistics()
+    avg_degree = 2 * (num_vertices - 1) / num_vertices
     # root.height = 0
+    farthest_vertex = root
+
     while stack:
         vertex = stack.pop()
         if vertex not in visited:
             visited.add(vertex)
             size = len(vertex.cliqueList)
 
+            degree = len(vertex.children)
             new_c = set(vertex.children) - visited
             stats.num_edges += len(new_c)
             for c in new_c:
@@ -126,7 +118,8 @@ def dfs_tree(tree, root):
                     stats.distribution_weight[c.weight] = 0
                 stats.distribution_weight[c.weight] += 1
 
-            stats.width = max(stats.width, len(new_c))
+            stats.width = max(stats.width, degree)
+            stats.degrees_var += (degree - avg_degree) * (degree - avg_degree)
             stats.height = max(stats.height, vertex.height)
             stats.sum_size += size
             stats.min_size = min(stats.min_size, size)
@@ -137,12 +130,32 @@ def dfs_tree(tree, root):
             stats.distribution_size[size] += 1
 
             if new_c:
-                stats.min_weight = min(stats.min_weight,
-                                       min(c.weight for c in new_c))
-                stats.max_weight = max(stats.max_weight,
-                                       max(c.weight for c in new_c))
+                stats.min_weight = min(stats.min_weight, min(c.weight for c in new_c))
+                stats.max_weight = max(stats.max_weight, max(c.weight for c in new_c))
+
+            if vertex.height > farthest_vertex.height:
+                farthest_vertex = vertex
 
             stack.extend(new_c)
+
+    # run a dfs from farthest_vertex to get the diameter
+    farthest_vertex.height = 0
+    visited, stack = set(), [farthest_vertex]
+    while stack:
+        vertex = stack.pop()
+        if vertex not in visited:
+            visited.add(vertex)
+            neighbors = vertex.children
+            if vertex.parent != None:
+                neighbors.append(vertex.parent)
+
+            new_c = set(neighbors) - visited
+            for c in new_c:
+                c.height = vertex.height + 1
+            
+            stats.diameter = max(stats.diameter, vertex.height)
+            stack.extend(new_c)
+
     return stats
 
 
@@ -256,8 +269,7 @@ def PerfectEliminationOrdering(G):
         if leftNeighbors[v]:
             parent[v] = B[max([position[w] for w in leftNeighbors[v]])]
             if not leftNeighbors[v] - {parent[v]} <= leftNeighbors[parent[v]]:
-                raise ValueError(
-                    "Input to PerfectEliminationOrdering is not chordal")
+                raise ValueError("Input to PerfectEliminationOrdering is not chordal")
     B.reverse()
     return B
 

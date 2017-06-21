@@ -277,9 +277,10 @@ def run_reports(name):
     all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + name + ".yml"), name)
     print(all_lines)
     if all_lines:
-        with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
-            writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-            writer.writerows((localize_floats(row) for row in all_lines))
+        write_excel(all_lines, os.path.join("Results", name + ".xlsx"), ['Title', 'Headline 1', 'Headline 2', 'Headline 3'])
+        # with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
+        #     writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
+        #     writer.writerows((localize_floats(row) for row in all_lines))
 
 
 # cleanup
@@ -367,10 +368,10 @@ def excel_reports(algorithms):
         indexes = [(name, i + 1) if name in valid_for_algorithm else (name, i) for name, i in indexes]
 
     print(rows)
-    write_excel(rows)
+    write_excel(rows, os.path.join("Results", "comparison.xlsx"))
 
 
-def write_excel(rows):
+def write_excel(rows, filename, header_rows = ['Headline 2', 'Headline 3']):
     workbook = Workbook()
     worksheet = workbook["Sheet"]
 
@@ -379,15 +380,15 @@ def write_excel(rows):
         worksheet.column_dimensions[get_column_letter(i + 1)].width = col_widths[i]
 
     for row_index, row in enumerate(rows):
-        if row_index < 2:
+        if row_index < len(header_rows):
             cells = [WriteOnlyCell(worksheet, value=v) for v in row]
             for cell in cells:
-                cell.style = "Headline " + str(row_index + 2)
+                cell.style = header_rows[row_index]
             worksheet.append(cells)
         else:
             worksheet.append(row)
 
-    workbook.save(os.path.join("Results", "comparison.xlsx"))
+    workbook.save(filename)
 
 
 NAME = "MVA2"

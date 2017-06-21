@@ -51,23 +51,23 @@ def merge_cliques(m_parameters, upper_bound, rand):
 
     final_edges = []
 
-    m_parameters.edges_list.sort(key=lambda e: -e[3])
+    # m_parameters.edges_list.sort(key=lambda e: -e[3])
 
     while m_parameters.edges_list and m_parameters.num_edges < upper_bound:
-        # (a, b, sep, omega), index = rand.next_element(m_parameters.edges_list)
-        (a, b, sep, omega), index = m_parameters.edges_list[0], 0
+        (a, b, sep, omega), index = rand.next_element(m_parameters.edges_list)
+        # (a, b, sep, omega), index = m_parameters.edges_list[0], 0
         del m_parameters.edges_list[index]
         i = dis_set[a]
         j = dis_set[b]
-        delta = m_parameters.cardinality_array[i] - omega
-        Delta = m_parameters.cardinality_array[j] - omega
-        if m_parameters.num_edges + (delta * Delta) <= upper_bound:
+        edges_a = m_parameters.cardinality_array[i] - omega
+        edges_b = m_parameters.cardinality_array[j] - omega
+        if m_parameters.num_edges + (edges_a * edges_b) <= upper_bound:
             dis_set.union(a, b)
             m_parameters.cliques[i].update(m_parameters.cliques[j])
-            m_parameters.cardinality_array[i] = Delta + delta + omega
+            m_parameters.cardinality_array[i] = edges_b + edges_a + omega
             m_parameters.cliques[j] = set()
             m_parameters.cardinality_array[j] = 0
-            m_parameters.num_edges += Delta * delta
+            m_parameters.num_edges += edges_b * edges_a
             m_parameters.num_maximal_cliques -= 1
         else:
             final_edges.append((a, b, sep, omega))
@@ -84,7 +84,7 @@ def expand_cliques(n, rand):
     Q, S, L, m, l = [set([0])], [1], [], 0, 0
     for u in range(1, n):
         i = rand.next_random(0, l + 1)
-        t = rand.next_random(0, S[i] + 1)
+        t = rand.next_random(1, S[i] + 1)
         if t == S[i]:
             # expand old clique
             Q[i].add(u)
@@ -126,7 +126,7 @@ def expand_tree(n, rand):
     return MVAParameters(l, m, L, S, Q)
 
 
-def dfs_mva_width_height(parameters):
+def dfs_mva_stats(parameters):
     """
         Calculates the width and height of the MVA clique tree using dfs
     """
@@ -140,9 +140,10 @@ def dfs_mva_width_height(parameters):
         if j not in dfs_dict:
             dfs_dict[j] = TreeNode(j)
         dfs_dict[i].children.append(dfs_dict[j])
+        dfs_dict[j].parent = dfs_dict[i]
 
-    dfs_stats = dfs_tree(None, next(iter(dfs_dict.values())))
-    return (dfs_stats.width, dfs_stats.height)
+    dfs_stats = dfs_tree(next(iter(dfs_dict.values())), parameters.num_maximal_cliques)
+    return (dfs_stats.width, dfs_stats.height, dfs_stats.degrees_var, dfs_stats.diameter)
 
 
 def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
@@ -167,7 +168,7 @@ def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
         stats.distribution_weight = collections.Counter((w for _, _, sep, w in p_mva.edges_list))
 
     # dfs for width and height
-    stats.width, stats.height = dfs_mva_width_height(p_mva)
+    stats.width, stats.height, stats.degrees_var, stats.diameter = dfs_mva_stats(p_mva)
 
     stats.max_clique_edge_distribution = (stats.max_size * (stats.max_size - 1) / 2) / p_mva.num_edges
 
@@ -221,12 +222,12 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None):
 
 NUM_VERTICES = [
     50,
-    100,
-    500,
-    1000,
-    2500,
-    5000,
-    10000,  # 50000, 100000, 500000, 1000000
+    # 100,
+    # 500,
+    # 1000,
+    # 2500,
+    # 5000,
+    # 10000,  # 50000, 100000, 500000, 1000000
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 
@@ -246,7 +247,7 @@ if __name__ == '__main__':
 
             with io.open(filename, 'w') as file:
                 print_statistics(Runners, file)
-            
+
             print("Done")
 
-    # run_reports(NAME)
+    run_reports(NAME)
