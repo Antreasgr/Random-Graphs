@@ -10,8 +10,11 @@ from yaml import Loader, Dumper
 from clique_tree import *
 import json
 # import xlsxwriter
+from openpyxl.utils import get_column_letter
 from openpyxl import Workbook
 from openpyxl.writer.write_only import WriteOnlyCell
+from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule
+from openpyxl.styles.colors import Color
 
 
 def parse_data(path, output=True):
@@ -198,11 +201,13 @@ def generate_accumulative_report(all_data_filename, name):
 
     return lines
 
+
 def index_of(order_list, value):
     try:
         return order_list.index(value)
     except ValueError:
         return -1
+
 
 def accumulative_header(parameters, datum, ct):
     columns_stats = [o for o in datum["Stats"]]
@@ -294,7 +299,7 @@ def excel_reports(algorithms):
 
     # with open(os.path.join("Results", "all_data.json"), 'w') as stream:
     #         json.dump(all_data, stream)
-        
+
     with open(os.path.join("Results", "all_data.json"), 'r') as stream:
         all_data = json.load(stream)
 
@@ -307,7 +312,6 @@ def excel_reports(algorithms):
                 d["Stats"]["edge_density"] = d["Stats"]["actual_edge_density"]
             elif "edge_density" not in d["Stats"]:
                 d["Stats"]["edge_density"] = [d["Parameters"]["edge_density"]]
-            
 
     # get headers from the first algorithm
     stats_headers = [h for h in all_data[algorithms[0]][0]["Stats"]]
@@ -333,14 +337,14 @@ def excel_reports(algorithms):
                 print("{0} in {2} != {1} in {3}, missing row".format(all_data[name][i]["Parameters"]["n"], rown, name, indexes[0][0]))
             else:
                 valid_for_algorithm.append(name)
-        
+
         stat_values = []
         for stat in stats_headers:
             for name, i in indexes:
                 if name in valid_for_algorithm:
                     if stat in all_data[name][i]["Stats"]:
-                       stat_values.append(statistics.mean(all_data[name][i]["Stats"][stat]))
-                       continue
+                        stat_values.append(statistics.mean(all_data[name][i]["Stats"][stat]))
+                        continue
                 stat_values.append("")
 
         ct_values = []
@@ -363,19 +367,28 @@ def excel_reports(algorithms):
         indexes = [(name, i + 1) if name in valid_for_algorithm else (name, i) for name, i in indexes]
 
     print(rows)
-    workbook = Workbook(write_only=True)
-    worksheet = workbook.create_sheet("data")
+    write_excel(rows)
+
+
+def write_excel(rows):
+    workbook = Workbook()
+    worksheet = workbook["Sheet"]
+
+    col_widths = [max(8, len(v) + 4) for v in rows[0]]
+    for i, _ in enumerate(rows[0]):
+        worksheet.column_dimensions[get_column_letter(i + 1)].width = col_widths[i]
 
     for row_index, row in enumerate(rows):
-        if row_index == 0:
-            cells = [WriteOnlyCell(worksheet, value=v) for v in row] 
+        if row_index < 2:
+            cells = [WriteOnlyCell(worksheet, value=v) for v in row]
             for cell in cells:
-                cell.style = "Headline 1"
+                cell.style = "Headline " + str(row_index + 2)
             worksheet.append(cells)
         else:
             worksheet.append(row)
 
     workbook.save(os.path.join("Results", "comparison.xlsx"))
+
 
 NAME = "MVA2"
 if __name__ == '__main__':
