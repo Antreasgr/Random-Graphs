@@ -233,7 +233,6 @@ EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 NAME = "MVA2"
 
 if __name__ == '__main__':
-
     mva_data = []
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
