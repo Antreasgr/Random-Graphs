@@ -95,19 +95,19 @@ def Run_INCR(num_vertices, edge_density, algorithm_name, k, init_tree=None):
     k = max(1, k * edges_bound)
     runner = runner_factory(num_vertices, algorithm_name, None, edges_bound=edges_bound, edge_density=edge_density, k=k)
 
-    randomizer = Randomizer(2 * num_vertices, runner["parameters"]["seed"])
+    randomizer = Randomizer(2 * num_vertices, runner["Parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
         if init_tree:
-            p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+            p_mva = expand_tree(runner["Parameters"]["n"], randomizer)
             print("- Expand tree:")
         else:
-            p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+            p_mva = expand_cliques(runner["Parameters"]["n"], randomizer)
             print("- Expand cliques:")
 
     print(p_mva)
 
     with Timer("t_split_edges", runner["Times"]):
-        loops = split_edges_k(p_mva, runner["parameters"]["edges_bound"], randomizer, k)
+        loops = split_edges_k(p_mva, runner["Parameters"]["edges_bound"], randomizer, k)
         print("- Split edges:")
     runner["Stats"]["total"] = runner["Times"]["t_split_edges"] + runner["Times"]["t_expand_cliques"]
     runner["Stats"]["loops%"] = loops / edges_bound

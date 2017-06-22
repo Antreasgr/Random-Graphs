@@ -7,7 +7,7 @@ def print_statistics(runners, file=sys.stdout):
     """
         Print all statistics in pretty format
     """
-    s_all = {'parameters': {}, 'Times': {}, 'Verify': {}, 'Stats': {}, 'Output': {}}
+    s_all = {'Parameters': {}, 'Times': {}, 'Verify': {}, 'Stats': {}, 'Output': {}}
 
     for i_run, run in enumerate(runners):
         if i_run == 0:
@@ -45,7 +45,7 @@ def runner_factory(num_of_vertices, algorithm="", seed=None, **kwargs):
         Creates a new runner object to initiliaze the algorithm
     """
     run_dict = {
-        "parameters": {
+        "Parameters": {
             "n": num_of_vertices,
             'seed': seed,
             'Algorithm': algorithm
@@ -57,6 +57,24 @@ def runner_factory(num_of_vertices, algorithm="", seed=None, **kwargs):
         'Output': {}
     }
 
-    run_dict["parameters"].update(kwargs)
+    run_dict["Parameters"].update(kwargs)
 
     return run_dict
+
+
+def merge_runners(runners):
+    merged_runner = runner_factory(0)
+    merged_runner["Parameters"] = runners[0]["Parameters"]
+
+    for section in ["Times", "Stats", "Output"]:
+        for key in runners[0][section].keys():
+            if key != 'clique_trees':
+                merged_runner[section][key] = [r[section][key] for r in runners]
+            else:
+                # convert TreeStatistics to dict to merge
+                dicts = [r[section][key][-1].__dict__ for r in runners]
+                merged_runner[section][key] = [{}]
+                for tree_section in dicts[0].keys():
+                    merged_runner[section][key][-1][tree_section] = [d[tree_section] for d in dicts]
+
+    return merged_runner

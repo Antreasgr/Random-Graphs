@@ -6,7 +6,7 @@ from LexBFS import LexBFS
 class TreeStatistics(object):
     __slots__ = [
         'max_clique_edge_distribution', 'num', 'num_edges', 'min_size', 'max_size', 'avg_size', 'sum_size', 'min_weight', 'max_weight', 'avg_weight',
-        'sum_weight', 'width', 'height', 'distribution_size', 'distribution_weight', 'degrees_var' , 'diameter'
+        'sum_weight', 'width', 'height', 'distribution_size', 'distribution_weight', 'degrees_var', 'diameter'
     ]
 
     def __init__(self):
@@ -36,6 +36,10 @@ class TreeStatistics(object):
 
     def __repr__(self):
         return self.__str__()
+
+    @property
+    def __dict__(self):
+        return {s: getattr(self, s, 0) for s in self.__slots__}
 
 
 def is_subset(list1, list2):
@@ -152,7 +156,7 @@ def dfs_tree(root, num_vertices):
             new_c = set(neighbors) - visited
             for c in new_c:
                 c.height = vertex.height + 1
-            
+
             stats.diameter = max(stats.diameter, vertex.height)
             stack.extend(new_c)
 

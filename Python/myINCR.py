@@ -307,7 +307,7 @@ def Run_INCR(n, edge_density, alg_name):
     edges_bound = edge_density * ((n * (n - 1)) / 2)
     runner = runner_factory(n, alg_name, None, edges_bound=edges_bound, edge_density=edge_density)
 
-    randomizer = Randomizer(2 * n, runner["parameters"]["seed"])    
+    randomizer = Randomizer(2 * n, runner["Parameters"]["seed"])    
 
     with Timer("t_init_incr", runner["Times"]):
         CT, EL = init_generation(n, randomizer)
@@ -371,7 +371,7 @@ def post_process(run):
     # stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
-    out["nodes"] = run["parameters"]["n"]  # len(graphs["nx_chordal"].nodes())
+    out["nodes"] = run["Parameters"]["n"]  # len(graphs["nx_chordal"].nodes())
     out["edges"] = graphs["nx_chordal"].size()  # len(graphs["nx_chordal"].edges())
     out["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
 

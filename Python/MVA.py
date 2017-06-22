@@ -10,7 +10,6 @@ from nx_converters import *
 from clique_tree import TreeStatistics
 from Runners import *
 from report_generator import *
-
 """
     Implements the markenzon algorithm version 2 as described in paper
     @param l holds the number of maximal cliques generated
@@ -192,19 +191,19 @@ def Run_MVA(num_vertices, edge_density, algorithm_name, init_tree=None):
     edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
     runner = runner_factory(num_vertices, algorithm_name, None, edges_bound=edges_bound, edge_density=edge_density)
 
-    randomizer = Randomizer(3 * num_vertices, runner["parameters"]["seed"])
+    randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
         if init_tree:
-            p_mva = expand_tree(runner["parameters"]["n"], randomizer)
+            p_mva = expand_tree(runner["Parameters"]["n"], randomizer)
             print("- Expand tree:")
         else:
-            p_mva = expand_cliques(runner["parameters"]["n"], randomizer)
+            p_mva = expand_cliques(runner["Parameters"]["n"], randomizer)
             print("- Expand cliques:")
 
     print(p_mva)
 
     with Timer("t_merge_cliques", runner["Times"]):
-        merge_cliques(p_mva, runner["parameters"]["edges_bound"], randomizer)
+        merge_cliques(p_mva, runner["Parameters"]["edges_bound"], randomizer)
         print("- Merge cliques:")
     runner["Stats"]["total"] = runner["Times"]["t_merge_cliques"] + runner["Times"]["t_expand_cliques"]
 
@@ -234,20 +233,24 @@ EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 NAME = "MVA2"
 
 if __name__ == '__main__':
+
+    mva_data = []
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
                 Runners.append(Run_MVA(num, edge_density, NAME, False))
 
-            filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-            if not os.path.isdir(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
+            # if not os.path.isdir(os.path.dirname(filename)):
+            #     os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
-                print_statistics(Runners, file)
+            # with io.open(filename, 'w') as file:
+            #     print_statistics(Runners, file)
 
             print("Done")
 
-    run_reports(NAME)
+            mva_data.append(merge_runners(Runners))
+
+    run_reports_data(NAME, mva_data)

@@ -51,9 +51,9 @@ def chordal_generation(run, rand):
     """
         Generate a random chordal graph with n vertices, k is the algorithm parameter
     """
-    k = run["parameters"]["k"]
-    n = run["parameters"]["n"]
-    version = run["parameters"]["version"]
+    k = run["Parameters"]["k"]
+    n = run["Parameters"]["n"]
+    version = run["Parameters"]["version"]
 
     if 2 * k - 1 > n:
         raise Exception("chordal gen parameter k must be lower than n/2")
@@ -108,15 +108,15 @@ def post_process(run):
     # stats["ratio[total/[chordal+forest]]"] = stats["total"] / float(times["t_forestverify"] + times["t_chordal"])
 
     # get output parameters
-    out["nodes"] = run["parameters"]["n"]  # len(graphs["nx_chordal"].nodes())
+    out["nodes"] = run["Parameters"]["n"]  # len(graphs["nx_chordal"].nodes())
     out["edges"] = graphs["nx_chordal"].size()  # len(graphs["nx_chordal"].edges())
-    out["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
+    stats["edge_density"] = float(out["edges"]) / (float(out["nodes"] * (out["nodes"] - 1)) / 2)
 
     temp_forest = cForest(1)
     temp_forest.ctree.append(graphs["tree"])
 
     # calculate tree output parameters
-    out["clique_trees"] = [dfs_forest(temp_forest), dfs_forest(graphs["final_cforest"])]
+    out["clique_trees"] = [dfs_forest(graphs["final_cforest"])]
     
     ct_stats = out["clique_trees"][1]
     ct_stats.max_clique_edge_distribution = (ct_stats.max_size * (ct_stats.max_size - 1) / 2) / out["edges"]

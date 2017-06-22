@@ -67,7 +67,7 @@ def process_data(run_stats):
 
                             accumulative[section][t][tree_index][treesection].append(tree[treesection])
 
-    accumulative["Parameters"] = run_stats["Run"][0]["parameters"]
+    accumulative["Parameters"] = run_stats["Run"][0]["Parameters"]
 
     return accumulative
 
@@ -92,10 +92,10 @@ def print_data(run_stats, accumulative, report_file=sys.stdout, frmt="csv"):
 
 def print_header_md(run_stats, report_file=sys.stdout):
     print("# Report\n".center(3), file=report_file)
-    line1 = "|".join(run_stats["Run"][0]["parameters"])
+    line1 = "|".join(run_stats["Run"][0]["Parameters"])
     line1 += "|Trials"
-    line2 = "|".join(("-" for _ in run_stats["Run"][0]["parameters"])) + "|-"
-    line3 = "|".join([str(run_stats["Run"][0]["parameters"][param]) for param in run_stats["Run"][0]["parameters"]])
+    line2 = "|".join(("-" for _ in run_stats["Run"][0]["Parameters"])) + "|-"
+    line3 = "|".join([str(run_stats["Run"][0]["Parameters"][param]) for param in run_stats["Run"][0]["Parameters"]])
     line3 += "|" + str(len(run_stats["Run"]))
 
     print("> |" + line1 + "|", file=report_file)
@@ -107,10 +107,10 @@ def print_header_md(run_stats, report_file=sys.stdout):
 def print_header_csv(run_stats, report_file=sys.stdout, delimiter=";"):
     print("Report\n", file=report_file)
     delimiter += " "
-    print(delimiter.join(run_stats["Run"][0]["parameters"]) + delimiter + "Trials", file=report_file)
+    print(delimiter.join(run_stats["Run"][0]["Parameters"]) + delimiter + "Trials", file=report_file)
     print(
-        delimiter.join([str(run_stats["Run"][0]["parameters"][param])
-                        for param in run_stats["Run"][0]["parameters"]]) + delimiter + str(len(run_stats["Run"])),
+        delimiter.join([str(run_stats["Run"][0]["Parameters"][param])
+                        for param in run_stats["Run"][0]["Parameters"]]) + delimiter + str(len(run_stats["Run"])),
         file=report_file)
     print("\n" + "-".center(3, "-"), file=report_file)
 
@@ -164,23 +164,22 @@ def sort_data_fn(a):
     return par["Algorithm"], par["n"], k
 
 
-def generate_accumulative_report(all_data_filename, name):
+def read_all_data_yml(name, all_data_filename):
     with open(all_data_filename, 'r') as stream:
         all_data = yaml.load(stream, Loader=Loader)
 
     mva_data = [d for d in all_data if d["Parameters"]["Algorithm"] == name]
     shet_data = []  # [d for d in all_data if d["Parameters"]["Algorithm"] == "SHET"]
-
     del all_data
-    for d in shet_data:
-        if "edge_density" in d["Output"]:
-            d["Stats"]["edge_density"] = d["Output"]["edge_density"]
 
+    return mva_data, shet_data
+
+
+def generate_accumulative_report(name, mva_data=None, shet_data=None):
     mva_data.sort(key=sort_data_fn)
     shet_data.sort(key=sort_data_fn)
 
     lines = []
-
     for i, datum in enumerate(mva_data):
         ct = datum["Output"]["clique_trees"][0]
         if i == 0:
@@ -265,25 +264,24 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-def run_reports(name):
-    mva_data = parse_data("Results/" + name, False)
-    shet_data = []  # parse_data("Results/" + name, False)
-
-    print("Done...")
+def run_reports_data(name, mva_data=[], shet_data=[]):
     if mva_data or shet_data:
         with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
             yaml.dump(mva_data + shet_data, stream)
 
-    all_lines = generate_accumulative_report(os.path.join("Results", "all_data_" + name + ".yml"), name)
+    # mva_data, shet_data = read_all_data_yml(name, os.path.join("Results", "all_data_" + name + ".yml"))
+    all_lines = generate_accumulative_report(name, mva_data, shet_data)
     print(all_lines)
     if all_lines:
         write_excel(all_lines, os.path.join("Results", name + ".xlsx"), ['Title', 'Headline 1', 'Headline 2', 'Headline 3'])
-        # with open(os.path.join("Results", "final_report_" + name + ".csv"), 'w') as stream:
-        #     writer = csv.writer(stream, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
-        #     writer.writerows((localize_floats(row) for row in all_lines))
 
 
-# cleanup
+def run_reports(name):
+    mva_data = parse_data("Results/" + name, False)
+    shet_data = []  # parse_data("Results/" + name, False)
+    print("Done...")
+
+    run_reports_data(name, mva_data, shet_data)
 
 
 def excel_reports(algorithms):
@@ -371,7 +369,7 @@ def excel_reports(algorithms):
     write_excel(rows, os.path.join("Results", "comparison.xlsx"))
 
 
-def write_excel(rows, filename, header_rows = ['Headline 2', 'Headline 3']):
+def write_excel(rows, filename, header_rows=['Headline 2', 'Headline 3']):
     workbook = Workbook()
     worksheet = workbook["Sheet"]
 
