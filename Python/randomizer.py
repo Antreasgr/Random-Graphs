@@ -60,11 +60,14 @@ class Randomizer(object):
             pool[j] = pool[n - i - 1]  # move non-selected item into vacancy
         return result
 
-    def next_random(self, low, high):
+    def random(self):
         self.local_index += 1
         self.total_count += 1
         if self.local_index >= self.size:
             #  print("Run out of random, reseting")
             self.local_index = 0
 
-        return int(self.np_random[self.local_index] * (high - low) + low)
+        return self.np_random[self.local_index]
+
+    def next_random(self, low, high):
+        return int(self.random() * (high - low) + low)

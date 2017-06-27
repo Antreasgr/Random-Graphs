@@ -4,18 +4,59 @@ from MVA import *
 class DECRCliqueTree(object):
     """
         Each edge in edge list is a tuple (node 1 index, node 2 index, seperator, length of seperator) ie. index is in cliques array
-        Each edge good_edges is a dict with key (x, y) and value the index of node containing edge in clique, 
+        Each edge good_edges is a dict with key (x, y) and value the index of node containing edge in clique,
         where x < y to avoid double storing
     """
     __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques", "good_edges"]
 
-    def __init__(self, l, m, L, S, Q, good_edges):
-        self.num_maximal_cliques = l
-        self.num_edges = m
-        self.edges_list = L
-        self.cardinality_array = S
-        self.cliques = Q
-        self.good_edges = good_edges
+    class CliqueNode(object):
+        """
+            https://wiki.python.org/moin/TimeComplexity for sets
+            index: is the index in the parent clique tree list. Must be UNIQUE and HASHABLE as it is used as key in neighbours dict
+            vertex_set: is the set with the vertices contained in this clique tree node
+            neighbours: is the dict of edges attached to this node. Each edge is a tuple (i, j, sep, len(sep))
+        """
+        __slots__ = ['index', 'vertex_set', 'neighbours']
+
+        def __init__(self, index):
+            self.index = index
+            self.vertex_set = set()
+            self.neighbours = {}
+
+        def add_edge(self, node, edge):
+            self.neighbours[node] = edge
+
+        def __hash__(self):
+            return hash(self.index)
+
+    def __init__(self):
+        self.num_maximal_cliques = 0
+        self.num_edges = 0
+        self.edges_list = []
+        self.cardinality_array = []
+        self.cliques = []
+        self.good_edges = dict()
+
+    def add_node(self, vertex_set):
+        new_node = DECRCliqueTree.CliqueNode(len(self.cliques))
+        new_node.vertex_set = vertex_set
+        self.cliques.append(new_node)
+        self.cardinality_array.append(len(vertex_set))
+        self.num_maximal_cliques += 1
+        return new_node
+
+    def add_edge(self, node1, node2, sep, weight):
+        edge = (node1, node2, sep, weight)
+        node1.neighbours[node2] = edge
+        node2.neighbours[node1] = edge
+        self.edges_list.append(edge)
+        return edge
+
+    def delete_node(self, node):
+        self.cliques[node.index] = None
+        self.cardinality_array[node.index] = 0
+        self.num_maximal_cliques -= 1
+        del node
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}\n\tgood edges: {}".format(
@@ -25,21 +66,83 @@ class DECRCliqueTree(object):
         return self.__str__()
 
 
+def delete_edge(clique_tree, clique_node, u, v, rand):
+    """
+        Deletes the edge from u to v contained in clique tree Node clique_node (x)
+    """
+    kx_with_u = clique_node.vertex_set - v  # O(len(vertex_set))
+    kx_with_v = clique_node.vertex_set - u  # O(len(vertex_set))
+
+    x_1, x_2 = None, None
+    # check if soon to be created nodes are maximal
+    # if not there is no reason to create them
+    is_subset_u = False
+    is_subset_v = False
+    for y in clique_node.neighbours.keys():
+        if not is_subset_u and kx_with_u.issubset(y):
+            is_subset_u = True
+            x_1 = y
+
+        if not is_subset_v and kx_with_v.issubset(y):
+            is_subset_v = True
+            x_2 = y
+
+        if not is_subset_u and not is_subset_v:
+            break
+
+    if not is_subset_u:
+        x_1 = clique_tree.add_node(kx_with_u)
+
+    if not is_subset_v:
+        x_2 = clique_tree.add_node(kx_with_v)
+
+    for y in clique_node.neighbours.keys():
+        if u in y.vertex_list:
+            # y \in N_u
+            # add {x1, y} i.e. modify {x, y}
+            old_edge = x_1.neighbours[clique_node]
+            x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
+            y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
+        elif v in y.vertex_list:
+            # y \in N_v
+            # add {x2, y}
+            old_edge = x_2.neighbours[clique_node]
+            x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
+            y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
+        else:
+            # y \notin N_uv
+            # add {x1 or x2, y}
+            if rand.random() < 0.5:
+                old_edge = x_1.neighbours[clique_node]
+                x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
+                y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
+            else:
+                old_edge = x_2.neighbours[clique_node]
+                x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
+                y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
+
+    # add-edge x1-x2, w = k - 2
+    sep = clique_node.vertex_set - u - v
+    clique_tree.add_edge(x_1, x_2, sep, len(sep))
+    clique_tree.delete_node(clique_node)
+    clique_tree.num_edges -= 1
+
+
 def init_k_tree(num_vertices, k, rand):
-    ct_tree = DECRCliqueTree(1, int(k * (k + 1) / 2), [], [k + 1], [[i for i in range(k + 1)]], dict())
+    ct_tree = DECRCliqueTree()
+    root = ct_tree.add_node(set([i for i in range(k + 1)]))
+    ct_tree.num_edges = int(k * (k + 1) / 2)
 
     for u in range(1, num_vertices - k + 1):
         i = rand.next_random(0, len(ct_tree.cliques))
-        y = rand.next_random(0, len(ct_tree.cliques[i]))
+        y = rand.next_random(0, len(ct_tree.cliques[i].vertex_set))
 
-        sep = [x for ii, x in enumerate(ct_tree.cliques[i]) if ii != y]
+        sep = [x for ii, x in enumerate(ct_tree.cliques[i].vertex_set) if ii != y]
 
-        ct_tree.cliques.append(sep + [u + k])
-        ct_tree.cardinality_array.append(k + 1)
-        ct_tree.num_maximal_cliques += 1
+        new_node = ct_tree.add_node(set(sep + [u + k]))
         ct_tree.num_edges += 1
 
-        ct_tree.edges_list.append((i, u, sep, k))
+        ct_tree.add_edge(ct_tree.cliques[i], new_node, sep, k)
 
         # remove edges gone bad, this is probably too slow
         for ii in range(len(sep)):
