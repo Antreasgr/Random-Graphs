@@ -3,7 +3,8 @@ from MVA import *
 
 class DECRCliqueTree(object):
     """
-        Each edge in edge list is a tuple (node 1 index, node 2 index, seperator, length of seperator) ie. index is in cliques array
+        Each edge in edge list is a tuple (node 1, node 2, seperator, length of seperator) ie. node is pointer to CliqueNode
+        `edges_list` and `cardinality_array` are only for running mva_stats. MAYBE remove and write another dfs stats function
         Each edge good_edges is a dict with key (x, y) and value the index of node containing edge in clique,
         where x < y to avoid double storing
     """
@@ -25,6 +26,12 @@ class DECRCliqueTree(object):
 
         def add_edge(self, node, edge):
             self.neighbours[node] = edge
+
+        def __str__(self):
+            return "\tindex: {}\n\tvertex_set: {}\n\tneighbours: {}".format(self.index, self.vertex_set, self.neighbours)
+
+        def __repr__(self):
+            return self.__str__()
 
         def __hash__(self):
             return hash(self.index)
@@ -158,12 +165,34 @@ def init_k_tree(num_vertices, k, rand):
     return ct_tree
 
 
+def find_good_edges(clique_tree):
+    visited = set()
+    for node in clique_tree.cliques:
+        if node not in visited:
+            visited.add(node)
+            good_uvs = set(node.vertex_set)
+            for neigh, edge in node.neighbours.items():
+                if neigh not in visited:
+                    visited.add(neigh)
+                    good_uvs.difference_update(edge[2])
+            print(good_uvs)
+
+
+def DECR(clique_tree, rand):
+    while clique_tree.good_edges:
+        r_key = rand.next_element(clique_tree.good_edges.items())
+        r_edge = clique_tree[r_key]
+        break
+
+
 def Run_DECR(num_vertices, k, algorithm_name):
 
     runner = runner_factory(num_vertices, algorithm_name, None, k=k)
     randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
 
     clique_tree = init_k_tree(num, k, randomizer)
+    find_good_edges(clique_tree)
+    # DECR(clique_tree, randomizer)
     print(clique_tree)
     return calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
 
