@@ -199,7 +199,7 @@
 
         var labelsEl = nodeEnter.append("text")
             .text(function(d) {
-                return d.id.toString() + " " + (d.data ? d.data.clique_list ? d.data.clique_list : "" : "");
+                return d.id.toString() + " " + (d.data ? d.data.clique_list ? "[" + d.data.clique_list + "]" : "" : "");
             }).attr('text-anchor', 'start');
 
         labelsEl.attr("x", function(d) {

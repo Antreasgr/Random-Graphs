@@ -5,8 +5,7 @@ class DECRCliqueTree(object):
     """
         Each edge in edge list is a tuple (node 1, node 2, seperator, length of seperator) ie. node is pointer to CliqueNode
         `edges_list` and `cardinality_array` are only for running mva_stats. MAYBE remove and write another dfs stats function
-        Each edge good_edges is a dict with key (x, y) and value the index of node containing edge in clique,
-        where x < y to avoid double storing
+        Each edge good_edges is a dict with key the node containing the edge and value is a list of good edges beloning to that node
     """
     __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques", "good_edges"]
 
@@ -28,7 +27,7 @@ class DECRCliqueTree(object):
             self.neighbours[node] = edge
 
         def __str__(self):
-            return "\tindex: {}\n\tvertex_set: {}\n\tneighbours: {}".format(self.index, self.vertex_set, self.neighbours)
+            return "\tindex: {}\n\tvertex_set: {}\n\tneighbours: {}".format(self.index, self.vertex_set, "")
 
         def __repr__(self):
             return self.__str__()
@@ -72,13 +71,32 @@ class DECRCliqueTree(object):
     def __repr__(self):
         return self.__str__()
 
+    def toJson(self, stream = None):
+        d = {"directed": False, "multigraph": False, "graph": {"graph_type": "tree"}, "nodes": [], "links": []}
+        visited = set()
+        all_cliques = [c for c in self.cliques if c != None]
+        for i, clique in enumerate(all_cliques):
+            if clique is None:
+                continue
+            d["nodes"].append({"id": clique.index, "clique_list": ",".join([str(s) for s in clique.vertex_set])})
+            for n in clique.neighbours.keys():
+                if n not in visited:
+                    visited.add(n)
+                    d["links"].append({"source": i, "target": all_cliques.index(n)})
+            visited.add(clique)
+
+        if stream != None:
+            json.dump(d, stream)
+        else:
+            return json.dumps(d)
+
 
 def delete_edge(clique_tree, clique_node, u, v, rand):
     """
         Deletes the edge from u to v contained in clique tree Node clique_node (x)
     """
-    kx_with_u = clique_node.vertex_set - v  # O(len(vertex_set))
-    kx_with_v = clique_node.vertex_set - u  # O(len(vertex_set))
+    kx_with_u = clique_node.vertex_set - set([v])  # O(len(vertex_set))
+    kx_with_v = clique_node.vertex_set - set([u])  # O(len(vertex_set))
 
     x_1, x_2 = None, None
     # check if soon to be created nodes are maximal
@@ -86,11 +104,11 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
     is_subset_u = False
     is_subset_v = False
     for y in clique_node.neighbours.keys():
-        if not is_subset_u and kx_with_u.issubset(y):
+        if not is_subset_u and kx_with_u.issubset([y]):
             is_subset_u = True
             x_1 = y
 
-        if not is_subset_v and kx_with_v.issubset(y):
+        if not is_subset_v and kx_with_v.issubset([y]):
             is_subset_v = True
             x_2 = y
 
@@ -104,32 +122,35 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
         x_2 = clique_tree.add_node(kx_with_v)
 
     for y in clique_node.neighbours.keys():
-        if u in y.vertex_list:
+        if u in y.vertex_set:
             # y \in N_u
             # add {x1, y} i.e. modify {x, y}
-            old_edge = x_1.neighbours[clique_node]
+            old_edge = clique_node.neighbours[y]
             x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
             y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
-        elif v in y.vertex_list:
+            del y.neighbours[clique_node]
+        elif v in y.vertex_set:
             # y \in N_v
             # add {x2, y}
-            old_edge = x_2.neighbours[clique_node]
+            old_edge = clique_node.neighbours[y]
             x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
             y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
+            del y.neighbours[clique_node]
         else:
             # y \notin N_uv
             # add {x1 or x2, y}
             if rand.random() < 0.5:
-                old_edge = x_1.neighbours[clique_node]
+                old_edge = clique_node.neighbours[y]
                 x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
                 y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
             else:
-                old_edge = x_2.neighbours[clique_node]
+                old_edge = clique_node.neighbours[y]
                 x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
                 y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
+            del y.neighbours[clique_node]
 
     # add-edge x1-x2, w = k - 2
-    sep = clique_node.vertex_set - u - v
+    sep = clique_node.vertex_set - set([u, v])
     clique_tree.add_edge(x_1, x_2, sep, len(sep))
     clique_tree.delete_node(clique_node)
     clique_tree.num_edges -= 1
@@ -159,46 +180,64 @@ def init_k_tree(num_vertices, k, rand):
                     del ct_tree.good_edges[key]
 
         # add good edges between u+k node and every other node in clique
+        if u not in ct_tree.good_edges:
+            ct_tree.good_edges[u] = []
+
         for s in sep:
-            ct_tree.good_edges[(s, u + k)] = u
+            ct_tree.good_edges[u].append((s, u + k))
 
     return ct_tree
 
 
-def find_good_edges(clique_tree):
-    visited = set()
-    for node in clique_tree.cliques:
-        if node not in visited:
-            visited.add(node)
-            good_uvs = set(node.vertex_set)
-            for neigh, edge in node.neighbours.items():
-                if neigh not in visited:
-                    visited.add(neigh)
-                    good_uvs.difference_update(edge[2])
-            print(good_uvs)
+# def find_good_edges(clique_tree):
+#     visited = set()
+#     for node in clique_tree.cliques:
+#         if node not in visited:
+#             visited.add(node)
+#             good_uvs = set(node.vertex_set)
+#             for neigh, edge in node.neighbours.items():
+#                 if neigh not in visited:
+#                     visited.add(neigh)
+#                     good_uvs.difference_update(edge[2])
+#             print(good_uvs)
 
 
-def DECR(clique_tree, rand):
+def DECR(clique_tree, rand, stream):
+    keys = list(clique_tree.good_edges.keys())
     while clique_tree.good_edges:
-        r_key = rand.next_element(clique_tree.good_edges.items())
-        r_edge = clique_tree[r_key]
-        break
+        r_key, _ = rand.next_element(keys)
+        r_edge = clique_tree.good_edges[r_key]
+        delete_edge(clique_tree, clique_tree.cliques[r_edge], r_key[0], r_key[1], rand)
+        del clique_tree.good_edges[r_key]
+        keys.remove(r_key)
+        stream.write(", ")
+        clique_tree.toJson(stream)
+
 
 
 def Run_DECR(num_vertices, k, algorithm_name):
 
-    runner = runner_factory(num_vertices, algorithm_name, None, k=k)
+    runner = runner_factory(num_vertices, algorithm_name, 166, k=k)
     randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
 
     clique_tree = init_k_tree(num, k, randomizer)
-    find_good_edges(clique_tree)
-    # DECR(clique_tree, randomizer)
+    with open("graph.json", "w") as stream:
+        stream.write("[")
+        clique_tree.toJson(stream)
+
+        DECR(clique_tree, randomizer, stream)
+
+        stream.write("]")
+
+
+    # find_good_edges(clique_tree)
+
     print(clique_tree)
     return calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
 
 
 NUM_VERTICES = [
-    50,
+    5,
     # 100,
     # 500,
     # 1000,
@@ -215,7 +254,7 @@ if __name__ == '__main__':
         # for edge_density in EDGES_DENSITY:
         Runners = []
         for _ in range(1):
-            Runners.append(Run_DECR(num, 7, NAME))
+            Runners.append(Run_DECR(num, 2, NAME))
 
             # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
