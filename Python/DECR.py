@@ -5,7 +5,7 @@ class DECRCliqueTree(object):
     """
         Each edge in edge list is a tuple (node 1, node 2, seperator, length of seperator) ie. node is pointer to CliqueNode
         `edges_list` and `cardinality_array` are only for running mva_stats. MAYBE remove and write another dfs stats function
-        Each edge good_edges is a dict with key the node containing the edge and value is a list of good edges beloning to that node
+        Each edge good_edges is a dict 
     """
     __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques", "good_edges"]
 
@@ -66,12 +66,13 @@ class DECRCliqueTree(object):
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}\n\tgood edges: {}".format(
-            self.num_maximal_cliques, self.num_edges, "Not printed for speed", self.cardinality_array, "Not printed for speed", self.good_edges)
+            self.num_maximal_cliques, self.num_edges, "Not printed for speed", self.cardinality_array, "Not printed for speed",
+            "Not printed for speed")
 
     def __repr__(self):
         return self.__str__()
 
-    def toJson(self, stream = None):
+    def toJson(self, stream=None):
         d = {"directed": False, "multigraph": False, "graph": {"graph_type": "tree"}, "nodes": [], "links": []}
         visited = set()
         all_cliques = [c for c in self.cliques if c != None]
@@ -155,11 +156,38 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
     clique_tree.delete_node(clique_node)
     clique_tree.num_edges -= 1
 
+    # edges gone bad
+    vertex_list = list(clique_node.vertex_set)
+    for ii in range(len(vertex_list)):
+        for jj in range(ii + 1, len(vertex_list)):
+            key = (min(vertex_list[ii], vertex_list[jj]), max(vertex_list[ii], vertex_list[jj]))
+            if ii != u and ii != v and jj != u and jj != v:
+                if key in clique_tree.good_edges:
+                    # remove from list is slow
+                    clique_tree.good_edges[key].difference_update([clique_node])
+                    clique_tree.good_edges[key].update([x_1, x_2])
+            if ii != v and jj != v:
+                clique_tree.good_edges[key].difference_update([clique_node])
+                clique_tree.good_edges[key].update([x_1])
+            if ii != u and jj != u:
+                clique_tree.good_edges[key].difference_update([clique_node])
+                clique_tree.good_edges[key].update([x_2])
+
+    # remove u, v edge
+    clique_tree.good_edges[(min(u, v), max(u, v))].difference_update([clique_node])
+
 
 def init_k_tree(num_vertices, k, rand):
     ct_tree = DECRCliqueTree()
     root = ct_tree.add_node(set([i for i in range(k + 1)]))
     ct_tree.num_edges = int(k * (k + 1) / 2)
+
+    vertex_list = list(root.vertex_set)
+    for ii in range(len(vertex_list)):
+        for jj in range(ii + 1, len(vertex_list)):
+            key = (min(vertex_list[ii], vertex_list[jj]), max(vertex_list[ii], vertex_list[jj]))
+            if key not in ct_tree.good_edges:
+                ct_tree.good_edges[key] = set([root])
 
     for u in range(1, num_vertices - k + 1):
         i = rand.next_random(0, len(ct_tree.cliques))
@@ -176,15 +204,15 @@ def init_k_tree(num_vertices, k, rand):
         for ii in range(len(sep)):
             for jj in range(ii + 1, len(sep)):
                 key = (min(sep[ii], sep[jj]), max(sep[ii], sep[jj]))
-                if key in ct_tree.good_edges:
-                    del ct_tree.good_edges[key]
+                ct_tree.good_edges[key].update([new_node])
 
         # add good edges between u+k node and every other node in clique
-        if u not in ct_tree.good_edges:
-            ct_tree.good_edges[u] = []
-
         for s in sep:
-            ct_tree.good_edges[u].append((s, u + k))
+            key = (s, u + k)
+            if key not in ct_tree.good_edges:
+                ct_tree.good_edges[key] = set()
+
+            ct_tree.good_edges[key].update([new_node])
 
     return ct_tree
 
@@ -202,17 +230,24 @@ def init_k_tree(num_vertices, k, rand):
 #             print(good_uvs)
 
 
-def DECR(clique_tree, rand, stream):
-    keys = list(clique_tree.good_edges.keys())
-    while clique_tree.good_edges:
-        r_key, _ = rand.next_element(keys)
-        r_edge = clique_tree.good_edges[r_key]
-        delete_edge(clique_tree, clique_tree.cliques[r_edge], r_key[0], r_key[1], rand)
-        del clique_tree.good_edges[r_key]
-        keys.remove(r_key)
-        stream.write(", ")
-        clique_tree.toJson(stream)
+def get_next_edge(clique_tree):
+    for key in clique_tree.good_edges.keys():
+        if len(clique_tree.good_edges[key]) == 1:
+            return key
 
+    return None
+
+
+def DECR(clique_tree, rand, stream):
+    r_key = get_next_edge(clique_tree)
+
+    while r_key:
+        r_node = list(clique_tree.good_edges[r_key])[0]
+        print("Deleting edge:", r_key, "in node:", r_node)
+        delete_edge(clique_tree, r_node, r_key[0], r_key[1], rand)
+        # stream.write(", ")
+        # clique_tree.toJson(stream)
+        r_key = get_next_edge(clique_tree)
 
 
 def Run_DECR(num_vertices, k, algorithm_name):
@@ -229,11 +264,10 @@ def Run_DECR(num_vertices, k, algorithm_name):
 
         stream.write("]")
 
-
     # find_good_edges(clique_tree)
 
-    print(clique_tree)
-    return calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
+    # print(clique_tree)
+    # return calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
 
 
 NUM_VERTICES = [
