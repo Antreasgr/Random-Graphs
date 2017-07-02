@@ -82,7 +82,6 @@ class DECRCliqueTree(object):
             d["nodes"].append({"id": clique.index, "clique_list": ",".join([str(s) for s in clique.vertex_set])})
             for n in clique.neighbours.keys():
                 if n not in visited:
-                    visited.add(n)
                     d["links"].append({"source": i, "target": all_cliques.index(n)})
             visited.add(clique)
 
@@ -113,7 +112,7 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
             is_subset_v = True
             x_2 = y
 
-        if not is_subset_u and not is_subset_v:
+        if is_subset_u and is_subset_v:
             break
 
     if not is_subset_u:
@@ -245,8 +244,8 @@ def DECR(clique_tree, rand, stream):
         r_node = list(clique_tree.good_edges[r_key])[0]
         print("Deleting edge:", r_key, "in node:", r_node)
         delete_edge(clique_tree, r_node, r_key[0], r_key[1], rand)
-        # stream.write(", ")
-        # clique_tree.toJson(stream)
+        stream.write(", ")
+        clique_tree.toJson(stream)
         r_key = get_next_edge(clique_tree)
 
 
