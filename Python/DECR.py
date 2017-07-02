@@ -104,11 +104,11 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
     is_subset_u = False
     is_subset_v = False
     for y in clique_node.neighbours.keys():
-        if not is_subset_u and kx_with_u.issubset([y]):
+        if not is_subset_u and kx_with_u.issubset(y.vertex_set):
             is_subset_u = True
             x_1 = y
 
-        if not is_subset_v and kx_with_v.issubset([y]):
+        if not is_subset_v and kx_with_v.issubset(y.vertex_set):
             is_subset_v = True
             x_2 = y
 
