@@ -5,7 +5,7 @@ class DECRCliqueTree(object):
     """
         Each edge in edge list is a tuple (node 1, node 2, seperator, length of seperator) ie. node is pointer to CliqueNode
         `edges_list` and `cardinality_array` are only for running mva_stats. MAYBE remove and write another dfs stats function
-        Each edge good_edges is a dict 
+        Each edge good_edges is a dict
     """
     __slots__ = ["num_maximal_cliques", "num_edges", "edges_list", "cardinality_array", "cliques", "good_edges"]
 
@@ -122,32 +122,31 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
         x_2 = clique_tree.add_node(kx_with_v)
 
     for y in clique_node.neighbours.keys():
+        add_x1_y = y != x_1
+        add_x2_y = y != x_2
         if u in y.vertex_set:
-            # y \in N_u
-            # add {x1, y} i.e. modify {x, y}
-            old_edge = clique_node.neighbours[y]
+            # y \in N_u add {x1, y} i.e. modify {x, y}
+            add_x1_y &= True
+        elif v in y.vertex_set:
+            # y \in N_v add {x2, y}
+            add_x2_y &= True
+        else:
+            # y \notin N_uv  add {x1 or x2, y}
+            if rand.random() < 0.5:
+                add_x1_y &= True
+            else:
+                add_x2_y &= True
+
+        old_edge = clique_node.neighbours[y]
+
+        if add_x1_y:
             x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
             y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
-            del y.neighbours[clique_node]
-        elif v in y.vertex_set:
-            # y \in N_v
-            # add {x2, y}
-            old_edge = clique_node.neighbours[y]
+        elif add_x2_y:
             x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
             y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
-            del y.neighbours[clique_node]
-        else:
-            # y \notin N_uv
-            # add {x1 or x2, y}
-            if rand.random() < 0.5:
-                old_edge = clique_node.neighbours[y]
-                x_1.neighbours[y] = (x_1, y, old_edge[2], old_edge[3])
-                y.neighbours[x_1] = (x_1, y, old_edge[2], old_edge[3])
-            else:
-                old_edge = clique_node.neighbours[y]
-                x_2.neighbours[y] = (x_2, y, old_edge[2], old_edge[3])
-                y.neighbours[x_2] = (x_2, y, old_edge[2], old_edge[3])
-            del y.neighbours[clique_node]
+
+        del y.neighbours[clique_node]
 
     # add-edge x1-x2, w = k - 2
     sep = clique_node.vertex_set - set([u, v])
@@ -160,15 +159,14 @@ def delete_edge(clique_tree, clique_node, u, v, rand):
     for ii in range(len(vertex_list)):
         for jj in range(ii + 1, len(vertex_list)):
             key = (min(vertex_list[ii], vertex_list[jj]), max(vertex_list[ii], vertex_list[jj]))
-            if ii != u and ii != v and jj != u and jj != v:
+            if key[0] != u and key[0] != v and key[1] != u and key[1] != v:
                 if key in clique_tree.good_edges:
-                    # remove from list is slow
                     clique_tree.good_edges[key].difference_update([clique_node])
                     clique_tree.good_edges[key].update([x_1, x_2])
-            if ii != v and jj != v:
+            if key[0] != v and key[1] != v:
                 clique_tree.good_edges[key].difference_update([clique_node])
                 clique_tree.good_edges[key].update([x_1])
-            if ii != u and jj != u:
+            if key[0] != u and key[1] != u:
                 clique_tree.good_edges[key].difference_update([clique_node])
                 clique_tree.good_edges[key].update([x_2])
 
@@ -250,7 +248,6 @@ def DECR(clique_tree, rand, stream):
 
 
 def Run_DECR(num_vertices, k, algorithm_name):
-
     runner = runner_factory(num_vertices, algorithm_name, 166, k=k)
     randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
 
@@ -258,10 +255,10 @@ def Run_DECR(num_vertices, k, algorithm_name):
     with open("graph.json", "w") as stream:
         stream.write("[")
         clique_tree.toJson(stream)
-
-        DECR(clique_tree, randomizer, stream)
-
-        stream.write("]")
+        try:
+            DECR(clique_tree, randomizer, stream)
+        finally:
+            stream.write("]")
 
     # find_good_edges(clique_tree)
 
