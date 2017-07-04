@@ -258,8 +258,9 @@ def Run_DECR(num_vertices, edge_density, algorithm_name):
     if k_edges < edges_bound:
         raise Exception("Wrong k autodetected, too few edges")
 
-    runner = runner_factory(num_vertices, algorithm_name, 166, edges_bound=edges_bound, k=k, edges_removed=int(k_edges - edges_bound))
-    randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
+    runner = runner_factory(
+        num_vertices, algorithm_name, None, edges_bound=edges_bound, edge_density=edge_density, k=k, edges_removed=int(k_edges - edges_bound))
+    randomizer = Randomizer(2 * num_vertices, runner["Parameters"]["seed"])
 
     with Timer("t_init_k_tree", runner["Times"]):
         clique_tree = init_k_tree(num, k, randomizer)
@@ -290,10 +291,10 @@ NUM_VERTICES = [
     50,
     100,
     500,
-    # 1000,
-    # 2500,
-    # 5000,
-    # 10000,  # 50000, 100000, 500000, 1000000
+    1000,
+    2500,
+    5000,
+    10000,  # 50000, 100000, 500000, 1000000
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 NAME = "DECR"
@@ -316,6 +317,6 @@ if __name__ == '__main__':
 
                 print("Done")
 
-                # mva_data.append(merge_runners(Runners))
+            mva_data.append(merge_runners(Runners))
 
-            # run_reports_data(NAME, mva_data)
+    run_reports_data(NAME, mva_data)
