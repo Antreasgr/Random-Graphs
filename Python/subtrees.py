@@ -14,7 +14,7 @@ class SimpleGraph(object):
     """
        A class representing simple graph
     """
-    __slots__ = ('nodes', 'edges')
+    __slots__ = ['nodes', 'edges']
 
     def __init__(self):
         self.nodes = 0
@@ -53,8 +53,7 @@ class TreeNode(object):
     """
         A class representing a tree node
     """
-    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList', 'children', 'parent',
-                 'marked', 'height', 'cc', 's', 'weight')
+    __slots__ = ('uid', 'Ax', 'Dx', 'cliqueList', 'children', 'parent', 'marked', 'height', 'cc', 's', 'weight')
 
     def __init__(self, uid):
         self.uid = uid

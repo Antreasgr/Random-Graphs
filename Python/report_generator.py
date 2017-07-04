@@ -190,7 +190,7 @@ def generate_accumulative_report(name, mva_data=None, shet_data=None):
         lines.append(other_lines)
 
     for i, datum in enumerate(shet_data):
-        ct = datum["Output"]["clique_trees"][1]
+        ct = datum["Output"]["clique_trees"][0]
         if i == 0:
             header_lines, columns_stats, columns_times, columns_ct = accumulative_header(["n", "k/n."], datum, ct)
             lines.extend(header_lines)

@@ -9,6 +9,7 @@ from randomizer import *
 from subtrees import *
 from datetime import datetime
 from Runners import *
+from report_generator import *
 
 import yaml
 from yaml import Loader, Dumper
@@ -116,11 +117,11 @@ def post_process(run):
     temp_forest.ctree.append(graphs["tree"])
 
     # calculate tree output parameters
-    out["clique_trees"] = [dfs_forest(graphs["final_cforest"])]
-    
-    ct_stats = out["clique_trees"][1]
+    out["clique_trees"] = [dfs_forest(graphs["final_cforest"], run["Parameters"]["n"])]
+
+    ct_stats = out["clique_trees"][0]
     ct_stats.max_clique_edge_distribution = (ct_stats.max_size * (ct_stats.max_size - 1) / 2) / out["edges"]
-    
+
     stats["ncc"] = len(graphs["final_cforest"].ctree)
 
     # convert clique forest to nx for export to json
@@ -129,18 +130,20 @@ def post_process(run):
 
     return nx_ctrees
 
-
+NAME = "SHET2"
 if __name__ == '__main__':
     NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000]
-    PAR_K_FACTOR = [[0.03, 0.1, 0.2, 0.32, 0.49], # 50
-                    [0.04, 0.1, 0.22, 0.33, 0.49], # 100
-                    [0.02, 0.05, 0.08, 0.2, 0.40 ], # 500
-                    [0.02, 0.05, 0.08, 0.18, 0.33 ], # 1000
-                    [0.01, 0.04, 0.07, 0.13, 0.36 ], # 2500
-                    [0.01, 0.04, 0.07, 0.1, 0.36 ], # 5000
-                    [0.009, 0.03, 0.06, 0.09, 0.33 ]] # 10000
+    PAR_K_FACTOR = [
+        [0.03, 0.1, 0.2, 0.32, 0.49],  # 50
+        [0.04, 0.1, 0.22, 0.33, 0.49],  # 100
+        [0.02, 0.05, 0.08, 0.2, 0.40],  # 500
+        [0.02, 0.05, 0.08, 0.18, 0.33],  # 1000
+        [0.01, 0.04, 0.07, 0.13, 0.36],  # 2500
+        [0.01, 0.04, 0.07, 0.1, 0.36],  # 5000
+        [0.009, 0.03, 0.06, 0.09, 0.33] # 10000
+    ]  
 
-    # EDGES_DENSITY = 0.1
+    shet_data = []
     for j, num in enumerate(NUM_VERTICES):
         for factor in PAR_K_FACTOR[j]:
             Runners = []
@@ -159,12 +162,16 @@ if __name__ == '__main__':
                 del Runners[-1]["Graphs"]
 
             print(".....Done")
-            # RUNNER contains all data and statistics
-            filename = "Results/SHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-            if not os.path.isdir(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
+            # # RUNNER contains all data and statistics
+            # filename = "Results/SHET/Run_{}_{}_{}.yml".format(num, par_k, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            # if not os.path.isdir(os.path.dirname(filename)):
+            #     os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
-                print_statistics(Runners, file)
+            # with io.open(filename, 'w') as file:
+            #     print_statistics(Runners, file)
+            
+            shet_data.append(merge_runners(Runners))
+
+    run_reports_data(NAME, [], shet_data)
 
     # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])

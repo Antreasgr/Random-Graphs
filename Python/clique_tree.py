@@ -163,13 +163,13 @@ def dfs_tree(root, num_vertices):
     return stats
 
 
-def dfs_forest(forest):
+def dfs_forest(forest, num_vertices):
     """
         Goes through a forest using DFS, and compute max children, its depth, and the level of each node
     """
     stats = TreeStatistics()
     for tree in forest.ctree:
-        tree_stats = dfs_tree(tree, tree[0])
+        tree_stats = dfs_tree(tree[0], num_vertices)
 
         stats.num += len(tree)
         stats.min_size = min(stats.min_size, tree_stats.min_size)
