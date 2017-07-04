@@ -1,4 +1,5 @@
 from MVA import *
+from math import sqrt, ceil
 
 
 class DECRCliqueTree(object):
@@ -63,6 +64,18 @@ class DECRCliqueTree(object):
         self.cardinality_array[node.index] = 0
         self.num_maximal_cliques -= 1
         del node
+
+    def calculate_tree_edges(self):
+        self.edges_list = []
+        visited = set()
+        all_cliques = [c for c in self.cliques if c != None]
+        for i, clique in enumerate(all_cliques):
+            if clique is None:
+                continue
+            for n in clique.neighbours.keys():
+                if n not in visited:
+                    self.edges_list.append(n.neighbours[clique])
+            visited.add(clique)
 
     def __str__(self):
         return "\t#: {}\n\tedges: {}\n\tedges_list: {}\n\tcardinalities: {}\n\tcliques: {}\n\tgood edges: {}".format(
@@ -186,14 +199,14 @@ def init_k_tree(num_vertices, k, rand):
             if key not in ct_tree.good_edges:
                 ct_tree.good_edges[key] = set([root])
 
-    for u in range(1, num_vertices - k + 1):
+    for u in range(1, num_vertices - k):
         i = rand.next_random(0, len(ct_tree.cliques))
         y = rand.next_random(0, len(ct_tree.cliques[i].vertex_set))
 
         sep = [x for ii, x in enumerate(ct_tree.cliques[i].vertex_set) if ii != y]
 
         new_node = ct_tree.add_node(set(sep + [u + k]))
-        ct_tree.num_edges += 1
+        ct_tree.num_edges += k
 
         ct_tree.add_edge(ct_tree.cliques[i], new_node, sep, k)
 
@@ -214,19 +227,6 @@ def init_k_tree(num_vertices, k, rand):
     return ct_tree
 
 
-# def find_good_edges(clique_tree):
-#     visited = set()
-#     for node in clique_tree.cliques:
-#         if node not in visited:
-#             visited.add(node)
-#             good_uvs = set(node.vertex_set)
-#             for neigh, edge in node.neighbours.items():
-#                 if neigh not in visited:
-#                     visited.add(neigh)
-#                     good_uvs.difference_update(edge[2])
-#             print(good_uvs)
-
-
 def get_next_edge(clique_tree):
     for key in clique_tree.good_edges.keys():
         if len(clique_tree.good_edges[key]) == 1:
@@ -235,41 +235,61 @@ def get_next_edge(clique_tree):
     return None
 
 
-def DECR(clique_tree, rand, stream):
+def DECR(clique_tree, edges_bound, rand, stream):
     r_key = get_next_edge(clique_tree)
 
-    while r_key:
+    while r_key and edges_bound < clique_tree.num_edges:
         r_node = list(clique_tree.good_edges[r_key])[0]
-        print("Deleting edge:", r_key, "in node:", r_node)
+        # print("Deleting edge:", r_key, "in node:", r_node)
         delete_edge(clique_tree, r_node, r_key[0], r_key[1], rand)
-        stream.write(", ")
-        clique_tree.toJson(stream)
         r_key = get_next_edge(clique_tree)
 
+        if stream:
+            stream.write(", ")
+            clique_tree.toJson(stream)
 
-def Run_DECR(num_vertices, k, algorithm_name):
-    runner = runner_factory(num_vertices, algorithm_name, 166, k=k)
+
+def Run_DECR(num_vertices, edge_density, algorithm_name):
+    edges_bound = int(edge_density * (num_vertices * (num_vertices - 1) / 2))
+    k = 1 / 2 * (2 * num_vertices - 1 - sqrt(((2 * num_vertices - 1) * (2 * num_vertices - 1)) - (8 * edges_bound)))
+    k = int(ceil(k))
+    k_edges = (num_vertices - k - 1) * k + (k * (k + 1) / 2)
+
+    if k_edges < edges_bound:
+        raise Exception("Wrong k autodetected, too few edges")
+
+    runner = runner_factory(num_vertices, algorithm_name, 166, edges_bound=edges_bound, k=k, edges_removed=int(k_edges - edges_bound))
     randomizer = Randomizer(3 * num_vertices, runner["Parameters"]["seed"])
 
-    clique_tree = init_k_tree(num, k, randomizer)
-    with open("graph.json", "w") as stream:
-        stream.write("[")
-        clique_tree.toJson(stream)
-        try:
-            DECR(clique_tree, randomizer, stream)
-        finally:
-            stream.write("]")
+    with Timer("t_init_k_tree", runner["Times"]):
+        clique_tree = init_k_tree(num, k, randomizer)
 
-    # find_good_edges(clique_tree)
+    with Timer("t_edges_remove", runner["Times"]):
+        DECR(clique_tree, edges_bound, randomizer, None)
+
+    runner["Stats"]["total"] = runner["Times"]["t_init_k_tree"] + runner["Times"]["t_edges_remove"]
+    # with open("graph.json", "w") as stream:
+    #     stream.write("[")
+    #     clique_tree.toJson(stream)
+    #     try:
+    #         DECR(clique_tree, edges_bound, randomizer, stream)
+    #         clique_tree.calculate_tree_edges()
+    #     finally:
+    #         stream.write("]")
 
     # print(clique_tree)
-    # return calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
+
+    # convert to MVA form for statistics calculation
+    with Timer("t_stats", runner["Times"]):
+        clique_tree.calculate_tree_edges()
+        stats = calculate_mva_statistics(clique_tree, runner, randomizer, num_vertices)
+    return stats
 
 
 NUM_VERTICES = [
-    5,
-    # 100,
-    # 500,
+    50,
+    100,
+    500,
     # 1000,
     # 2500,
     # 5000,
@@ -281,21 +301,21 @@ NAME = "DECR"
 if __name__ == '__main__':
     mva_data = []
     for num in NUM_VERTICES:
-        # for edge_density in EDGES_DENSITY:
-        Runners = []
-        for _ in range(1):
-            Runners.append(Run_DECR(num, 2, NAME))
+        for ed in EDGES_DENSITY:
+            Runners = []
+            for _ in range(10):
+                Runners.append(Run_DECR(num, ed, NAME))
 
-            # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+                # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-            # if not os.path.isdir(os.path.dirname(filename)):
-            #     os.makedirs(os.path.dirname(filename))
+                # if not os.path.isdir(os.path.dirname(filename)):
+                #     os.makedirs(os.path.dirname(filename))
 
-            # with io.open(filename, 'w') as file:
-            #     print_statistics(Runners, file)
+                # with io.open(filename, 'w') as file:
+                #     print_statistics(Runners, file)
 
-            print("Done")
+                print("Done")
 
-            # mva_data.append(merge_runners(Runners))
+                # mva_data.append(merge_runners(Runners))
 
-        # run_reports_data(NAME, mva_data)
+            # run_reports_data(NAME, mva_data)

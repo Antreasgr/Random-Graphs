@@ -169,7 +169,7 @@ def calculate_mva_statistics(p_mva, runner, randomizer, num_vertices):
     # dfs for width and height
     stats.width, stats.height, stats.degrees_var, stats.diameter = dfs_mva_stats(p_mva)
 
-    stats.max_clique_edge_distribution = (stats.max_size * (stats.max_size - 1) / 2) / p_mva.num_edges
+    stats.max_clique_edge_distribution = (stats.max_size * (stats.max_size - 1) / 2) / p_mva.num_edges if p_mva.num_edges != 0 else 0
 
     runner["Stats"]["randoms"] = randomizer.total_count
     runner["Output"]["nodes"] = num_vertices
