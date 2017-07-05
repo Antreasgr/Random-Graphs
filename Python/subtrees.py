@@ -96,7 +96,7 @@ def sub_tree_gen(T, k, i, rand, version=AlgorithmVersion.Index):
         # after sy we have nodes with neighbors outside
         y, yi = rand.next_element(tree_i, s_y)
         # after y.s in y.Ax there is a neighbor of y outside
-        z, zi = rand.next_element(y.Ax, y.s)
+        z, zi = y.Ax[y.s], y.s # rand.next_element(y.Ax, y.s)
 
         # add z to Ti
         tree_i.append(z)

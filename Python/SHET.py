@@ -130,7 +130,7 @@ def post_process(run):
 
     return nx_ctrees
 
-NAME = "SHET2"
+NAME = "SHET_SEMI_RANDOM"
 if __name__ == '__main__':
     NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000]
     PAR_K_FACTOR = [
@@ -150,7 +150,7 @@ if __name__ == '__main__':
             par_k = int(num * factor)
             par_k = max(1, par_k)
             par_k = min(num // 2, par_k)
-            for i in range(10):
+            for i in range(3):
                 randomizer = Randomizer(2 * num)
 
                 Runners.append(runner_factory(num, "SHET", None, k=par_k, version=AlgorithmVersion.Dict))
@@ -173,5 +173,3 @@ if __name__ == '__main__':
             shet_data.append(merge_runners(Runners))
 
     run_reports_data(NAME, [], shet_data)
-
-    # nx_export_json(trees1 + [Runners[0]["Graphs"]["nx_chordal"]])
