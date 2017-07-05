@@ -46,7 +46,7 @@ class Randomizer(object):
         """
             Get the next random element, and index from given array starting from index to end
         """
-        i = self.next_random(index, len(array))
+        i = index # self.next_random(index, len(array))
         return array[i], i
 
     def sample(self, population, k):

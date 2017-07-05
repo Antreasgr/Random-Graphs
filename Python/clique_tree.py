@@ -183,6 +183,8 @@ def dfs_forest(forest, num_vertices):
         stats.num_edges += tree_stats.num_edges
         stats.distribution_size.update(tree_stats.distribution_size)
         stats.distribution_weight.update(tree_stats.distribution_weight)
+        stats.diameter = max(stats.diameter, tree_stats.diameter)
+        stats.degrees_var = max(stats.degrees_var, tree_stats.degrees_var)
 
     stats.avg_size = stats.sum_size / stats.num
     if stats.num_edges > 0:
