@@ -1,6 +1,6 @@
 from MVA import *
 from report_generator import *
-
+from math import sqrt, ceil, floor
 
 def split_edges_k(m_parameters, upper_bound, rand, k=1):
     """
@@ -86,18 +86,50 @@ def split_edges_k(m_parameters, upper_bound, rand, k=1):
     return loops
 
 
+
+def init_k_tree_incr(num_vertices, k, rand):
+    ct_tree = MVAParameters(0, 0, [], [], [])
+    ct_tree.cliques.append(set([i for i in range(k + 1)]))
+    ct_tree.cardinality_array.append(k + 1)
+    ct_tree.num_maximal_cliques = 1
+    ct_tree.num_edges = int(k * (k + 1) / 2)
+    
+    root = ct_tree.cliques[0]
+
+    for u in range(1, num_vertices - k):
+        i = rand.next_random(0, len(ct_tree.cliques))
+        y = rand.next_random(0, len(ct_tree.cliques[i]))
+
+        sep = [x for ii, x in enumerate(ct_tree.cliques[i]) if ii != y]
+
+        ct_tree.cliques.append(set(sep + [u + k]))
+        ct_tree.cardinality_array.append(k + 1)
+        ct_tree.num_maximal_cliques += 1
+        ct_tree.num_edges += k
+        new_node = ct_tree.cliques[-1]
+        ct_tree.edges_list.append((i, len(ct_tree.cliques) - 1, sep, k))
+
+    return ct_tree
+
+
 def Run_INCR(num_vertices, edge_density, algorithm_name, k, init_tree=None):
     """
         Initialize and run the MVA algorithm
     """
 
-    edges_bound = edge_density * ((num_vertices * (num_vertices - 1)) / 2)
+    edges_bound = int(edge_density * (num_vertices * (num_vertices - 1) / 2))
     k = max(1, k * edges_bound)
     runner = runner_factory(num_vertices, algorithm_name, None, edges_bound=edges_bound, edge_density=edge_density, k=k)
 
     randomizer = Randomizer(2 * num_vertices, runner["Parameters"]["seed"])
     with Timer("t_expand_cliques", runner["Times"]):
-        if init_tree:
+        if init_tree == "ktree":
+            ktree_k = 1 / 2 * (2 * num_vertices - 1 - sqrt(((2 * num_vertices - 1) * (2 * num_vertices - 1)) - (8 * edges_bound)))
+            ktree_k = int(floor(ktree_k))
+            k_edges = (num_vertices - ktree_k - 1) * ktree_k + (ktree_k * (ktree_k + 1) / 2)
+            p_mva = init_k_tree_incr(runner["Parameters"]["n"], ktree_k,  randomizer)
+            print("- Init with " + str(ktree_k) + "-tree:")
+        elif init_tree == "tree":
             p_mva = expand_tree(runner["Parameters"]["n"], randomizer)
             print("- Expand tree:")
         else:
@@ -128,20 +160,24 @@ NUM_VERTICES = [
 ]
 EDGES_DENSITY = [0.1, 0.33, 0.5, 0.75, 0.99]
 
-NAME = "INCR_k_1e-5"
+NAME = "INCR_KTREE_k_1"
 if __name__ == '__main__':
+    mva_data = []
     for num in NUM_VERTICES:
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_INCR(num, edge_density, NAME, 1e-5, True))
+                Runners.append(Run_INCR(num, edge_density, NAME, 1e-100, "ktree"))
 
-            filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
-            if not os.path.isdir(os.path.dirname(filename)):
-                os.makedirs(os.path.dirname(filename))
+            # if not os.path.isdir(os.path.dirname(filename)):
+            #     os.makedirs(os.path.dirname(filename))
 
-            with io.open(filename, 'w') as file:
-                print_statistics(Runners, file)
-
+            # with io.open(filename, 'w') as file:
+            #     print_statistics(Runners, file)
+            
             print("Done")
+            mva_data.append(merge_runners(Runners))
+
+    run_reports_data(NAME, mva_data)

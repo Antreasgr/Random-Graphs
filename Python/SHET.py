@@ -61,34 +61,37 @@ def chordal_generation(run, rand):
 
     print("Begin Run ".center(70, "-"))
     print("Parameters: ")
-    print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format("n", "k", "seed", "version"))
-    print('{0:>10} |{1:>10} |{2:>10} |{3:>10}'.format(n, k, rand.Seed if rand.Seed != None else "None", version))
+    formatstr = ''
+    listvalues = [str(v) for v in run["Parameters"].values()]
+    listkeys = list(run["Parameters"].keys())
+    for ii, par in enumerate(listvalues):
+        formatstr += '{' + str(ii) + ':>' + str(max(len(par), len(listkeys[ii])) + 1) + '} |'
+    print(formatstr.format(*listkeys))
+    print(formatstr.format(*listvalues))
 
     print("Times: ".center(70, "-"))
     with Timer("t_real_tree", run["Times"]):
         tree = tree_generation(n, rand)
 
     with Timer("t_subtrees_2", run["Times"]):
-        for node in tree:
-            node.s = 0
-        for subtree_index in range(0, n):
-            sub_tree_gen(tree, k, subtree_index, rand, version)
+        if version != SHETVersion.PrunedTree:
+            for node in tree:
+                node.s = 0
+            for subtree_index in range(0, n):
+                sub_tree_gen(tree, k, subtree_index, rand, version)
+        else:
+            fraction = run["Parameters"]["edge_fraction"]
+            barier = run["Parameters"]["barier"]
+            for sub_tree_index in range(n):
+                pruned_tree(tree, n, sub_tree_index, fraction, barier, rand)
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree", run["Times"]):
         nx_chordal, final_cforest = convert_clique_tree_networkx2(tree, n, True)
 
-    # with Timer("t_chordal", run["Times"]):
-    #    graph_chordal = Chordal(nx_chordal)
-
-    # with Timer("t_forestverify", run["Times"]):
-    #    tree_cliqueforest = is_cliqueforest(final_cforest, nx_chordal)
-
     run["Graphs"]["tree"] = tree
     run["Graphs"]["nx_chordal"] = nx_chordal
     run["Graphs"]["final_cforest"] = final_cforest
-    # run["Verify"]["graph_chordal"] = graph_chordal
-    # run["Verify"]["tree_cliqueforest"] = tree_cliqueforest
 
     print("End Run".center(70, "-"))
 
@@ -130,7 +133,8 @@ def post_process(run):
 
     return nx_ctrees
 
-NAME = "SHET_SEMI_RANDOM"
+
+NAME = "SHET_PRUNED"
 if __name__ == '__main__':
     NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000]
     PAR_K_FACTOR = [
@@ -140,8 +144,8 @@ if __name__ == '__main__':
         [0.02, 0.05, 0.08, 0.18, 0.33],  # 1000
         [0.01, 0.04, 0.07, 0.13, 0.36],  # 2500
         [0.01, 0.04, 0.07, 0.1, 0.36],  # 5000
-        [0.009, 0.03, 0.06, 0.09, 0.33] # 10000
-    ]  
+        [0.009, 0.03, 0.06, 0.09, 0.33]  # 10000
+    ]
 
     shet_data = []
     for j, num in enumerate(NUM_VERTICES):
@@ -153,7 +157,9 @@ if __name__ == '__main__':
             for i in range(3):
                 randomizer = Randomizer(2 * num)
 
-                Runners.append(runner_factory(num, "SHET", None, k=par_k, version=AlgorithmVersion.Dict))
+                # Runners.append(runner_factory(num, NAME, None, k=par_k, version=SHETVersion.Dict))
+
+                Runners.append(runner_factory(num, NAME, None, k=0, edge_fraction=0.1, barier=0.33, version=SHETVersion.PrunedTree))
 
                 chordal_generation(Runners[-1], randomizer)
                 trees1 = post_process(Runners[-1])
@@ -169,7 +175,7 @@ if __name__ == '__main__':
 
             # with io.open(filename, 'w') as file:
             #     print_statistics(Runners, file)
-            
+
             shet_data.append(merge_runners(Runners))
 
-    run_reports_data(NAME, [], shet_data)
+    # run_reports_data(NAME, [], shet_data)
