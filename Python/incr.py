@@ -167,7 +167,7 @@ if __name__ == '__main__':
         for edge_density in EDGES_DENSITY:
             Runners = []
             for _ in range(10):
-                Runners.append(Run_INCR(num, edge_density, NAME, 1e-100, "ktree"))
+                Runners.append(Run_INCR(num, edge_density, NAME, 0, "ktree"))
 
             # filename = "Results/" + NAME + "/Run_{}_{}_{}.yml".format(num, edge_density, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 

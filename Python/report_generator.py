@@ -175,24 +175,14 @@ def read_all_data_yml(name, all_data_filename):
     return mva_data, shet_data
 
 
-def generate_accumulative_report(name, mva_data=None, shet_data=None):
-    mva_data.sort(key=sort_data_fn)
-    shet_data.sort(key=sort_data_fn)
+def generate_accumulative_report(name, data=None):
+    data.sort(key=sort_data_fn)
 
     lines = []
-    for i, datum in enumerate(mva_data):
+    for i, datum in enumerate(data):
         ct = datum["Output"]["clique_trees"][0]
         if i == 0:
-            header_lines, columns_stats, columns_times, columns_ct = accumulative_header(["n", "e.d."], datum, ct)
-            lines.extend(header_lines)
-
-        other_lines = accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct)
-        lines.append(other_lines)
-
-    for i, datum in enumerate(shet_data):
-        ct = datum["Output"]["clique_trees"][0]
-        if i == 0:
-            header_lines, columns_stats, columns_times, columns_ct = accumulative_header(["n", "k/n."], datum, ct)
+            header_lines, columns_stats, columns_times, columns_ct = accumulative_header(datum, ct)
             lines.extend(header_lines)
 
         other_lines = accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct)
@@ -208,7 +198,7 @@ def index_of(order_list, value):
         return -1
 
 
-def accumulative_header(parameters, datum, ct):
+def accumulative_header(datum, ct):
     columns_stats = [o for o in datum["Stats"]]
     columns_times = [o for o in datum["Times"]]
 
@@ -216,17 +206,20 @@ def accumulative_header(parameters, datum, ct):
     columns_ct = [o for o in ct if not o.startswith("distribution")]
     columns_ct.sort(key=lambda h: index_of(orderby, h))
 
+    parameters = [pp for pp in datum["Parameters"] if (pp != "Algorithm" and pp != "seed" and pp != "version"  and pp != "k")]
+
     l_1 = [datum["Parameters"]["Algorithm"]]
-    l_11 = ["" for _ in parameters] + ["Stats"] + ["" for _ in range(2 * len(columns_stats) - 1)]
+
+    l_11 = ["" for pp in parameters] + ["Stats"] + ["" for _ in range(2 * len(columns_stats) - 1)]
     l_11 += ["Times"] + ["" for _ in range(2 * len(columns_times) - 1)]
     l_11 += ["Clique Tree"] + ["" for _ in range(2 * len(columns_ct) - 1)]
 
-    l_2 = parameters
+    l_2 = ["" for pp in parameters]
     l_2 += [header if not twice else "" for header in columns_stats for twice in range(2)]
     l_2 += [header if not twice else "" for header in columns_times for twice in range(2)]
     l_2 += [header if not twice else "" for header in columns_ct for twice in range(2)]
 
-    l_3 = ["", ""]
+    l_3 = [pp for pp in parameters]
     l_3 += [twice for header in columns_stats for twice in ["mean", "std"]]
     l_3 += [twice for header in columns_times for twice in ["mean", "std"]]
     l_3 += [twice for header in columns_ct for twice in ["mean", "std"]]
@@ -239,7 +232,7 @@ def accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct):
     stats = datum["Stats"]
     times = datum["Times"]
 
-    l = [par["n"], par["edge_density"] if "edge_density" in par else float(par["k"]) / par["n"]]
+    l = [str(par[pp]) for pp in par if (pp != "Algorithm" and pp != "seed" and pp != "version" and pp != "k")]
 
     l.extend([fn(stats[k]) if k in stats else "" for k in columns_stats for fn in [statistics.mean, statistics.stdev]])
 
@@ -264,13 +257,13 @@ def localize_floats(row):
     return [str(el).replace('.', ',') if isinstance(el, float) else el for el in row]
 
 
-def run_reports_data(name, mva_data=[], shet_data=[]):
-    if mva_data or shet_data:
+def run_reports_data(name, data=[]):
+    if data:
         with open(os.path.join("Results", "all_data_" + name + ".yml"), 'w') as stream:
-            yaml.dump(mva_data + shet_data, stream)
+            yaml.dump(data, stream)
 
     # mva_data, shet_data = read_all_data_yml(name, os.path.join("Results", "all_data_" + name + ".yml"))
-    all_lines = generate_accumulative_report(name, mva_data, shet_data)
+    all_lines = generate_accumulative_report(name, data)
     print(all_lines)
     if all_lines:
         write_excel(all_lines, os.path.join("Results", name + ".xlsx"), ['Title', 'Headline 1', 'Headline 2', 'Headline 3'])
@@ -281,7 +274,7 @@ def run_reports(name):
     shet_data = []  # parse_data("Results/" + name, False)
     print("Done...")
 
-    run_reports_data(name, mva_data, shet_data)
+    run_reports_data(name, mva_data)
 
 
 def excel_reports(algorithms):
@@ -391,5 +384,6 @@ def write_excel(rows, filename, header_rows=['Headline 2', 'Headline 3']):
 
 NAME = "MVA2"
 if __name__ == '__main__':
+    pass
     # run_reports(NAME)
-    excel_reports(["SHET", "MVA2", "INCR_k_1e-5", "INCR_k_1_rev_2"])
+    # excel_reports(["SHET", "MVA2", "INCR_k_1e-5", "INCR_k_1_rev_2"])
