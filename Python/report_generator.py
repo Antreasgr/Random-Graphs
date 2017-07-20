@@ -15,6 +15,7 @@ from openpyxl import Workbook
 from openpyxl.writer.write_only import WriteOnlyCell
 from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule
 from openpyxl.styles.colors import Color
+import math
 
 
 def parse_data(path, output=True):
@@ -241,12 +242,12 @@ def accumulative_line(i, datum, ct, columns_stats, columns_times, columns_ct):
     all_values = (ct[k] for k in columns_ct if len(ct[k]) and not isinstance(ct[k][0], dict))
     sanitize_values = []
     for array_of_values in all_values:
-        col = [vv for vv in array_of_values if not isinstance(vv, str)]
+        col = [vv for vv in array_of_values if not isinstance(vv, str) and not math.isinf(vv) and not math.isnan(vv)]
         if col:
             sanitize_values.append(col)
 
     if sanitize_values:
-        l.extend([fn(v) for v in sanitize_values for fn in [statistics.mean, statistics.stdev]])
+        l.extend([fn(v) if len(v) > 1 else v[0] for v in sanitize_values for fn in [statistics.mean, statistics.stdev]])
     else:
         l.extend([0, 0])
 
@@ -270,8 +271,11 @@ def run_reports_data(name, data=[]):
 
 
 def run_reports(name):
-    mva_data = parse_data("Results/" + name, False)
-    shet_data = []  # parse_data("Results/" + name, False)
+    # mva_data = parse_data("Results/" + name, False)
+    # shet_data = []  # parse_data("Results/" + name, False)
+    with open(os.path.join("Results", "all_data_" + name + ".yml"), 'r') as stream:
+        mva_data = yaml.load(stream)
+
     print("Done...")
 
     run_reports_data(name, mva_data)
@@ -382,8 +386,7 @@ def write_excel(rows, filename, header_rows=['Headline 2', 'Headline 3']):
     workbook.save(filename)
 
 
-NAME = "MVA2"
+NAME = "SHET_PRUNED"
 if __name__ == '__main__':
-    pass
-    # run_reports(NAME)
+    run_reports(NAME)
     # excel_reports(["SHET", "MVA2", "INCR_k_1e-5", "INCR_k_1_rev_2"])

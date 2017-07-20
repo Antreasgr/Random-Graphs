@@ -74,16 +74,18 @@ def chordal_generation(run, rand):
         tree = tree_generation(n, rand)
 
     with Timer("t_subtrees_2", run["Times"]):
-        if version != SHETVersion.PrunedTree:
-            for node in tree:
-                node.s = 0
-            for subtree_index in range(0, n):
-                sub_tree_gen(tree, k, subtree_index, rand, version)
-        else:
+        if version == SHETVersion.ConnectedNodes:
+            connected_nodes(tree, n, rand)
+        elif version == SHETVersion.PrunedTree:
             fraction = run["Parameters"]["edge_fraction"]
             barier = run["Parameters"]["barier"]
             for sub_tree_index in range(n):
                 pruned_tree(tree, n, sub_tree_index, fraction, barier, rand)
+        else:
+            for node in tree:
+                node.s = 0
+            for subtree_index in range(0, n):
+                sub_tree_gen(tree, k, subtree_index, rand, version)
 
     # convert to networkx, our main algorithm
     with Timer("t_ctree", run["Times"]):
@@ -153,6 +155,7 @@ def run_SHET_PRUNED(list_vertices, list_f_s, num_runs):
             shet_data.append(merge_runners(Runners))
     run_reports_data(NAME, shet_data)
 
+
 def run_normal_SHET(list_vertices, list_k, num_runs):
     shet_data = []
     for j, num in enumerate(list_vertices):
@@ -184,7 +187,28 @@ def run_normal_SHET(list_vertices, list_k, num_runs):
 
     run_reports_data(NAME, shet_data)
 
-NAME = "SHET_PRUNED"
+
+def run_SHET_Connected_Nodes(list_vertices, list_lamda, num_runs):
+    shet_data = []
+    for j, num in enumerate(list_vertices):
+        for l in list_lamda[j]:
+            Runners = []
+            for i in range(num_runs):
+                randomizer = Randomizer(2 * num)
+                Runners.append(runner_factory(num, NAME, None, k=0, lamda=l, version=SHETVersion.ConnectedNodes))
+
+                chordal_generation(Runners[-1], randomizer)
+                trees1 = post_process(Runners[-1])
+                Runners[-1]["Stats"]["randoms"] = randomizer.total_count
+                # cleanup some memory
+                del Runners[-1]["Graphs"]
+
+            print(".....Done")
+            shet_data.append(merge_runners(Runners))
+    run_reports_data(NAME, shet_data)
+
+
+NAME = "SHET_CNODES"
 if __name__ == '__main__':
     NUM_VERTICES = [50, 100, 500, 1000, 2500, 5000, 10000]
     PAR_K_FACTOR = [
@@ -207,7 +231,8 @@ if __name__ == '__main__':
         [(0.70, 0.81), (0.060, 0.93), (0.031, 0.96)]  # 10000
     ]
 
-    run_SHET_PRUNED(NUM_VERTICES, PAR_F_S_PRUNED, 3)
-    # run_normal_SHET(num_runs, PAR_K_FACTOR, 10)
+    PAR_L = [[0], [0], [0], [0], [0], [0], [0]]
 
-   
+    # run_SHET_PRUNED(NUM_VERTICES, PAR_F_S_PRUNED, 3)
+    # run_normal_SHET(num_runs, PAR_K_FACTOR, 10)
+    run_SHET_Connected_Nodes(NUM_VERTICES, PAR_L, 10)

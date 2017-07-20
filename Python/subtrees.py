@@ -1,6 +1,7 @@
 from enum import Enum
 from collections import deque
 from math import floor
+import numpy
 
 
 class SHETVersion(Enum):
@@ -11,6 +12,7 @@ class SHETVersion(Enum):
     Dict = 1
     Hybrid = 2
     PrunedTree = 3
+    ConnectedNodes = 4
 
 
 class SimpleGraph(object):
@@ -159,6 +161,58 @@ def pruned_tree(clique_tree, num_vertices, subtree_index, edge_fraction, barier,
         original_node.cliqueList.append(subtree_index)
 
     return ccs[index], ki
+
+
+def bfs_height(clique_tree, root):
+    for node in clique_tree:
+        node.height = 0
+
+    max_level = 0
+    visited = set()
+    queue = deque([node])
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            visited.add(vertex)
+            vertex.height = vertex.parent.height + 1
+            max_level = max(vertex.height, max_level)
+            nn = set(vertex.children)
+            # if vertex.parent != None:
+            #     nn.update([vertex.parent])
+
+            queue.extend(nn - visited)
+    return max_level
+
+
+def connected_nodes(clique_tree, num_vertices, rand):
+    max_level = bfs_height(clique_tree, None)
+    for subtree_index in range(num_vertices):
+        levels_list = [[] for subtree_index in range(max_level + 1)]
+        for node in clique_tree:
+            node.marked = False
+
+        k_i = rand.next_random(0, num_vertices)
+
+        node_copy = [node for node in clique_tree]
+        seperation_index = 0
+        max_d = 0
+        for k in range(k_i):
+            node, node_index = rand.next_element(node_copy, seperation_index)
+            node_copy[seperation_index], node_copy[node_index] = node_copy[node_index], node_copy[seperation_index]
+            seperation_index += 1
+            node.marked = True
+
+            node.cliqueList.append(subtree_index)
+            levels_list[node.height].append(node)
+            max_d = max(max_d, node.height)
+
+        for level in range(max_d, -1, -1):
+            for node in levels_list[level]:
+                if node.parent != None and not node.parent.marked:
+                    node.parent.cliqueList.append(subtree_index)
+                    node.parent.marked = True
+                    levels_list[level - 1].append(node.parent)
+            levels_list[level] = []
 
 
 def sub_tree_gen(T, k, i, rand, version=SHETVersion.Index):
