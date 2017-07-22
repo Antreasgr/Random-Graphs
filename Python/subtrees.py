@@ -186,6 +186,8 @@ def bfs_height(clique_tree, root):
 
 def connected_nodes(clique_tree, num_vertices, rand):
     max_level = bfs_height(clique_tree, None)
+    node_copy = [node for node in clique_tree]
+
     for subtree_index in range(num_vertices):
         levels_list = [[] for subtree_index in range(max_level + 1)]
         for node in clique_tree:
@@ -193,11 +195,11 @@ def connected_nodes(clique_tree, num_vertices, rand):
 
         k_i = rand.next_random(0, num_vertices)
 
-        node_copy = [node for node in clique_tree]
         seperation_index = 0
         max_d = 0
         for k in range(k_i):
-            node, node_index = rand.next_element(node_copy, seperation_index)
+            node_index = rand.next_random(seperation_index, num_vertices)
+            node = node_copy[node_index]
             node_copy[seperation_index], node_copy[node_index] = node_copy[node_index], node_copy[seperation_index]
             seperation_index += 1
             node.marked = True
@@ -208,10 +210,12 @@ def connected_nodes(clique_tree, num_vertices, rand):
 
         for level in range(max_d, -1, -1):
             for node in levels_list[level]:
-                if node.parent != None and not node.parent.marked:
-                    node.parent.cliqueList.append(subtree_index)
-                    node.parent.marked = True
+                if node.parent != None:
                     levels_list[level - 1].append(node.parent)
+                    if not node.parent.marked:
+                        node.parent.cliqueList.append(subtree_index)
+                        node.parent.marked = True
+
             levels_list[level] = []
 
 

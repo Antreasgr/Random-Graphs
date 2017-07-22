@@ -1,8 +1,8 @@
 import os
 
-import networkx as nx
+# import networkx as nx
+import numpy
 from numpy.random import RandomState
-
 from clique_tree import *
 from nx_converters import *
 from randomizer import *
@@ -10,7 +10,7 @@ from subtrees import *
 from datetime import datetime
 from Runners import *
 from report_generator import *
-
+from enum import Enum
 import yaml
 from yaml import Loader, Dumper
 
@@ -235,4 +235,4 @@ if __name__ == '__main__':
 
     # run_SHET_PRUNED(NUM_VERTICES, PAR_F_S_PRUNED, 3)
     # run_normal_SHET(num_runs, PAR_K_FACTOR, 10)
-    run_SHET_Connected_Nodes(NUM_VERTICES, PAR_L, 10)
+    run_SHET_Connected_Nodes(NUM_VERTICES, PAR_L, 5)
