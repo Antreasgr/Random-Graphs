@@ -1,0 +1,8 @@
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\bin\Debug\netcoreapp1.1\Csharp.deps.json
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\bin\Debug\netcoreapp1.1\Csharp.runtimeconfig.json
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\bin\Debug\netcoreapp1.1\Csharp.runtimeconfig.dev.json
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\bin\Debug\netcoreapp1.1\Csharp.dll
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\bin\Debug\netcoreapp1.1\Csharp.pdb
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\obj\Debug\netcoreapp1.1\Csharp.AssemblyInfo.cs
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\obj\Debug\netcoreapp1.1\Csharp.dll
+C:\Users\Antreas\Documents\RandomGraphs\Csharp\obj\Debug\netcoreapp1.1\Csharp.pdb

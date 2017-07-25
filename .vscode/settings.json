@@ -12,5 +12,6 @@
         "--disable=C0111"
     ],
     "editor.fontSize": 14,
-    "editor.fontFamily": "Consolas, 'Courier New', monospace"
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "editor.codeLens": false
 }
