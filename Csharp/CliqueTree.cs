@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static SHET.TreeNode;
@@ -50,20 +51,24 @@ namespace SHET
 
             if (newVertices.Count > 0)
             {
-                newEdges = (newVertices.Count * (newVertices.Count - 1)) + oldVertices.Count;
+                newEdges = ((newVertices.Count * (newVertices.Count - 1)) / 2) + oldVertices.Count * newVertices.Count;
                 // if (Add)
                 // {
+                //     var count = 0;
                 //     for (int i = 0; i < newVertices.Count; i++)
                 //     {
                 //         for (int j = i + 1; j < newVertices.Count; j++)
                 //         {
+                //             count++;
                 //             // addEdge(newVertices[i], newVertices[j]);
                 //         }
 
                 //         foreach (var v2 in oldVertices)
                 //         {
+                //             count++;
                 //             // addEdge(newVertices[i], node2)
                 //         }
+                //     }
                 // }
 
                 if (oldVertices.Count > 0)
