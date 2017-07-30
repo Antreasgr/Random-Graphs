@@ -30,6 +30,10 @@ namespace SHET
 
         public int SeperationIndex { get; set; } = 0;
 
+        public int Width { get; set; } = 0;
+        
+        public int Height { get; set; } = 0;
+
         public static List<TreeNode> GenerateTree(int n, Random random)
         {
             var tree = new List<TreeNode>() { new TreeNode(0) };
@@ -52,7 +56,7 @@ namespace SHET
 
         public static void SubTreeGeneration(List<TreeNode> tree, int k, int treeIndex, Random random)
         {
-            
+
             var n = tree.Count;
             var subTree = new List<TreeNode>();
             var firstNode = tree[random.Next(n)];

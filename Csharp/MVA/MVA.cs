@@ -4,7 +4,9 @@ namespace MVA
     using System.Collections.Generic;
     using System.Linq;
     using Helpers;
+    using SHET;
     using Statistics;
+    using static SHET.TreeNode;
 
     public class MVAMain
     {
@@ -24,21 +26,41 @@ namespace MVA
             return stats;
         }
 
+        public TreeStatistics MVABFSStatistics(int n, MVACliqueTree tree)
+        {
+            // convert to SHET data structure for the statistics
+            var dict = new Dictionary<int, TreeNode>();
+            foreach (var edge in tree.EdgesList)
+            {
+                foreach (var node in new int[] { edge.Node1, edge.Node2 })
+                {
+                    if (!dict.ContainsKey(node))
+                    {
+                        dict[node] = new TreeNode(node)
+                        {
+                            State = edge.SeperatorWeight == 0 ? NodeState.NewCC : NodeState.Valid,
+                            CliqueList = tree.Cliques[node].ToList()
+                        };
+                    }
+                }
+
+                dict[edge.Node1].Adjoint.Add(dict[edge.Node2]);
+                dict[edge.Node2].Adjoint.Add(dict[edge.Node1]);
+            }
+
+            var shetTree = dict.Values.ToList();
+
+            var tmpSHET = new SHET();
+            return tmpSHET.SHETBFSStatistics(tree.Edges, shetTree);
+        }
+
         private void CalculateRunStatistics(int n, MVACliqueTree tree, Stats stats)
         {
             var maxEdges = (n * (n - 1)) / 2;
             stats.Output["Edges"].Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
-            var validCliques = tree.Cliques.Where(c => c != null && c.Count > 0);
-            var max = validCliques.Max(c => c.Count);
-            stats.CliqueTrees.Add(new TreeStatistics()
-            {
-                Num = validCliques.Count(),
-                MaxSize = max,
-                MinSize = validCliques.Min(c => c.Count),
-                AvgSize = validCliques.Average(c => c.Count),
-                MaxCliqueDistribution = ((max * (max - 1)) / 2) / (double)tree.Edges
-            });
+
+            stats.CliqueTrees.Add(this.MVABFSStatistics(n, tree));
         }
 
         public void PrintRunStatistics(Stats stats)
@@ -82,6 +104,7 @@ namespace MVA
                             tree.MergeCliques((int)edgesBound, random);
                         }
 
+                        stats.Times["Total"].Add(stats.Times["ExpandCliques"].Last() + stats.Times["MergeCliques"].Last());
                         Console.WriteLine($"Expand Cliques: {stats.Times["ExpandCliques"].Last()} s");
                         Console.WriteLine($"Merge Cliques: {stats.Times["MergeCliques"].Last()} s");
                         this.CalculateRunStatistics(n, tree, stats);

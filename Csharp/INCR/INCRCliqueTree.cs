@@ -108,6 +108,12 @@ namespace INCR
                 }
             }
 
+            foreach (var edge in this.EdgesList)
+            {
+                edge.Node1 = disSet[edge.Node1];
+                edge.Node2 = disSet[edge.Node2];
+            }
+
             return loops;
         }
 

@@ -36,10 +36,97 @@ namespace SHET
             stats.Times["treeTime"] = new List<double>();
             stats.Times["subTreesTime"] = new List<double>();
             stats.Times["ctreeTime"] = new List<double>();
+            stats.Times["Total"] = new List<double>();
             stats.Output["edges"] = new List<double>();
             stats.Output["edgeDensity"] = new List<double>();
             stats.Output["CC"] = new List<double>();
             return stats;
+        }
+
+        public TreeStatistics SHETBFSStatistics(int edges, IEnumerable<TreeNode> tree)
+        {
+            var count = tree.Count();
+            var avgDegree = 2.0 * (count - 1) / count;
+            var tStats = new TreeStatistics();
+            var visited = new HashSet<TreeNode>();
+            var stack = new Stack<TreeNode>();
+            var root = tree.First();
+            var farthestNode = root;
+            stack.Push(root);
+            while (stack.Count > 0)
+            {
+                var clique = stack.Pop();
+                visited.Add(clique);
+                var degree = 0;
+                foreach (var child in clique.Adjoint.Where(c => (c.State == NodeState.Valid || c.State == NodeState.NewCC) && !visited.Contains(c)))
+                {
+                    child.Height = clique.Height + 1;
+                    degree++;
+                    stack.Push(child);
+                    // calculate for each edge
+                    tStats.NumEdges++;
+                    var seperatorCount = clique.CliqueList.Intersect(child.CliqueList).Count();
+                    tStats.SumWeight += seperatorCount;
+                    tStats.MaxWeight = Math.Max(tStats.MaxWeight, seperatorCount);
+                    tStats.MinWeight = tStats.MinWeight == 0 ? seperatorCount : Math.Min(tStats.MinWeight, seperatorCount);
+
+                    if (!tStats.DistributionWeight.ContainsKey(seperatorCount))
+                    {
+                        tStats.DistributionWeight[seperatorCount] = 1;
+                    }
+                    else
+                    {
+                        tStats.DistributionWeight[seperatorCount] += 1;
+                    }
+                }
+
+                var size = clique.CliqueList.Count;
+                tStats.Num++;
+                tStats.Width = Math.Max(tStats.Width, degree);
+                tStats.Height = Math.Max(tStats.Height, clique.Height);
+                tStats.DegreesVar += (degree - avgDegree) * (degree - avgDegree);
+                tStats.MaxSize = Math.Max(tStats.MaxSize, size);
+                tStats.MinSize = tStats.MinSize == 0 ? clique.CliqueList.Count : Math.Min(tStats.MinSize, clique.CliqueList.Count);
+                tStats.SumSize += clique.CliqueList.Count;
+
+                if (!tStats.DistributionSize.ContainsKey(size))
+                {
+                    tStats.DistributionSize[size] = 1;
+                }
+                else
+                {
+                    tStats.DistributionSize[size] += 1;
+                }
+
+                if (clique.Height > farthestNode.Height)
+                {
+                    farthestNode = clique;
+                }
+            }
+
+            tStats.MaxCliqueDistribution = ((tStats.MaxSize * (tStats.MaxSize - 1)) / 2.0) / edges;
+            tStats.AvgSize = tStats.SumSize / (double)tStats.Num;
+            tStats.AvgWeight = tStats.SumWeight / (double)tStats.NumEdges;
+
+            // run a second bfs from farthest vertex to get the diameter
+            farthestNode.Height = 0;
+            visited = new HashSet<TreeNode>();
+            stack = new Stack<TreeNode>();
+            stack.Push(farthestNode);
+            while (stack.Count > 0)
+            {
+                var clique = stack.Pop();
+                visited.Add(clique);
+                foreach (var child in clique.Adjoint.Where(c => (c.State == NodeState.Valid || c.State == NodeState.NewCC) && !visited.Contains(c)))
+                {
+                    child.Height = clique.Height + 1;
+                    stack.Push(child);
+                }
+
+                tStats.Diameter = Math.Max(tStats.Diameter, clique.Height);
+            }
+
+            return tStats;
         }
 
         private void CalculateRunStatistics(int n, int edges, List<TreeNode> tree, Stats stats)
@@ -49,14 +136,7 @@ namespace SHET
             stats.Output["edges"].Add(edges);
             stats.Output["edgeDensity"].Add((double)edges / maxEdges);
             stats.Output["CC"].Add(validCliques.Where(x => x.State == NodeState.NewCC).Count());
-            var max = (double)validCliques.Max(x => x.CliqueList.Count);
-            stats.CliqueTrees.Add(new TreeStatistics()
-            {
-                Num = validCliques.Count(),
-                MinSize = validCliques.Min(x => x.CliqueList.Count),
-                MaxSize = (int)max,
-                MaxCliqueDistribution = ((max * (max - 1)) / 2) / edges
-            });
+            stats.CliqueTrees.Add(this.SHETBFSStatistics(edges, validCliques));
         }
 
         public void PrintRunStatistics(Stats stats)
@@ -70,6 +150,94 @@ namespace SHET
             Console.WriteLine($"\tNum: {stats.CliqueTrees.Last().Num}");
             Console.WriteLine($"\tMin: {stats.CliqueTrees.Last().MinSize}");
             Console.WriteLine($"\tMax: {stats.CliqueTrees.Last().MaxSize}");
+        }
+
+        public List<double> AverageStd(List<double> values)
+        {
+            double mean = 0.0;
+            double sum = 0.0;
+            double stdDev = 0.0;
+            int n = 0;
+            foreach (double val in values)
+            {
+                n++;
+                double delta = val - mean;
+                mean += delta / n;
+                sum += delta * (val - mean);
+            }
+
+            if (n > 1)
+            {
+                stdDev = Math.Sqrt(sum / (n - 1));
+            }
+
+            return new List<double> { mean, stdDev };
+        }
+
+        public List<Stats> MergeStatistics(List<Stats> stats)
+        {
+            var allStats = new List<Stats>();
+            foreach (var stat in stats)
+            {
+                var finalStats = new Stats()
+                {
+                    Parameters = stat.Parameters
+                };
+
+                allStats.Add(finalStats);
+
+                foreach (var key in stat.Times.Keys)
+                {
+                    finalStats.Times[key] = this.AverageStd(stat.Times[key]);
+                }
+
+                foreach (var key in stat.Output.Keys)
+                {
+                    finalStats.Output[key] = this.AverageStd(stat.Output[key]);
+                }
+
+                var treeStat = new TreeStatistics();
+                stat.CliqueTrees.Add(treeStat);
+                var count = 0;
+
+                foreach (var tree in stat.CliqueTrees)
+                {
+                    treeStat.Num += tree.Num;
+                    treeStat.NumEdges += tree.NumEdges;
+                    treeStat.AvgSize += tree.AvgSize;
+                    treeStat.AvgWeight += tree.AvgWeight;
+                    treeStat.Width += tree.Width;
+                    treeStat.Height += tree.Height;
+                    treeStat.DegreesVar += tree.DegreesVar;
+                    treeStat.Diameter += tree.Diameter;
+                    treeStat.MaxCliqueDistribution += tree.MaxCliqueDistribution;
+                    treeStat.MaxSize += tree.MaxSize;
+                    treeStat.MinSize += tree.MinSize;
+                    treeStat.MaxWeight += tree.MaxWeight;
+                    treeStat.MinWeight += tree.MinWeight;
+                    treeStat.SumSize += tree.SumSize;
+                    treeStat.SumWeight += tree.SumWeight;
+                    count++;
+                }
+
+                treeStat.Num /= count;
+                treeStat.NumEdges /= count;
+                treeStat.AvgSize /= count;
+                treeStat.AvgWeight /= count;
+                treeStat.Width /= count;
+                treeStat.Height /= count;
+                treeStat.DegreesVar /= count;
+                treeStat.Diameter /= count;
+                treeStat.MaxCliqueDistribution /= count;
+                treeStat.MaxSize /= count;
+                treeStat.MinSize /= count;
+                treeStat.MaxWeight /= count;
+                treeStat.MinWeight /= count;
+                treeStat.SumSize /= count;
+                treeStat.SumWeight /= count;
+            }
+
+            return allStats;
         }
 
         public List<Stats> RunSHET(int runs)
@@ -112,6 +280,8 @@ namespace SHET
                             }
                         }
 
+                        stats.Times["Total"].Add(stats.Times["treeTime"].Last() + stats.Times["subTreesTime"].Last() + stats.Times["ctreetime"].Last());
+
                         int edges = 0;
                         using (var sw = new Watch(stats.Times["ctreeTime"]))
                         {
@@ -128,7 +298,7 @@ namespace SHET
                 }
             }
 
-            return allStats;
+            return this.MergeStatistics(allStats);
         }
     }
 }

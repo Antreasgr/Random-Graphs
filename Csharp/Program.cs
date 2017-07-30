@@ -10,9 +10,9 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            // new SHET().RunSHET(10);
-            //new MVAMain().RunMVA(10);
-            new INCRMain().RunINCR(10, 0);
+            var finalStats = new SHET.SHET().RunSHET(1);
+            // new MVAMain().RunMVA(1);
+            //new INCRMain().RunINCR(10, 0);
         }
     }
 }

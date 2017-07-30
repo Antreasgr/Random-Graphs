@@ -94,6 +94,12 @@ namespace MVA
             }
 
             this.EdgesList.AddRange(finalEdges);
+
+            foreach (var edge in this.EdgesList)
+            {
+                edge.Node1 = disSet[edge.Node1];
+                edge.Node2 = disSet[edge.Node2];
+            }
         }
 
         public static MVACliqueTree ExpandCliques(int n, Random random)

@@ -10,13 +10,13 @@ namespace Statistics
         public int SumSize { get; set; } = 0;
         public double AvgSize { get; set; } = 0;
         public int SumWeight { get; set; } = 0;
-        public int AvgWeight { get; set; } = 0;
+        public double AvgWeight { get; set; } = 0;
         public int MinWeight { get; set; } = 0;
         public int MaxWeight { get; set; } = 0;
         public int NumEdges { get; set; } = 0;
         public int Width { get; set; } = 0;
         public int Height { get; set; } = 0;
-        public int DegreesVar { get; set; } = 0;
+        public double DegreesVar { get; set; } = 0;
         public int Diameter { get; set; } = 0;
         public double MaxCliqueDistribution { get; set; } = 0;
         public Dictionary<int, int> DistributionSize { get; set; } = new Dictionary<int, int>();

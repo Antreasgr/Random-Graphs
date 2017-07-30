@@ -4,6 +4,7 @@ namespace INCR
     using System.Collections.Generic;
     using System.Linq;
     using Helpers;
+    using MVA;
     using Statistics;
 
     public class INCRMain
@@ -33,16 +34,8 @@ namespace INCR
             var maxEdges = (n * (n - 1)) / 2;
             stats.Output["Edges"].Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
-            var validCliques = tree.Cliques.Where(c => c != null && c.Count > 0);
-            var max = validCliques.Max(c => c.Count);
-            stats.CliqueTrees.Add(new TreeStatistics()
-            {
-                Num = validCliques.Count(),
-                MaxSize = max,
-                MinSize = validCliques.Min(c => c.Count),
-                AvgSize = validCliques.Average(c => c.Count),
-                MaxCliqueDistribution = ((max * (max - 1)) / 2) / (double)tree.Edges
-            });
+            var mvaAlgo = new MVAMain();
+            stats.CliqueTrees.Add(mvaAlgo.MVABFSStatistics(n, tree));
         }
 
         public void PrintRunStatistics(Stats stats)
@@ -68,7 +61,7 @@ namespace INCR
                     var edgesBound = ed * ((n * (n - 1)) / 2);
                     var k = Math.Max(1, edgesToAdd * edgesBound);
                     var ktreeK = 1.0 / 2 * (2 * n - 1 - Math.Sqrt(((2 * n - 1) * (2 * n - 1)) - (8 * edgesBound)));
-                    // ktreeK = (int)(Math.Floor(ktreeK));
+                    ktreeK = (int)(Math.Floor(ktreeK));
                     var kEdges = (n - ktreeK - 1) * ktreeK + (ktreeK * (ktreeK + 1) / 2);
 
                     var stats = this.InitializeRunStats(n, ed, k, ktreeK, kEdges);
@@ -92,6 +85,7 @@ namespace INCR
                             tree.SplitEdgesK((int)edgesBound, random, (int)k);
                         }
 
+                        stats.Times["Total"].Add(stats.Times["GenerateKTree"].Last() + stats.Times["SplitEdgesK"].Last());
                         Console.WriteLine($"Generate K-Tree: {stats.Times["GenerateKTree"].Last()} s");
                         Console.WriteLine($"Split Edges K: {stats.Times["SplitEdgesK"].Last()} s");
                         this.CalculateRunStatistics(n, tree, stats);
