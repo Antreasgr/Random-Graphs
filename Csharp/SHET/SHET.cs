@@ -202,39 +202,11 @@ namespace SHET
 
                 foreach (var tree in stat.CliqueTrees)
                 {
-                    treeStat.Num += tree.Num;
-                    treeStat.NumEdges += tree.NumEdges;
-                    treeStat.AvgSize += tree.AvgSize;
-                    treeStat.AvgWeight += tree.AvgWeight;
-                    treeStat.Width += tree.Width;
-                    treeStat.Height += tree.Height;
-                    treeStat.DegreesVar += tree.DegreesVar;
-                    treeStat.Diameter += tree.Diameter;
-                    treeStat.MaxCliqueDistribution += tree.MaxCliqueDistribution;
-                    treeStat.MaxSize += tree.MaxSize;
-                    treeStat.MinSize += tree.MinSize;
-                    treeStat.MaxWeight += tree.MaxWeight;
-                    treeStat.MinWeight += tree.MinWeight;
-                    treeStat.SumSize += tree.SumSize;
-                    treeStat.SumWeight += tree.SumWeight;
+                    treeStat.Add(tree);
                     count++;
                 }
 
-                treeStat.Num /= count;
-                treeStat.NumEdges /= count;
-                treeStat.AvgSize /= count;
-                treeStat.AvgWeight /= count;
-                treeStat.Width /= count;
-                treeStat.Height /= count;
-                treeStat.DegreesVar /= count;
-                treeStat.Diameter /= count;
-                treeStat.MaxCliqueDistribution /= count;
-                treeStat.MaxSize /= count;
-                treeStat.MinSize /= count;
-                treeStat.MaxWeight /= count;
-                treeStat.MinWeight /= count;
-                treeStat.SumSize /= count;
-                treeStat.SumWeight /= count;
+                treeStat.Divide(count);
             }
 
             return allStats;
