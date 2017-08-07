@@ -8,16 +8,17 @@ namespace MVA
     using Statistics;
     using static SHET.TreeNode;
 
-    public class MVAMain
+    public class MVAMain : SHET
     {
-        public static readonly int[] Vertices = new int[] { 50, 100, 500, 1000, 2500, 5000, 10000 };
+        public static new readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
         private Stats InitializeRunStats(int n, double ed)
         {
             var stats = new Stats();
-            stats.Parameters["n"] = n.ToString();
-            stats.Parameters["edgeDensity"] = ed.ToString("F2");
+            stats.Parameters["Algorithm"] = "MVA";
+            stats.Parameters["n"] = n.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            stats.Parameters["edgeDensity"] = ed.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
             stats.Times["ExpandCliques"] = new List<double>();
             stats.Times["MergeCliques"] = new List<double>();
             stats.Times["Total"] = new List<double>();
@@ -63,7 +64,7 @@ namespace MVA
             stats.CliqueTrees.Add(this.MVABFSStatistics(n, tree));
         }
 
-        public void PrintRunStatistics(Stats stats)
+        public new void PrintRunStatistics(Stats stats)
         {
             Console.WriteLine($"Edges: {stats.Output["Edges"].Last()} - {stats.Output["EdgeDensity"].Last()}");
             Console.WriteLine($"Clique tree:");
@@ -113,7 +114,8 @@ namespace MVA
                     }
                 }
             }
-            return allStats;
+
+            return this.MergeStatistics(allStats);
         }
     }
 }

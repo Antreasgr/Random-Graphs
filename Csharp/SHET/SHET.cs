@@ -9,12 +9,9 @@ namespace SHET
 
     public class SHET
     {
-        public static readonly int[] Vertices = new int[] { 50, 100, 500, 1000, 2500, 5000, 10000 };
+        public static readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
 
         public static readonly double[][] KFactor = new double[][]{
-            new double[] {0.03, 0.1, 0.2, 0.32, 0.49},  // 50
-            new double[] {0.04, 0.1, 0.22, 0.33, 0.49},  // 100
-            new double[] {0.02, 0.05, 0.08, 0.2, 0.40},  // 500
             new double[] {0.02, 0.05, 0.08, 0.18, 0.33},  // 1000
             new double[] {0.01, 0.04, 0.07, 0.13, 0.36},  // 2500
             new double[] {0.01, 0.04, 0.07, 0.1, 0.36},  // 5000
@@ -30,9 +27,10 @@ namespace SHET
         private Stats InitializeRunStats(int n, int k)
         {
             var stats = new Stats();
-            stats.Parameters["n"] = n.ToString();
-            stats.Parameters["k"] = k.ToString();
-            stats.Parameters["n/k"] = ((float)n / k).ToString();
+            stats.Parameters["Algorithm"] = "Shet";
+            stats.Parameters["n"] = n.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            stats.Parameters["k"] = k.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            stats.Parameters["n/k"] = ((float)n / k).ToString(System.Globalization.CultureInfo.InvariantCulture);
             stats.Times["treeTime"] = new List<double>();
             stats.Times["subTreesTime"] = new List<double>();
             stats.Times["ctreeTime"] = new List<double>();
@@ -152,28 +150,6 @@ namespace SHET
             Console.WriteLine($"\tMax: {stats.CliqueTrees.Last().MaxSize}");
         }
 
-        public List<double> AverageStd(List<double> values)
-        {
-            double mean = 0.0;
-            double sum = 0.0;
-            double stdDev = 0.0;
-            int n = 0;
-            foreach (double val in values)
-            {
-                n++;
-                double delta = val - mean;
-                mean += delta / n;
-                sum += delta * (val - mean);
-            }
-
-            if (n > 1)
-            {
-                stdDev = Math.Sqrt(sum / (n - 1));
-            }
-
-            return new List<double> { mean, stdDev };
-        }
-
         public List<Stats> MergeStatistics(List<Stats> stats)
         {
             var allStats = new List<Stats>();
@@ -188,25 +164,15 @@ namespace SHET
 
                 foreach (var key in stat.Times.Keys)
                 {
-                    finalStats.Times[key] = this.AverageStd(stat.Times[key]);
+                    finalStats.Times[key] = TreeStatistics.AverageStd(stat.Times[key]);
                 }
 
                 foreach (var key in stat.Output.Keys)
                 {
-                    finalStats.Output[key] = this.AverageStd(stat.Output[key]);
+                    finalStats.Output[key] = TreeStatistics.AverageStd(stat.Output[key]);
                 }
 
-                var treeStat = new TreeStatistics();
-                stat.CliqueTrees.Add(treeStat);
-                var count = 0;
-
-                foreach (var tree in stat.CliqueTrees)
-                {
-                    treeStat.Add(tree);
-                    count++;
-                }
-
-                treeStat.Divide(count);
+                finalStats.CliqueTrees = TreeStatistics.AvgStdTreeStats(stat.CliqueTrees);
             }
 
             return allStats;
@@ -252,13 +218,13 @@ namespace SHET
                             }
                         }
 
-                        stats.Times["Total"].Add(stats.Times["treeTime"].Last() + stats.Times["subTreesTime"].Last() + stats.Times["ctreetime"].Last());
-
                         int edges = 0;
                         using (var sw = new Watch(stats.Times["ctreeTime"]))
                         {
                             edges = CliqueTree.ConvertToGraph(tree, n);
                         }
+
+                        stats.Times["Total"].Add(stats.Times["treeTime"].Last() + stats.Times["subTreesTime"].Last() + stats.Times["ctreeTime"].Last());
 
                         Console.WriteLine($"Generate tree time: {stats.Times["treeTime"].Last()} s");
                         Console.WriteLine($"Subtrees time: {stats.Times["subTreesTime"].Last()} s");

@@ -1,6 +1,8 @@
 namespace Statistics
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class TreeStatistics
     {
@@ -58,6 +60,81 @@ namespace Statistics
             this.MinWeight /= factor;
             this.SumSize /= factor;
             this.SumWeight /= factor;
+        }
+
+        public static List<TreeStatistics> AvgStdTreeStats(List<TreeStatistics> treeStats)
+        {
+            var avgStats = new TreeStatistics();
+            var stdStats = new TreeStatistics();
+            var tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.Num));
+            avgStats.Num = tmp[0]; stdStats.Num = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.NumEdges));
+            avgStats.NumEdges = tmp[0]; stdStats.NumEdges = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.AvgSize));
+            avgStats.AvgSize = tmp[0]; stdStats.AvgSize = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.AvgWeight));
+            avgStats.AvgWeight = tmp[0]; stdStats.AvgWeight = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.Width));
+            avgStats.Width = tmp[0]; stdStats.Width = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.Height));
+            avgStats.Height = tmp[0]; stdStats.Height = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.DegreesVar));
+            avgStats.DegreesVar = tmp[0]; stdStats.DegreesVar = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.Diameter));
+            avgStats.Diameter = tmp[0]; stdStats.Diameter = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.MaxCliqueDistribution));
+            avgStats.MaxCliqueDistribution = tmp[0]; stdStats.MaxCliqueDistribution = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.MaxSize));
+            avgStats.MaxSize = tmp[0]; stdStats.MaxSize = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.MinSize));
+            avgStats.MinSize = tmp[0]; stdStats.MinSize = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.MaxWeight));
+            avgStats.MaxWeight = tmp[0]; stdStats.MaxWeight = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.MinWeight));
+            avgStats.MinWeight = tmp[0]; stdStats.MinWeight = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.SumSize));
+            avgStats.SumSize = tmp[0]; stdStats.SumSize = tmp[1];
+
+            tmp = TreeStatistics.AverageStd(treeStats.Select(t => t.SumWeight));
+            avgStats.SumWeight = tmp[0]; stdStats.SumWeight = tmp[1];
+
+
+            return new List<TreeStatistics>() { avgStats, stdStats };
+        }
+
+        public static List<double> AverageStd(IEnumerable<double> values)
+        {
+            double mean = 0.0;
+            double sum = 0.0;
+            double stdDev = 0.0;
+            int n = 0;
+            foreach (double val in values)
+            {
+                n++;
+                double delta = val - mean;
+                mean += delta / n;
+                sum += delta * (val - mean);
+            }
+
+            if (n > 1)
+            {
+                stdDev = Math.Sqrt(sum / (n - 1));
+            }
+
+            return new List<double> { mean, stdDev };
         }
     }
 

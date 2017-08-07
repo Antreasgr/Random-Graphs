@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using INCR;
 using MVA;
+using ExcelReporter;
 
 namespace Main
 {
@@ -10,9 +11,23 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            var finalStats = new SHET.SHET().RunSHET(1);
-            // new MVAMain().RunMVA(1);
-            //new INCRMain().RunINCR(10, 0);
+            var shetStats = new SHET.SHET().RunSHET(3);
+            Console.WriteLine("Done...");
+            Console.WriteLine("Writing excel report...");
+            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("SHET", shetStats);
+            Console.WriteLine("Done");
+
+            var mvaStats = new MVAMain().RunMVA(3);
+            Console.WriteLine("Done...");
+            Console.WriteLine("Writing excel report...");
+            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("MVA", mvaStats);
+            Console.WriteLine("Done");
+
+            var incrStats = new INCRMain().RunINCR(10, 0);
+            Console.WriteLine("Done...");
+            Console.WriteLine("Writing excel report...");
+            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR", incrStats);
+            Console.WriteLine("Done");
         }
     }
 }

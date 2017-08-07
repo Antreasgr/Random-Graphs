@@ -7,19 +7,20 @@ namespace INCR
     using MVA;
     using Statistics;
 
-    public class INCRMain
+    public class INCRMain : SHET.SHET
     {
-        public static readonly int[] Vertices = new int[] { 50, 100, 500, 1000, 2500, 5000, 10000 };
+        public static new readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
         private Stats InitializeRunStats(int n, double ed, double k, double ktreeK, double kEdges)
         {
             var stats = new Stats();
-            stats.Parameters["n"] = n.ToString();
-            stats.Parameters["edgeDensity"] = ed.ToString("F2");
+            stats.Parameters["Algorithm"] = "INCR";
+            stats.Parameters["n"] = n.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            stats.Parameters["edgeDensity"] = ed.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
             stats.Parameters["k"] = k.ToString("F2");
-            stats.Parameters["ktreeK"] = ktreeK.ToString("F2");
-            stats.Parameters["kEdges"] = kEdges.ToString("F2");
+            stats.Parameters["ktreeK"] = ktreeK.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+            stats.Parameters["kEdges"] = kEdges.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
 
             stats.Times["GenerateKTree"] = new List<double>();
             stats.Times["SplitEdgesK"] = new List<double>();
@@ -38,7 +39,7 @@ namespace INCR
             stats.CliqueTrees.Add(mvaAlgo.MVABFSStatistics(n, tree));
         }
 
-        public void PrintRunStatistics(Stats stats)
+        public new void PrintRunStatistics(Stats stats)
         {
             Console.WriteLine($"Edges: {stats.Output["Edges"].Last()} - {stats.Output["EdgeDensity"].Last()}");
             Console.WriteLine($"Clique tree:");
@@ -94,7 +95,7 @@ namespace INCR
                     }
                 }
             }
-            return allStats;
+            return this.MergeStatistics(allStats);
         }
     }
 }
