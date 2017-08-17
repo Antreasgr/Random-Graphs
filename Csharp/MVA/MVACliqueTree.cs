@@ -36,7 +36,7 @@ namespace MVA
         }
 
         public int MaximalCliques { get; set; }
-        public int Edges { get; set; }
+        public long Edges { get; set; }
         public List<MVAEdge> EdgesList { get; set; }
         public List<int> Cardinalities { get; set; }
         public List<MVANode> Cliques { get; set; }
@@ -50,7 +50,7 @@ namespace MVA
             this.Cliques = new List<MVANode>();
         }
 
-        public void MergeCliques(int upperBound, Random random)
+        public void MergeCliques(long upperBound, Random random)
         {
             var disSet = new MVA.UnionFind<int>();
             for (int i = 0; i < this.MaximalCliques; i++)
@@ -102,7 +102,7 @@ namespace MVA
             }
         }
 
-        public static MVACliqueTree ExpandCliques(int n, Random random)
+        public static MVACliqueTree ExpandCliques(long n, Random random)
         {
             var cliqueTree = new MVACliqueTree()
             {

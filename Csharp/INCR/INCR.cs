@@ -9,10 +9,10 @@ namespace INCR
 
     public class INCRMain : SHET.SHET
     {
-        public static new readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
+        public static new readonly long[] Vertices = new long[] { /* 1000, 2500, 5000, */10000, 50000, 100000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
-        private Stats InitializeRunStats(int n, double ed, double k, double ktreeK, double kEdges)
+        private Stats InitializeRunStats(long n, double ed, double k, double ktreeK, double kEdges)
         {
             var stats = new Stats();
             stats.Parameters["Algorithm"] = "INCR";
@@ -25,15 +25,14 @@ namespace INCR
             stats.Times["GenerateKTree"] = new List<double>();
             stats.Times["SplitEdgesK"] = new List<double>();
             stats.Times["Total"] = new List<double>();
-            stats.Output["Edges"] = new List<double>();
             stats.Output["EdgeDensity"] = new List<double>();
             return stats;
         }
 
-        private void CalculateRunStatistics(int n, INCRCliqueTree tree, Stats stats)
+        private void CalculateRunStatistics(long n, INCRCliqueTree tree, Stats stats)
         {
-            var maxEdges = (n * (n - 1)) / 2;
-            stats.Output["Edges"].Add(tree.Edges);
+            var maxEdges = (n * (n - 1)) / 2L;
+            stats.Edges.Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
             var mvaAlgo = new MVAMain();
             stats.CliqueTrees.Add(mvaAlgo.MVABFSStatistics(n, tree));
@@ -41,7 +40,7 @@ namespace INCR
 
         public new void PrintRunStatistics(Stats stats)
         {
-            Console.WriteLine($"Edges: {stats.Output["Edges"].Last()} - {stats.Output["EdgeDensity"].Last()}");
+            Console.WriteLine($"Edges: {stats.Edges.Last()} - {stats.Output["EdgeDensity"].Last()}");
             Console.WriteLine($"Clique tree:");
 
             Console.WriteLine($"\tMax clique distr.: {stats.CliqueTrees.Last().MaxCliqueDistribution}");
@@ -59,11 +58,13 @@ namespace INCR
                 var n = Vertices[nIndex];
                 foreach (var ed in EdgeDensity)
                 {
-                    var edgesBound = ed * ((n * (n - 1)) / 2);
+                    var edgesBound = ed * ((n * (n - 1)) / 2L);
                     var k = Math.Max(1, edgesToAdd * edgesBound);
                     var ktreeK = 1.0 / 2 * (2 * n - 1 - Math.Sqrt(((2 * n - 1) * (2 * n - 1)) - (8 * edgesBound)));
                     ktreeK = (int)(Math.Floor(ktreeK));
                     var kEdges = (n - ktreeK - 1) * ktreeK + (ktreeK * (ktreeK + 1) / 2);
+                    long ktreeK1 = (long)ktreeK + 1;
+                    var kEdges1 = (n - ktreeK1 - 1) * ktreeK1 + (ktreeK1 * (ktreeK1 + 1) / 2);
 
                     var stats = this.InitializeRunStats(n, ed, k, ktreeK, kEdges);
                     allStats.Add(stats);
@@ -72,7 +73,8 @@ namespace INCR
                     {
                         Console.WriteLine("------------------ Begin Run --------------------");
                         Console.WriteLine($"n:{n} \t ed:{ed.ToString("F2")} \t edgesBound: {edgesBound}");
-                        Console.WriteLine($"k:{k} \t kTree:{ktreeK.ToString("F2")} \t kEdges: {kEdges}");
+                        Console.WriteLine($"k:{k} \t kTree:{ktreeK.ToString("F2")} \t kEdges: {kEdges}({edgesBound - kEdges})");
+                        Console.WriteLine($"kTree + 1:{ktreeK1.ToString("F2")} \t kEdges + 1: {kEdges1}({edgesBound - kEdges1})");
 
                         var random = new Random();
 

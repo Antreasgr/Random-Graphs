@@ -136,6 +136,28 @@ namespace Statistics
 
             return new List<double> { mean, stdDev };
         }
+
+        public static List<long> AverageStd(IEnumerable<long> values)
+        {
+            long mean = 0;
+            long sum = 0;
+            long stdDev = 0;
+            long n = 0;
+            foreach (long val in values)
+            {
+                n++;
+                long delta = val - mean;
+                mean += delta / n;
+                sum += delta * (val - mean);
+            }
+
+            if (n > 1)
+            {
+                stdDev = (long)Math.Sqrt(sum / (n - 1));
+            }
+
+            return new List<long> { mean, stdDev };
+        }
     }
 
     public class Stats
@@ -143,6 +165,9 @@ namespace Statistics
         public Dictionary<string, string> Parameters = new Dictionary<string, string>();
         public Dictionary<string, List<double>> Output = new Dictionary<string, List<double>>();
         public Dictionary<string, List<double>> Times = new Dictionary<string, List<double>>();
+
+        public List<long> Edges = new List<long>();
+
         public List<TreeStatistics> CliqueTrees { get; set; } = new List<TreeStatistics>();
     }
 }

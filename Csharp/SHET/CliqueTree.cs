@@ -7,13 +7,13 @@ namespace SHET
 {
     public class CliqueTree
     {
-        public static int ConvertToGraph(List<TreeNode> tree, int n)
+        public static long ConvertToGraph(List<TreeNode> tree, int n)
         {
             var seen = new bool[n];
 
             var visited = new HashSet<TreeNode>();
             var queue = new Queue<TreeNode>();
-            var edges = 0;
+            var edges = 0L;
             queue.Enqueue(tree[0]);
 
             while (queue.Count > 0)
@@ -31,9 +31,9 @@ namespace SHET
             return edges;
         }
 
-        public static int AddClique(TreeNode node, ref bool[] seen, bool Add = true)
+        public static long AddClique(TreeNode node, ref bool[] seen, bool Add = true)
         {
-            var newEdges = 0;
+            var newEdges = 0L;
             var oldVertices = new List<int>();
             var newVertices = new List<int>();
             foreach (var c in node.CliqueList)

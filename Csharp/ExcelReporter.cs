@@ -82,6 +82,20 @@ namespace ExcelReporter
                 }
             }
 
+            for (var i = 0; i < stats[0].Edges.Count; i++)
+            {
+                row.AppendChild(new Cell()
+                {
+                    DataType = CellValues.String,
+                    CellValue = new CellValue(i == 0 ? "Edges" : "")
+                });
+                row2.AppendChild(new Cell()
+                {
+                    DataType = CellValues.String,
+                    CellValue = new CellValue(i == 0 ? "mean" : "std")
+                });
+            }
+
             foreach (var key in stats[0].Times.Keys)
             {
                 for (var i = 0; i < stats[0].Times[key].Count; i++)
@@ -147,6 +161,15 @@ namespace ExcelReporter
                             CellValue = new CellValue(Convert.ToString(item.Value[i], System.Globalization.CultureInfo.InvariantCulture))
                         });
                     }
+                }
+
+                for (var i = 0; i < s.Edges.Count; i++)
+                {
+                    row.AppendChild(new Cell()
+                    {
+                        DataType = CellValues.Number,
+                        CellValue = new CellValue(Convert.ToString(s.Edges[i], System.Globalization.CultureInfo.InvariantCulture))
+                    });
                 }
 
                 foreach (var item in s.Times)

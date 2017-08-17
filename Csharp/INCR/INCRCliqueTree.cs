@@ -7,7 +7,7 @@ namespace INCR
 
     public class INCRCliqueTree : MVACliqueTree
     {
-        public int SplitEdgesK(int upperBound, Random random, int k = 1)
+        public long SplitEdgesK(long upperBound, Random random, int k = 1)
         {
             var loops = 0;
             var disSet = new MVA.UnionFind<int>();
@@ -104,7 +104,6 @@ namespace INCR
                     this.MaximalCliques++;
                     this.Edges += edgesAdded;
                     this.EdgesList.RemoveAt(rndEdgeI);
-
                 }
             }
 
@@ -117,7 +116,7 @@ namespace INCR
             return loops;
         }
 
-        public static INCRCliqueTree GenerateKTree(int n, int k, Random random)
+        public static INCRCliqueTree GenerateKTree(long n, int k, Random random)
         {
             var node = new MVANode(Enumerable.Range(0, k + 1));
             var cliqueTree = new INCRCliqueTree()

@@ -11,22 +11,22 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            var shetStats = new SHET.SHET().RunSHET(3);
-            Console.WriteLine("Done...");
-            Console.WriteLine("Writing excel report...");
-            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("SHET", shetStats);
-            Console.WriteLine("Done");
+            // var shetStats = new SHET.SHET().RunSHET(10);
+            // Console.WriteLine("Done...");
+            // Console.WriteLine("Writing excel report...");
+            // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("SHEt4", shetStats);
+            // Console.WriteLine("Done");
 
-            var mvaStats = new MVAMain().RunMVA(3);
-            Console.WriteLine("Done...");
-            Console.WriteLine("Writing excel report...");
-            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("MVA", mvaStats);
-            Console.WriteLine("Done");
+            // var mvaStats = new MVAMain().RunMVA(10);
+            // Console.WriteLine("Done...");
+            // Console.WriteLine("Writing excel report...");
+            // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("MVA3", mvaStats);
+            // Console.WriteLine("Done");
 
-            var incrStats = new INCRMain().RunINCR(10, 0);
+            var incrStats = new INCRMain().RunINCR(10, 0.01);
             Console.WriteLine("Done...");
             Console.WriteLine("Writing excel report...");
-            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR", incrStats);
+            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR2", incrStats);
             Console.WriteLine("Done");
         }
     }

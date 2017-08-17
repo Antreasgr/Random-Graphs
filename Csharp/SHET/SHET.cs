@@ -9,13 +9,15 @@ namespace SHET
 
     public class SHET
     {
-        public static readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
+        public static readonly int[] Vertices = new int[] { /*1000, 2500, 5000, 10000, 50000 ,*/ 100000 };
 
         public static readonly double[][] KFactor = new double[][]{
-            new double[] {0.02, 0.05, 0.08, 0.18, 0.33},  // 1000
-            new double[] {0.01, 0.04, 0.07, 0.13, 0.36},  // 2500
-            new double[] {0.01, 0.04, 0.07, 0.1, 0.36},  // 5000
-            new double[] {0.009, 0.03, 0.06, 0.09, 0.33}  // 10000
+            // new double[] {0.02, 0.05, 0.08, 0.18, 0.33},  // 1000
+            // new double[] {0.01, 0.04, 0.07, 0.13, 0.36},  // 2500
+            // new double[] {0.01, 0.04, 0.07, 0.1, 0.36},  // 5000
+            // new double[] {0.009, 0.03, 0.06, 0.09, 0.33},  // 10000
+            // new double[] {0.007, 0.01, 0.036, 0.082, 0.12},  // 50000
+            new double[] { /*0.004, 0.01, */0.02, 0.03, 0.04 }  // 100000
         };
 
         // public static readonly int[] Vertices = new int[] { 5 };
@@ -35,13 +37,12 @@ namespace SHET
             stats.Times["subTreesTime"] = new List<double>();
             stats.Times["ctreeTime"] = new List<double>();
             stats.Times["Total"] = new List<double>();
-            stats.Output["edges"] = new List<double>();
             stats.Output["edgeDensity"] = new List<double>();
             stats.Output["CC"] = new List<double>();
             return stats;
         }
 
-        public TreeStatistics SHETBFSStatistics(int edges, IEnumerable<TreeNode> tree)
+        public TreeStatistics SHETBFSStatistics(long edges, IEnumerable<TreeNode> tree)
         {
             var count = tree.Count();
             var avgDegree = 2.0 * (count - 1) / count;
@@ -127,19 +128,19 @@ namespace SHET
             return tStats;
         }
 
-        private void CalculateRunStatistics(int n, int edges, List<TreeNode> tree, Stats stats)
+        private void CalculateRunStatistics(long n, long edges, List<TreeNode> tree, Stats stats)
         {
-            var maxEdges = (n * (n - 1)) / 2;
+            long maxEdges = ((long)n * (n - 1)) / 2L;
             var validCliques = tree.Where(x => x.State == NodeState.Valid || x.State == NodeState.NewCC);
-            stats.Output["edges"].Add(edges);
-            stats.Output["edgeDensity"].Add((double)edges / maxEdges);
+            stats.Edges.Add(edges);
+            stats.Output["edgeDensity"].Add(Convert.ToDouble(Decimal.Divide((decimal)edges, (decimal)maxEdges)));
             stats.Output["CC"].Add(validCliques.Where(x => x.State == NodeState.NewCC).Count());
             stats.CliqueTrees.Add(this.SHETBFSStatistics(edges, validCliques));
         }
 
         public void PrintRunStatistics(Stats stats)
         {
-            Console.WriteLine($"Edges: {stats.Output["edges"].Last()} - {stats.Output["edgeDensity"].Last()}");
+            Console.WriteLine($"Edges: {stats.Edges.Last()} - {stats.Output["edgeDensity"].Last()}");
             Console.WriteLine($"CC: {stats.Output["CC"].Last()}");
             Console.WriteLine($"Clique tree:");
 
@@ -166,6 +167,8 @@ namespace SHET
                 {
                     finalStats.Times[key] = TreeStatistics.AverageStd(stat.Times[key]);
                 }
+
+                finalStats.Edges = TreeStatistics.AverageStd(stat.Edges);
 
                 foreach (var key in stat.Output.Keys)
                 {
@@ -218,7 +221,7 @@ namespace SHET
                             }
                         }
 
-                        int edges = 0;
+                        long edges = 0;
                         using (var sw = new Watch(stats.Times["ctreeTime"]))
                         {
                             edges = CliqueTree.ConvertToGraph(tree, n);
@@ -233,6 +236,9 @@ namespace SHET
                         this.PrintRunStatistics(stats);
                         Console.WriteLine("------------------ End Run --------------------");
                     }
+
+                    var runStats = this.MergeStatistics(new List<Stats>() { stats });
+                    ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook($"Shet_{n}_{kfactor}", runStats);
                 }
             }
 

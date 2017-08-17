@@ -10,10 +10,10 @@ namespace MVA
 
     public class MVAMain : SHET
     {
-        public static new readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000 };
+        public static new readonly long[] Vertices = new long[] { /*1000, 2500, 5000, 10000,*/  50000,/* 100000 */};
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
-        private Stats InitializeRunStats(int n, double ed)
+        private Stats InitializeRunStats(long n, double ed)
         {
             var stats = new Stats();
             stats.Parameters["Algorithm"] = "MVA";
@@ -22,12 +22,11 @@ namespace MVA
             stats.Times["ExpandCliques"] = new List<double>();
             stats.Times["MergeCliques"] = new List<double>();
             stats.Times["Total"] = new List<double>();
-            stats.Output["Edges"] = new List<double>();
             stats.Output["EdgeDensity"] = new List<double>();
             return stats;
         }
 
-        public TreeStatistics MVABFSStatistics(int n, MVACliqueTree tree)
+        public TreeStatistics MVABFSStatistics(long n, MVACliqueTree tree)
         {
             // convert to SHET data structure for the statistics
             var dict = new Dictionary<int, TreeNode>();
@@ -55,10 +54,10 @@ namespace MVA
             return tmpSHET.SHETBFSStatistics(tree.Edges, shetTree);
         }
 
-        private void CalculateRunStatistics(int n, MVACliqueTree tree, Stats stats)
+        private void CalculateRunStatistics(long n, MVACliqueTree tree, Stats stats)
         {
             var maxEdges = (n * (n - 1)) / 2;
-            stats.Output["Edges"].Add(tree.Edges);
+            stats.Edges.Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
 
             stats.CliqueTrees.Add(this.MVABFSStatistics(n, tree));
@@ -66,7 +65,7 @@ namespace MVA
 
         public new void PrintRunStatistics(Stats stats)
         {
-            Console.WriteLine($"Edges: {stats.Output["Edges"].Last()} - {stats.Output["EdgeDensity"].Last()}");
+            Console.WriteLine($"Edges: {stats.Edges.Last()} - {stats.Output["EdgeDensity"].Last()}");
             Console.WriteLine($"Clique tree:");
 
             Console.WriteLine($"\tMax clique distr.: {stats.CliqueTrees.Last().MaxCliqueDistribution}");
@@ -84,7 +83,7 @@ namespace MVA
                 var n = Vertices[nIndex];
                 foreach (var ed in EdgeDensity)
                 {
-                    var edgesBound = ed * ((n * (n - 1)) / 2);
+                    var edgesBound = ed * ((n * (n - 1)) / 2L);
                     var stats = this.InitializeRunStats(n, ed);
                     allStats.Add(stats);
 
@@ -102,7 +101,7 @@ namespace MVA
                         }
                         using (var sw = new Watch(stats.Times["MergeCliques"]))
                         {
-                            tree.MergeCliques((int)edgesBound, random);
+                            tree.MergeCliques((long)edgesBound, random);
                         }
 
                         stats.Times["Total"].Add(stats.Times["ExpandCliques"].Last() + stats.Times["MergeCliques"].Last());

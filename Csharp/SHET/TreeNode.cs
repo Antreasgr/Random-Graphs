@@ -56,7 +56,6 @@ namespace SHET
 
         public static void SubTreeGeneration(List<TreeNode> tree, int k, int treeIndex, Random random)
         {
-
             var n = tree.Count;
             var subTree = new List<TreeNode>();
             var firstNode = tree[random.Next(n)];

@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v1.1",
+    "signature": "2be31fc920cadf46da5012da32bb7372afbccfdc"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v1.1": {
+      "csharp/1.0.0": {
+        "dependencies": {
+          "DocumentFormat.OpenXml": "2.7.2"
+        },
+        "runtime": {
+          "Csharp.dll": {}
+        }
+      },
+      "documentformat.openxml/2.7.2": {
+        "dependencies": {
+          "System.IO.Packaging": "4.0.0"
+        },
+        "runtime": {
+          "lib/netstandard1.3/DocumentFormat.OpenXml.dll": {}
+        }
+      },
+      "system.io.packaging/4.0.0": {
+        "runtime": {
+          "lib/netstandard1.3/System.IO.Packaging.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "csharp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "documentformat.openxml/2.7.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tWT7iu0ab9PNoMTWjv24rt+qnyqvcnPOYs167vPnk4aegAYSAxoUjwNW+VxY8xoLtJntQ/JlWTi7Vt+8TghLlQ==",
+      "path": "documentformat.openxml/2.7.2",
+      "hashPath": "documentformat.openxml.2.7.2.nupkg.sha512"
+    },
+    "system.io.packaging/4.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-taPqPWcAj/h6e/c+zIWIVe1ddJtpV6acC6g9GpolxUcIwUaH6zc0ZbFS8kkVzBkuWv76pMalKeTzfmHtfT1pXA==",
+      "path": "system.io.packaging/4.0.0",
+      "hashPath": "system.io.packaging.4.0.0.nupkg.sha512"
+    }
+  }
+}
