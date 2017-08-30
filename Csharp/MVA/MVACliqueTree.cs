@@ -13,6 +13,7 @@ namespace MVA
             {
 
             }
+            
             public MVANode(IEnumerable<int> collection)
             : base(collection)
             {

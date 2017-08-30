@@ -131,15 +131,25 @@ namespace INCR
             {
                 var i = random.Next(cliqueTree.MaximalCliques);
                 var y = random.Next(cliqueTree.Cliques[i].Count);
-                var sep = cliqueTree.Cliques[i].Where((x, ii) => ii != y);
-
+                // var sep = cliqueTree.Cliques[i].Where((x, ii) => ii != y);
+                var newSep = new HashSet<int>();
                 var newNode = new MVANode() { u + k };
-                newNode.UnionWith(sep);
+
+                foreach (var s in cliqueTree.Cliques[i])
+                {
+                    if (s != y)
+                    {
+                        newSep.Add(s);
+                        newNode.Add(s);
+                    }
+                }
+                
+                // newNode.UnionWith(sep);
                 cliqueTree.Cliques.Add(newNode);
                 cliqueTree.Cardinalities.Add(k + 1);
                 cliqueTree.MaximalCliques++;
                 cliqueTree.Edges += k;
-                cliqueTree.EdgesList.Add(new MVAEdge(i, cliqueTree.Cliques.Count - 1, new HashSet<int>(sep), k));
+                cliqueTree.EdgesList.Add(new MVAEdge(i, cliqueTree.Cliques.Count - 1, newSep, k));
             }
 
             return cliqueTree;

@@ -9,7 +9,7 @@ namespace INCR
 
     public class INCRMain : SHET.SHET
     {
-        public static new readonly long[] Vertices = new long[] { /* 1000, 2500, 5000, */10000, 50000, 100000 };
+        public static new readonly long[] Vertices = new long[] { /* 1000, 2500, 5000, 10000,*/ 50000, 100000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
         private Stats InitializeRunStats(long n, double ed, double k, double ktreeK, double kEdges)
@@ -83,6 +83,7 @@ namespace INCR
                         {
                             tree = INCRCliqueTree.GenerateKTree(n, (int)ktreeK, random);
                         }
+                        
                         using (var sw = new Watch(stats.Times["SplitEdgesK"]))
                         {
                             tree.SplitEdgesK((int)edgesBound, random, (int)k);
