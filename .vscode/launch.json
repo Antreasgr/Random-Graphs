@@ -21,7 +21,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build c#",
-            "program": "${workspaceRoot}/Csharp/bin/Debug/netcoreapp1.1/Csharp.dll",
+            "program": "${workspaceRoot}/Csharp/bin/Debug/netcoreapp2.0/Csharp.dll",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,

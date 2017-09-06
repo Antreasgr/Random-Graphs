@@ -34,8 +34,35 @@ namespace INCR
             var maxEdges = (n * (n - 1)) / 2L;
             stats.Edges.Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
-            var mvaAlgo = new MVAMain();
-            stats.CliqueTrees.Add(mvaAlgo.MVABFSStatistics(n, tree));
+            stats.CliqueTrees.Add(this.MVABFSStatistics(n, tree));
+        }
+
+        public TreeStatistics MVABFSStatistics(long n, INCRCliqueTree tree)
+        {
+            // convert to SHET data structure for the statistics
+            var dict = new Dictionary<int, SHET.TreeNode>();
+            foreach (var edge in tree.EdgesList)
+            {
+                foreach (var node in new int[] { edge.Node1, edge.Node2 })
+                {
+                    if (!dict.ContainsKey(node))
+                    {
+                        dict[node] = new SHET.TreeNode(node)
+                        {
+                            State = edge.SeperatorWeight == 0 ? SHET.TreeNode.NodeState.NewCC : SHET.TreeNode.NodeState.Valid,
+                            CliqueList = tree.Cliques[node].ToList()
+                        };
+                    }
+                }
+
+                dict[edge.Node1].Adjoint.Add(dict[edge.Node2]);
+                dict[edge.Node2].Adjoint.Add(dict[edge.Node1]);
+            }
+
+            var shetTree = dict.Values.ToList();
+
+            var tmpSHET = new SHET.SHET();
+            return tmpSHET.SHETBFSStatistics(tree.Edges, shetTree);
         }
 
         public new void PrintRunStatistics(Stats stats)
@@ -83,10 +110,12 @@ namespace INCR
                         {
                             tree = INCRCliqueTree.GenerateKTree(n, (int)ktreeK, random);
                         }
-                        
+
+                        GC.Collect();
+
                         using (var sw = new Watch(stats.Times["SplitEdgesK"]))
                         {
-                            tree.SplitEdgesK((int)edgesBound, random, (int)k);
+                            //     tree.SplitEdgesK((int)edgesBound, random, (int)k);
                         }
 
                         stats.Times["Total"].Add(stats.Times["GenerateKTree"].Last() + stats.Times["SplitEdgesK"].Last());
@@ -95,6 +124,7 @@ namespace INCR
                         this.CalculateRunStatistics(n, tree, stats);
                         this.PrintRunStatistics(stats);
                         Console.WriteLine("------------------ End Run --------------------");
+                        GC.Collect();
                     }
                 }
             }
