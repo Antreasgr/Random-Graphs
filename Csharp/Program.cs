@@ -23,7 +23,7 @@ namespace Main
             // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("MVA3", mvaStats);
             // Console.WriteLine("Done");
 
-            var incrStats = new INCRMain().RunINCR(10, 0.01);
+            var incrStats = new INCRMain().RunINCR(1, 0);
             Console.WriteLine("Done...");
             Console.WriteLine("Writing excel report...");
             ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR2", incrStats);

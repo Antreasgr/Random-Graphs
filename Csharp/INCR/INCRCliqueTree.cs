@@ -8,14 +8,14 @@ namespace INCR
 
     public class INCRCliqueTree
     {
-        public class INCRNode : List<int>
+        public class INCRNode : List<ushort>
         {
             public INCRNode()
             : base()
             {
             }
 
-            public INCRNode(IEnumerable<int> collection)
+            public INCRNode(IEnumerable<ushort> collection)
             : base(collection)
             {
             }
@@ -23,17 +23,17 @@ namespace INCR
 
         public class INCREdge
         {
-            public INCREdge(int node1, int node2, List<int> seperator, int seperatorWeight)
+            public INCREdge(int node1, int node2, List<ushort> seperator, int seperatorWeight)
             {
                 this.Node1 = node1;
                 this.Node2 = node2;
-                this.Seperator = seperator;
+                // this.Seperator = seperator;
                 this.SeperatorWeight = seperatorWeight;
             }
 
             public int Node1 { get; set; }
             public int Node2 { get; set; }
-            public List<int> Seperator { get; set; }
+            // public List<ushort> Seperator { get; set; }
             public int SeperatorWeight { get; set; }
         }
 
@@ -68,11 +68,14 @@ namespace INCR
                 var rndEdge = this.EdgesList[rndEdgeI];
                 int i = disSet[rndEdge.Node1], j = disSet[rndEdge.Node2];
 
-                var xSep = new HashSet<int>(this.Cliques[i]);
-                xSep.ExceptWith(rndEdge.Seperator);
+                var sep = new HashSet<ushort>(this.Cliques[i]);
+                sep.IntersectWith(this.Cliques[j]);
 
-                var ySep = new HashSet<int>(this.Cliques[j]);
-                ySep.ExceptWith(rndEdge.Seperator);
+                var xSep = new HashSet<ushort>(this.Cliques[i]); // O(n)
+                xSep.ExceptWith(sep);
+
+                var ySep = new HashSet<ushort>(this.Cliques[j]); // O(n)
+                ySep.ExceptWith(sep);
 
                 if (xSep.Count == 0 && ySep.Count == 0)
                 {
@@ -83,17 +86,22 @@ namespace INCR
                     // merge x,y
                     var edgesAdded = xSep.Count * ySep.Count;
                     var mergedIndex = disSet.Union(rndEdge.Node1, rndEdge.Node2);
-                    if (mergedIndex != i)
+                    if (mergedIndex == i)
                     {
-                        // Union find merged in j
-                        var tmp = i;
-                        i = j;
-                        j = tmp;
+                        // Union find merged in i
+                        this.Cliques[i].AddRange(ySep);
+                        this.Cardinalities[i] += ySep.Count;
+                        this.Cliques[j] = null;
+                        this.Cardinalities[j] = 0;
                     }
-                    this.Cliques[i].Union(this.Cliques[j]);
-                    this.Cardinalities[i] += ySep.Count;
-                    this.Cliques[j] = null;
-                    this.Cardinalities[j] = 0;
+                    else
+                    {
+                        this.Cliques[j].AddRange(xSep);
+                        this.Cardinalities[j] += xSep.Count;
+                        this.Cliques[i] = null;
+                        this.Cardinalities[i] = 0;
+                    }
+
                     this.Edges += edgesAdded;
                     this.MaximalCliques--;
                     this.EdgesList.RemoveAt(rndEdgeI);
@@ -106,7 +114,7 @@ namespace INCR
 
                     this.Cliques[i].AddRange(yRandom);
                     this.Cardinalities[i] += yLen;
-                    this.EdgesList[rndEdgeI].Seperator.Union(yRandom);
+                    // this.EdgesList[rndEdgeI].Seperator.Union(yRandom);
                     this.EdgesList[rndEdgeI].SeperatorWeight += yLen;
                 }
                 else if (ySep.Count <= k)
@@ -117,7 +125,7 @@ namespace INCR
 
                     this.Cliques[i].AddRange(xRandom);
                     this.Cardinalities[i] += xLen;
-                    this.EdgesList[rndEdgeI].Seperator.Union(xRandom);
+                    // this.EdgesList[rndEdgeI].Seperator.Union(xRandom);
                     this.EdgesList[rndEdgeI].SeperatorWeight += xLen;
                 }
                 else
@@ -131,19 +139,21 @@ namespace INCR
 
                     var z = new INCRNode(xRandom);
                     z.AddRange(yRandom);
-                    z.AddRange(rndEdge.Seperator);
+                    z.AddRange(sep);
 
                     var edgesAdded = xLen * yLen;
                     this.Cliques.Add(z);
                     this.Cardinalities.Add(xLen + yLen + rndEdge.SeperatorWeight);
 
-                    var sep1 = new List<int>(xRandom);
-                    sep1.AddRange(rndEdge.Seperator);
-                    this.EdgesList.Add(new INCREdge(rndEdge.Node1, this.Cliques.Count - 1, sep1, edgesAdded + rndEdge.SeperatorWeight));
+                    // var sep1 = new List<ushort>(xRandom); // Ο(n)
+                    // sep1.AddRange(rndEdge.Seperator);
+                    // this.EdgesList.Add(new INCREdge(rndEdge.Node1, this.Cliques.Count - 1, sep1, edgesAdded + rndEdge.SeperatorWeight));
+                    this.EdgesList.Add(new INCREdge(rndEdge.Node1, this.Cliques.Count - 1, null, edgesAdded + rndEdge.SeperatorWeight));
 
-                    var sep2 = new List<int>(yRandom);
-                    sep2.AddRange(rndEdge.Seperator);
-                    this.EdgesList.Add(new INCREdge(rndEdge.Node2, this.Cliques.Count - 1, sep2, edgesAdded + rndEdge.SeperatorWeight));
+                    // var sep2 = new List<ushort>(yRandom);
+                    // sep2.AddRange(rndEdge.Seperator);
+                    // this.EdgesList.Add(new INCREdge(rndEdge.Node2, this.Cliques.Count - 1, sep2, edgesAdded + rndEdge.SeperatorWeight));
+                    this.EdgesList.Add(new INCREdge(rndEdge.Node2, this.Cliques.Count - 1, null, edgesAdded + rndEdge.SeperatorWeight));
 
                     this.MaximalCliques++;
                     this.Edges += edgesAdded;
@@ -162,7 +172,7 @@ namespace INCR
 
         public static INCRCliqueTree GenerateKTree(long n, int k, Random random)
         {
-            var node = new INCRNode(Enumerable.Range(0, k + 1));
+            var node = new INCRNode(Enumerable.Range(0, k + 1).Select(i => (ushort)i));
             var cliqueTree = new INCRCliqueTree()
             {
                 MaximalCliques = 1,
@@ -176,15 +186,15 @@ namespace INCR
                 var i = random.Next(cliqueTree.MaximalCliques);
                 var y = random.Next(cliqueTree.Cardinalities[i]);
                 var sep = cliqueTree.Cliques[i].Where((x, ii) => ii != y);
-                var newSep = new List<int>(sep);
+                // var newSep = new List<ushort>(sep);
                 var newNode = new INCRNode(sep);
-                newNode.Add(u + k);
+                newNode.Add((ushort)(u + k));
 
                 cliqueTree.Cliques.Add(newNode);
                 cliqueTree.Cardinalities.Add(k + 1);
                 cliqueTree.MaximalCliques++;
                 cliqueTree.Edges += k;
-                cliqueTree.EdgesList.Add(new INCREdge(i, cliqueTree.Cliques.Count - 1, newSep, k));
+                cliqueTree.EdgesList.Add(new INCREdge(i, cliqueTree.Cliques.Count - 1, null, k));
             }
 
             return cliqueTree;

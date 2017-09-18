@@ -50,7 +50,7 @@ namespace INCR
                         dict[node] = new SHET.TreeNode(node)
                         {
                             State = edge.SeperatorWeight == 0 ? SHET.TreeNode.NodeState.NewCC : SHET.TreeNode.NodeState.Valid,
-                            CliqueList = tree.Cliques[node].ToList()
+                            CliqueList = tree.Cliques[node].Select(i => (int)i).ToList()
                         };
                     }
                 }
@@ -115,7 +115,7 @@ namespace INCR
 
                         using (var sw = new Watch(stats.Times["SplitEdgesK"]))
                         {
-                            //     tree.SplitEdgesK((int)edgesBound, random, (int)k);
+                            tree.SplitEdgesK((int)edgesBound, n, random, (int)k);
                         }
 
                         stats.Times["Total"].Add(stats.Times["GenerateKTree"].Last() + stats.Times["SplitEdgesK"].Last());
