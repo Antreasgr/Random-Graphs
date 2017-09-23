@@ -9,7 +9,7 @@ namespace INCR
 
     public class INCRMain : SHET.SHET
     {
-        public static new readonly long[] Vertices = new long[] { /* 1000, 2500, 5000, 10000,*/ 50000, 100000 };
+        public static new readonly long[] Vertices = new long[] { /* 1000, 2500, 5000, 10000, 50000,*/ 100000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
         private Stats InitializeRunStats(long n, double ed, double k, double ktreeK, double kEdges)
@@ -111,8 +111,6 @@ namespace INCR
                             tree = INCRCliqueTree.GenerateKTree(n, (int)ktreeK, random);
                         }
 
-                        GC.Collect();
-
                         using (var sw = new Watch(stats.Times["SplitEdgesK"]))
                         {
                             tree.SplitEdgesK((int)edgesBound, n, random, (int)k);
@@ -124,8 +122,12 @@ namespace INCR
                         this.CalculateRunStatistics(n, tree, stats);
                         this.PrintRunStatistics(stats);
                         Console.WriteLine("------------------ End Run --------------------");
+                        tree = null;
                         GC.Collect();
                     }
+
+                    var runStats = this.MergeStatistics(new List<Stats>() { stats });
+                    ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook($"Incr_{n}_{ed}", runStats);
                 }
             }
             return this.MergeStatistics(allStats);

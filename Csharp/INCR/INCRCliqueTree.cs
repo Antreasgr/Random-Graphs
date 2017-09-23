@@ -8,14 +8,14 @@ namespace INCR
 
     public class INCRCliqueTree
     {
-        public class INCRNode : List<ushort>
+        public class INCRNode : List<uint>
         {
             public INCRNode()
             : base()
             {
             }
 
-            public INCRNode(IEnumerable<ushort> collection)
+            public INCRNode(IEnumerable<uint> collection)
             : base(collection)
             {
             }
@@ -23,7 +23,7 @@ namespace INCR
 
         public class INCREdge
         {
-            public INCREdge(int node1, int node2, List<ushort> seperator, int seperatorWeight)
+            public INCREdge(int node1, int node2, List<uint> seperator, int seperatorWeight)
             {
                 this.Node1 = node1;
                 this.Node2 = node2;
@@ -68,13 +68,13 @@ namespace INCR
                 var rndEdge = this.EdgesList[rndEdgeI];
                 int i = disSet[rndEdge.Node1], j = disSet[rndEdge.Node2];
 
-                var sep = new HashSet<ushort>(this.Cliques[i]);
+                var sep = new HashSet<uint>(this.Cliques[i]);
                 sep.IntersectWith(this.Cliques[j]);
 
-                var xSep = new HashSet<ushort>(this.Cliques[i]); // O(n)
+                var xSep = new HashSet<uint>(this.Cliques[i]); // O(n)
                 xSep.ExceptWith(sep);
 
-                var ySep = new HashSet<ushort>(this.Cliques[j]); // O(n)
+                var ySep = new HashSet<uint>(this.Cliques[j]); // O(n)
                 ySep.ExceptWith(sep);
 
                 if (xSep.Count == 0 && ySep.Count == 0)
@@ -172,7 +172,7 @@ namespace INCR
 
         public static INCRCliqueTree GenerateKTree(long n, int k, Random random)
         {
-            var node = new INCRNode(Enumerable.Range(0, k + 1).Select(i => (ushort)i));
+            var node = new INCRNode(Enumerable.Range(0, k + 1).Select(i => (uint)i));
             var cliqueTree = new INCRCliqueTree()
             {
                 MaximalCliques = 1,
@@ -188,7 +188,7 @@ namespace INCR
                 var sep = cliqueTree.Cliques[i].Where((x, ii) => ii != y);
                 // var newSep = new List<ushort>(sep);
                 var newNode = new INCRNode(sep);
-                newNode.Add((ushort)(u + k));
+                newNode.Add((uint)(u + k));
 
                 cliqueTree.Cliques.Add(newNode);
                 cliqueTree.Cardinalities.Add(k + 1);
