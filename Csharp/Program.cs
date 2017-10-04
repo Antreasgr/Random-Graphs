@@ -11,11 +11,11 @@ namespace Main
     {
         static void Main(string[] args)
         {
-            // var shetStats = new SHET.SHET().RunSHET(10);
-            // Console.WriteLine("Done...");
-            // Console.WriteLine("Writing excel report...");
+            var shetStats = new SHET.SHET().RunSHET(10);
+            Console.WriteLine("Done...");
+            Console.WriteLine("Writing excel report...");
             // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("SHEt4", shetStats);
-            // Console.WriteLine("Done");
+            Console.WriteLine("Done");
 
             // var mvaStats = new MVAMain().RunMVA(10);
             // Console.WriteLine("Done...");
@@ -23,11 +23,11 @@ namespace Main
             // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("MVA3", mvaStats);
             // Console.WriteLine("Done");
 
-            var incrStats = new INCRMain().RunINCR(10, 0);
-            Console.WriteLine("Done...");
-            Console.WriteLine("Writing excel report...");
-            ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR2", incrStats);
-            Console.WriteLine("Done");
+            // var incrStats = new INCRMain().RunINCR(10, 0);
+            // Console.WriteLine("Done...");
+            // Console.WriteLine("Writing excel report...");
+            // ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook("INCR2", incrStats);
+            // Console.WriteLine("Done");
         }
     }
 }

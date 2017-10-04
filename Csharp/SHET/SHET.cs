@@ -9,15 +9,15 @@ namespace SHET
 
     public class SHET
     {
-        public static readonly int[] Vertices = new int[] { /*1000, 2500, 5000, 10000, 50000 ,*/ 100000 };
+        public static readonly int[] Vertices = new int[] { 1000, 2500, 5000, 10000, 50000 , 100000 };
 
         public static readonly double[][] KFactor = new double[][]{
-            // new double[] {0.02, 0.05, 0.08, 0.18, 0.33},  // 1000
-            // new double[] {0.01, 0.04, 0.07, 0.13, 0.36},  // 2500
-            // new double[] {0.01, 0.04, 0.07, 0.1, 0.36},  // 5000
-            // new double[] {0.009, 0.03, 0.06, 0.09, 0.33},  // 10000
-            // new double[] {0.007, 0.01, 0.036, 0.082, 0.12},  // 50000
-            new double[] { /*0.004, 0.01, */0.02, 0.03, 0.04 }  // 100000
+            new double[] {0.02, 0.05, 0.08, 0.18, 0.33},  // 1000
+            new double[] {0.01, 0.04, 0.07, 0.13, 0.36},  // 2500
+            new double[] {0.01, 0.04, 0.07, 0.1, 0.36},  // 5000
+            new double[] {0.009, 0.03, 0.06, 0.09, 0.33},  // 10000
+            new double[] {0.007, 0.01, 0.036, 0.082, 0.12},  // 50000
+            new double[] { 0.004, 0.01, 0.02, 0.03, 0.04 }  // 100000
         };
 
         // public static readonly int[] Vertices = new int[] { 5 };
@@ -39,6 +39,7 @@ namespace SHET
             stats.Times["Total"] = new List<double>();
             stats.Output["edgeDensity"] = new List<double>();
             stats.Output["CC"] = new List<double>();
+            stats.Output["Mem"] = new List<double>();
             return stats;
         }
 
@@ -136,6 +137,9 @@ namespace SHET
             stats.Output["edgeDensity"].Add(Convert.ToDouble(Decimal.Divide((decimal)edges, (decimal)maxEdges)));
             stats.Output["CC"].Add(validCliques.Where(x => x.State == NodeState.NewCC).Count());
             stats.CliqueTrees.Add(this.SHETBFSStatistics(edges, validCliques));
+
+            var proc = System.Diagnostics.Process.GetCurrentProcess();
+            stats.Output["Mem"].Add(proc.WorkingSet64 / (1024.0 * 1024.0));
         }
 
         public void PrintRunStatistics(Stats stats)
@@ -238,7 +242,7 @@ namespace SHET
                     }
 
                     var runStats = this.MergeStatistics(new List<Stats>() { stats });
-                    ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook($"Shet_{n}_{kfactor}", runStats);
+                    ExcelReporter.ExcelReporter.CreateSpreadsheetWorkbook($"ShetMem_{n}_{kfactor}", runStats);
                 }
             }
 
