@@ -10,7 +10,7 @@ namespace MVA
 
     public class MVAMain : SHET
     {
-        public static new readonly long[] Vertices = new long[] { /*1000, 2500, 5000, 10000,*/  50000,/* 100000 */};
+        public static new readonly long[] Vertices = new long[] { 1000, 2500, 5000, 10000, 50000, 100000 };
         public static readonly double[] EdgeDensity = new double[] { 0.1, 0.33, 0.5, 0.75, 0.99 };
 
         private Stats InitializeRunStats(long n, double ed)
@@ -23,6 +23,7 @@ namespace MVA
             stats.Times["MergeCliques"] = new List<double>();
             stats.Times["Total"] = new List<double>();
             stats.Output["EdgeDensity"] = new List<double>();
+            stats.Output["Mem"] = new List<double>();
             return stats;
         }
 
@@ -59,6 +60,8 @@ namespace MVA
             var maxEdges = (n * (n - 1)) / 2;
             stats.Edges.Add(tree.Edges);
             stats.Output["EdgeDensity"].Add((double)tree.Edges / maxEdges);
+            var proc = System.Diagnostics.Process.GetCurrentProcess();
+            stats.Output["Mem"].Add(proc.WorkingSet64 / (1024.0 * 1024.0));
 
             stats.CliqueTrees.Add(this.MVABFSStatistics(n, tree));
         }
