@@ -1,5 +1,7 @@
 #Antreas Custom
 ~$*.xlsx
+obj/
+bin/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
